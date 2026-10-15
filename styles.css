@@ -96,3 +96,37 @@
 /* v23 alternating player-name background */
 .player-row.alt td:first-child{background:#f2f4f3!important;}
 .player-row:not(.alt) td:first-child{background:#fff!important;}
+
+
+/* v24 page layout cleanup: consistent rows, compact 9-hole view, no result-table sideways scroll */
+.player-row.alt td,.stroke-row.alt td{background:#f0f3f2!important}
+.player-row:not(.alt) td,.stroke-row:not(.alt) td{background:#fff!important}
+.player-row.alt td:first-child,.stroke-row.alt td:first-child{background:#f0f3f2!important}
+.player-row:not(.alt) td:first-child,.stroke-row:not(.alt) td:first-child{background:#fff!important}
+.score-table .match-status-cell{font-size:10px;white-space:nowrap;letter-spacing:-.2px}
+.result-scroll{overflow:visible!important;width:100%}
+.result-table{width:100%!important;min-width:0!important;table-layout:fixed}
+.result-table th,.result-table td{padding:8px 3px;font-size:11px;overflow:hidden;text-overflow:ellipsis}
+.result-table th:first-child,.result-table td:first-child{width:27%;white-space:normal;overflow-wrap:anywhere}
+.result-table th:not(:first-child),.result-table td:not(:first-child){width:14.6%}
+@media(max-width:640px){
+ .score-page{padding-bottom:22px}
+ .mode-tabs{padding:8px 8px;gap:6px;top:68px}
+ .mode-tab{height:38px;font-size:13px}
+ .score-scroll{padding:0 6px 4px}
+ .score-table.match-score-table{min-width:0!important;width:100%!important;table-layout:fixed}
+ .score-table.match-score-table th,.score-table.match-score-table td{min-width:0!important;width:auto!important;padding:0 1px;font-size:11px;height:42px}
+ .score-table.match-score-table th:first-child,.score-table.match-score-table td:first-child{width:70px!important;min-width:70px!important;padding-left:7px;font-size:11px}
+ .score-table.match-score-table thead th{height:30px!important;font-size:10px!important}
+ .score-table.match-score-table .circle{width:23px;height:23px;border-width:2px;font-size:11px}
+ .score-table.match-score-table .double-circle{width:24px;height:24px;border-width:2px;font-size:10px}
+ .score-table.match-score-table .double-circle::after{inset:3px;border-width:1.5px}
+ .score-table.match-score-table .match-status-cell{font-size:9px!important;letter-spacing:-.35px}
+ .score-table.match-score-table .player-name{overflow-wrap:anywhere;font-size:10px}
+ .score-table.match-score-table .match-hcp{font-size:8px}
+ .result-card{margin:10px 8px}
+ .result-title{font-size:14px;padding:10px}
+ .result-table th,.result-table td{padding:7px 1px;font-size:10px}
+ .result-table th:first-child,.result-table td:first-child{width:27%}
+ .result-table th:not(:first-child),.result-table td:not(:first-child){width:14.6%}
+}
