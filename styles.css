@@ -130,3 +130,13 @@
  .result-table th:first-child,.result-table td:first-child{width:27%}
  .result-table th:not(:first-child),.result-table td:not(:first-child){width:14.6%}
 }
+
+/* v25: compact player label, clean MATCH status row */
+.match-status-label-cell{color:transparent!important;font-size:0!important}
+.match-status-cell.status-square{color:#111!important;font-weight:900}
+.match-hcp{font-size:10px;line-height:1.2;color:#586b64;font-weight:800;margin-top:3px;white-space:normal;overflow-wrap:anywhere}
+@media(max-width:640px){
+ .score-table.match-score-table th:first-child,.score-table.match-score-table td:first-child{width:82px!important;min-width:82px!important;max-width:82px!important;padding-left:6px!important}
+ .score-table.match-score-table .player-name{overflow-wrap:normal;font-size:10px!important;line-height:1.15}
+ .score-table.match-score-table .match-hcp{font-size:8px!important;letter-spacing:-.15px;line-height:1.15}
+}
