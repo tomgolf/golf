@@ -152,8 +152,50 @@ function resultForOpponent(pid,mode){const me=state.currentPlayer.player_id;retu
 function resultPanel(){const mode=state.currentMode==='B9'?'B9':'F9';const pairs=[];for(let i=0;i<state.players.length;i++){for(let j=i+1;j<state.players.length;j++){const a=state.players[i],b=state.players[j];const r=resultForPair(a.player_id,b.player_id,mode);pairs.push({label:`${a.name} v ${b.name}`,r})}}return `<div class="result-card"><div class="result-title">${mode==='F9'?'Front 9 Result':'Back 9 Result'}</div><div class="result-scroll"><table class="result-table"><thead><tr><th>Opponent</th><th>Game</th><th>Tommy</th><th>Buy</th><th>Bonus</th><th>Total</th></tr></thead><tbody>${pairs.map(x=>{const r=x.r;return `<tr><td>${esc(x.label)}</td><td>${fmtSigned(r.game)}</td><td>${fmtSigned(r.tommy)}</td><td>${fmtSigned(r.buy)}</td><td>${fmtSigned(r.bonus)}</td><td><b>${fmtSigned(r.total)}</b></td></tr>`}).join('')}</tbody></table></div></div>`}
 function bonusBreakdown(pid,mode){const holes=mode==='F9'?Array.from({length:9},(_,i)=>i+1):Array.from({length:9},(_,i)=>i+10);const data={double3:0,double5:0,birdie:0,eagle:0,hio:0,bonus:0};const rows=holes.map(h=>{const score=Number(scoreFor(pid,h).score);const par=Number(courseHole(h)?.par||0);return {score,par}});const par3=rows.filter(x=>x.par===3);const par5=rows.filter(x=>x.par===5);if(par3.length===2&&par3.every(x=>x.score>0&&x.score<=x.par))data.double3=1;if(par5.length===2&&par5.every(x=>x.score>0&&x.score<=x.par))data.double5=1;rows.forEach(x=>{if(!x.score||!x.par)return;if(x.par===3&&x.score===1){data.hio+=12;return}if(x.score<=x.par-2){data.eagle+=6;return}if(x.score===x.par-1)data.birdie+=1});data.bonus=data.double3+data.double5+data.birdie+data.eagle+data.hio;return data}
 function fmtSigned(n){return n>0?`+${n}`:String(n)}
-function baccaratTable(){const holes=Array.from({length:18},(_,i)=>i+1);return `<div class="score-scroll"><table class="score-table"><thead><tr><th>Holes</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th>Total</th></tr><tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th>—</th></tr><tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th>—</th></tr></thead><tbody>${displayPlayers().map((p,pi)=>`<tr class="player-row ${pi%2?'alt':''}"><td class="player-name">${esc(p.name)}${p.player_id===state.currentPlayer.player_id?'<div class="you">YOU</div>':''}</td>${holes.map(h=>`<td>${baccaratPoints(p.player_id,h)}</td>`).join('')}<td><b>${holes.reduce((a,h)=>a+baccaratPoints(p.player_id,h),0)}</b></td></tr>`).join('')}</tbody></table></div><div class="score-tools"><button class="nav-btn" onclick="prevHole()">‹ Prev</button><span class="hole-count">Hole ${state.currentHole} / 18</span><button class="nav-btn" onclick="nextHole()">Next ›</button></div>`}
-function baccaratPoints(pid,hole){const s=Number(scoreFor(pid,hole).score);if(!s)return 0;const par=courseHole(hole)?.par||4;if(par===3&&s===1)return 32;let pts=1;if(s<=par-2)pts=4;else if(s===par-1)pts=2;const up=scoreFor(pid,hole).up;return up?pts*2:pts}
+function baccaratTable(){
+  const holes=Array.from({length:18},(_,i)=>i+1);
+  const ordered=displayPlayers();
+  const rows=ordered.map((p,pi)=>{
+    const vals=holes.map(h=>baccaratPoints(p.player_id,h));
+    const total=vals.reduce((sum,n)=>sum+n,0);
+    return `<tr class="player-row ${pi%2?'alt':''}"><td class="player-name">${esc(p.name)}${p.player_id===state.currentPlayer.player_id?'<div class="you">YOU</div>':''}</td>${holes.map((h,i)=>`<td class="baccarat-point ${state.isAdmin||p.player_id===state.currentPlayer.player_id?'editable':''}" onclick="editScore('${p.player_id}',${h})">${vals[i]===0?'<span class="zero-point">0</span>':`<span class="${vals[i]>0?'point-positive':'point-negative'}">${fmtSigned(vals[i])}</span>`}</td>`).join('')}<td class="baccarat-total"><b>${fmtSigned(total)}</b></td></tr>`;
+  }).join('');
+  return `<div class="score-scroll baccarat-scroll"><table class="score-table baccarat-table"><thead><tr><th>Player</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th>Total</th></tr><tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th>—</th></tr><tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th>—</th></tr></thead><tbody>${rows}</tbody></table></div><div class="baccarat-note">Points are calculated pair-by-pair after handicap strokes. UP and Birdie/Eagle multipliers apply only to the winner; the loser's UP call doubles the result. Par 3 hole-in-one = 32 points.</div><div class="score-tools"><button class="nav-btn" onclick="prevHole()">‹ Prev</button><span class="hole-count">Hole ${state.currentHole} / 18</span><button class="nav-btn" onclick="nextHole()">Next ›</button></div>`;
+}
+function baccaratStrokeValueForHole(a,b,hole){
+  const hc=getPairHandicap(a,b);if(!hc)return 0;
+  const candidates=(state.course?.holes||[]).slice().sort((x,y)=>Number(x.si)-Number(y.si));
+  const abs=Math.abs(hc), full=Math.floor(abs), half=abs-full;
+  const idx=candidates.findIndex(x=>Number(x.hole)===Number(hole));
+  if(idx<0||idx>=full+(half?1:0))return 0;
+  return (hc<0?-1:1)*(idx<full?1:0.5);
+}
+function baccaratPairPoints(a,b,hole){
+  const sa=Number(scoreFor(a,hole).score),sb=Number(scoreFor(b,hole).score);
+  if(!sa||!sb)return {a:0,b:0,result:'S'};
+  const par=Number(courseHole(hole)?.par||4);
+  const adjA=sa-baccaratStrokeValueForHole(a,b,hole);
+  const adjB=sb;
+  if(adjA===adjB)return {a:0,b:0,result:'S'};
+  const winner=adjA<adjB?a:b, loser=winner===a?b:a;
+  const winScore=Number(scoreFor(winner,hole).score), loseScore=Number(scoreFor(loser,hole).score);
+  if(par===3&&winScore===1)return winner===a?{a:32,b:-32,result:'W'}:{a:-32,b:32,result:'L'};
+  let multiplier=scoreFor(winner,hole).up?2:1;
+  if(winScore<=par-2)multiplier*=4;
+  else if(winScore===par-1)multiplier*=2;
+  if(scoreFor(loser,hole).up)multiplier*=2;
+  const points=multiplier;
+  return winner===a?{a:points,b:-points,result:'W'}:{a:-points,b:points,result:'L'};
+}
+function baccaratPoints(pid,hole){
+  let total=0;
+  for(const p of state.players){
+    if(p.player_id===pid)continue;
+    const pair=baccaratPairPoints(pid,p.player_id,hole);
+    total+=pair.a;
+  }
+  return total;
+}
 function setMode(m){state.currentMode=m;state.currentHole=m==='B9'?10:1;render()}function prevHole(){state.currentHole=Math.max(state.currentMode==='B9'?10:1,state.currentHole-1);render()}function nextHole(){const max=state.currentMode==='F9'?9:18;state.currentHole=Math.min(max,state.currentHole+1);render()}
 function editScore(pid,hole){if(pid!==state.currentPlayer.player_id&&!state.isAdmin)return;if(state.isAdmin){state.editingHole=hole;state.editingScores=state.players.map(p=>({pid:p.player_id,name:p.name,...scoreFor(p.player_id,hole)}));state.editingScore=null;render()}else{state.editingScore={pid,hole,...scoreFor(pid,hole)};render()}}
 function scoreEditor(){const e=state.editingScore;return `<div class="score-editor"><div class="editor-panel"><div class="editor-title">Edit Score</div><div class="editor-sub">${esc(state.players.find(p=>p.player_id===e.pid)?.name||'')} · Hole ${e.hole}</div><div class="score-picker">${Array.from({length:12},(_,i)=>i+1).map(n=>`<button class="score-option ${Number(e.score)===n?'active':''}" onclick="pickScore(${n})">${n}</button>`).join('')}</div><label class="up-row"><input id="editUp" type="checkbox" ${e.up?'checked':''}> UP</label><div class="editor-actions"><button class="cancel-score" onclick="cancelEdit()">Cancel</button><button class="save-score" onclick="saveEditedScore()">Save</button></div></div></div>`}

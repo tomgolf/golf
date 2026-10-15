@@ -143,3 +143,17 @@
 
 .below-handicap-tools{display:flex;justify-content:flex-end;padding:10px 12px 2px;margin:0 0 4px}
 .below-handicap-tools .link-btn{min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:#eaf5f1;color:var(--green);font-weight:900}
+
+/* Baccarat scoring */
+.baccarat-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.baccarat-table{min-width:980px}
+.baccarat-table th,.baccarat-table td{padding:7px 5px;text-align:center;white-space:nowrap;font-size:12px}
+.baccarat-table th:first-child,.baccarat-table td:first-child{position:sticky;left:0;z-index:2;min-width:78px;max-width:110px;text-align:left;background:#fff}
+.baccarat-table thead th:first-child{background:#e7f5f1}
+.baccarat-table .player-row.alt td:first-child{background:#f0f2f1}
+.baccarat-point.editable{cursor:pointer}
+.point-positive{color:#075fc5;font-weight:800}
+.point-negative{color:#d9232e;font-weight:800}
+.zero-point{color:#89938f}
+.baccarat-total{font-weight:800;background:#f0f8f5}
+.baccarat-note{font-size:12px;color:#60726b;padding:8px 10px;line-height:1.45}
