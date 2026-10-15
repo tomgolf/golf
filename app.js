@@ -94,18 +94,26 @@ function resultForPair(aid,bid,mode){
   }
   let game=0,tommy=0,buy=0;
   if(decisionIndex!==null){
-    const seq=rows.slice(decisionIndex).map(x=>x.r).join('');
     const finalMargin=final.margin;
     if(startMargin===0){
       // A tied game decided on the final hole: winner gets Game +/-3 and Tommy +/-1.
       // If the final hole is square, the match remains square and Game is -1.
-      if(finalMargin!==0){game=finalMargin>0?3:-3;tommy=0;buy=0;}
+      if(finalMargin!==0){game=finalMargin>0?3:finalMargin<0?-3:0;tommy=0;buy=0;}
       else {game=-1;tommy=0;buy=0;}
     }else{
-      const absStart=Math.min(4,Math.max(1,Math.abs(startMargin)));
+      // Look up the complete sequence from the initial X-UP / X-TO-GO state,
+      // not merely the final holes after the game becomes mathematically decided.
+      const lookupStartIndex=rows.findIndex((row,i)=>
+        i>0 && Math.abs(rows[i-1].margin)===rows.length-i
+      );
+      const tableStartIndex=lookupStartIndex>=0 && lookupStartIndex<=decisionIndex
+        ? lookupStartIndex : decisionIndex;
+      const tableStartMargin=tableStartIndex>0?rows[tableStartIndex-1].margin:startMargin;
+      const seq=rows.slice(tableStartIndex).map(x=>x.r).join('');
+      const absStart=Math.min(4,Math.max(1,Math.abs(tableStartMargin)));
       const table=RESULT_TABLES[absStart];
       let total;
-      if(startMargin>0){
+      if(tableStartMargin>0){
         total=table?.[seq];
       }else{
         const mirrored=seq.replace(/[WL]/g,c=>c==='W'?'L':c==='L'?'W':'S');
