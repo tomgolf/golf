@@ -96,8 +96,8 @@ function resultForPair(aid,bid,mode){
     if(startMargin===0){
       // A tied game decided on the final hole: winner gets Game +/-3 and Tommy +/-1.
       // If the final hole is square, the match remains square and Game is -1.
-      if(finalMargin!==0){game=finalMargin>0?3:-3;tommy=finalMargin>0?1:-1;}
-      else {game=-1;tommy=0;}
+      if(finalMargin!==0){game=finalMargin>0?3:-3;tommy=0;buy=0;}
+      else {game=-1;tommy=0;buy=0;}
     }else{
       const absStart=Math.min(4,Math.max(1,Math.abs(startMargin)));
       const table=RESULT_TABLES[absStart];
@@ -137,7 +137,7 @@ function resultForPair(aid,bid,mode){
   }else if(beforeFinal===0 && final.margin!==0){
     // The final hole alone decides a previously square match.
     game=final.margin>0?3:-3;
-    tommy=final.margin>0?1:-1;
+    tommy=0;
     buy=0;
   }else{
     // No decisive winner: agreed all-square settlement.
