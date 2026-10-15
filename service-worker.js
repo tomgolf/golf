@@ -1,5 +1,5 @@
-const CACHE='golf-game-pwa-v42';
-const ASSETS=['./','./index.html','./style.css','./styles.css?v=42','./app.js?v=42','./manifest.json','./manifest.webmanifest','./home-course.svg'];
+const CACHE='golf-game-pwa-v43';
+const ASSETS=['./','./index.html','./style.css','./styles.css?v=43','./app.js?v=43','./manifest.json','./manifest.webmanifest','./home-course.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
