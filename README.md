@@ -29,3 +29,9 @@ Keep the existing Google Sheet and permanent COURSES data. Match-data cleanup mu
 - F9/B9 give-stroke cells: white background, black numbers, deep-red border.
 - F9/B9 receive-stroke cells: white background, black numbers, deep-blue border.
 - Baccarat: only players who called UP on that hole receive a deep-red border; all cells remain white with black numbers.
+
+
+## v41 match-status correction
+- When a pair reaches X-UP/X-DW with X holes remaining, subsequent holes switch to Tommy tracking instead of continuing to show shrinking UP/DW states.
+- Example: 4UP with four holes left, then losses on the next two holes, shows T-1 then T-2. A halved hole shows T0; wins show T+1.
+- Cache and asset versions updated to v41. Google Apps Script and Sheets are unchanged.
