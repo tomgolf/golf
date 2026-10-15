@@ -140,3 +140,6 @@
  .score-table.match-score-table .player-name{overflow-wrap:normal;font-size:10px!important;line-height:1.15}
  .score-table.match-score-table .match-hcp{font-size:8px!important;letter-spacing:-.15px;line-height:1.15}
 }
+
+.below-handicap-tools{display:flex;justify-content:flex-end;padding:10px 12px 2px;margin:0 0 4px}
+.below-handicap-tools .link-btn{min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:#eaf5f1;color:var(--green);font-weight:900}
