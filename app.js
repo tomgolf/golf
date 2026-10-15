@@ -75,54 +75,73 @@ function pairHoleResults(aid,bid,mode){
   return {holes,rows};
 }
 function resultForPair(aid,bid,mode){
+  // Calculate each pair only from its own scores and directional handicap.
   const {holes,rows}=pairHoleResults(aid,bid,mode);
+  const final=rows[rows.length-1];
+  const beforeFinal=rows.length>1?rows[rows.length-2].margin:0;
   let decisionIndex=null;
   let startMargin=0;
   for(let i=0;i<rows.length;i++){
-    const before=i===0?0:rows[i-1].margin;
-    const remainingBefore=holes.length-i;
+    // A game is decided when the lead is greater than the holes remaining.
     if(Math.abs(rows[i].margin)>rows[i].remainingAfter){
-      decisionIndex=i; startMargin=before; break;
+      decisionIndex=i;
+      startMargin=i===0?0:rows[i-1].margin;
+      break;
     }
   }
-  let game,tommy,buy;
-  if(decisionIndex===null){
-    // No early decision. If the final hole decides the game, the 1UP/1TOGO
-    // table applies; otherwise an all-square finish is Game -1.
-    const final=rows[rows.length-1];
-    const before=rows.length>1?rows[rows.length-2].margin:0;
-    if(Math.abs(before)===1){
-      const mirror=c=>c==='W'?'L':c==='L'?'W':'S';
-      const total=before>0 ? RESULT_TABLES[1][final.r] : -RESULT_TABLES[1][mirror(final.r)];
-      game=final.margin>0?3:final.margin<0?-3:0;
-      tommy=total-game;
-      buy=0;
-    }else{
-      game=-1; tommy=0; buy=0;
-    }
-  }else{
-    const len=holes.length-decisionIndex;
+  let game=0,tommy=0,buy=0;
+  if(decisionIndex!==null){
     const seq=rows.slice(decisionIndex).map(x=>x.r).join('');
-    const absStart=Math.min(4,Math.max(1,Math.abs(startMargin)));
-    const table=RESULT_TABLES[absStart];
-    let total=table&&table[seq];
-    if(total==null){
-      // Mirror the known lookup when the other side is leading.
-      const mirror=seq.replace(/[WL]/g,c=>c==='W'?'L':'W');
-      const t=table&&table[mirror];
-      total=t==null?0:-t;
+    const finalMargin=final.margin;
+    if(startMargin===0){
+      // A tied game decided on the final hole: winner gets Game +/-3 and Tommy +/-1.
+      // If the final hole is square, the match remains square and Game is -1.
+      if(finalMargin!==0){game=finalMargin>0?3:-3;tommy=finalMargin>0?1:-1;}
+      else {game=-1;tommy=0;}
+    }else{
+      const absStart=Math.min(4,Math.max(1,Math.abs(startMargin)));
+      const table=RESULT_TABLES[absStart];
+      let total;
+      if(startMargin>0){
+        total=table?.[seq];
+      }else{
+        const mirrored=seq.replace(/[WL]/g,c=>c==='W'?'L':c==='L'?'W':'S');
+        const mirroredTotal=table?.[mirrored];
+        total=mirroredTotal==null?undefined:-mirroredTotal;
+      }
+      if(total==null){
+        // Fallback only for incomplete/unsupported sequences; preserve the pair's final state.
+        total=finalMargin>0?4:finalMargin<0?-4:-1;
+      }
+      game=finalMargin>0?3:finalMargin<0?-3:0;
+      let bmargin=0;
+      // Buy begins on the hole AFTER the hole where Game is decided.
+      for(let i=decisionIndex+1;i<rows.length;i++){
+        if(rows[i].r==='W')bmargin++;else if(rows[i].r==='L')bmargin--;
+      }
+      buy=bmargin>0?1:bmargin<0?-1:0;
+      tommy=total-game-buy;
     }
-    // The lookup is the complete Game+Tommy+Buy total. Keep the component
-    // columns consistent with the agreed rule: Game is ±3 when decided,
-    // and the remaining amount is Tommy+Buy.
-    game=startMargin>0?3:-3;
-    const rem=total-game;
-    // Buy starts on the hole after Game is decided. Reconstruct final Buy
-    // state from outcomes after the decision hole.
-    let bmargin=0;
-    for(let i=decisionIndex+1;i<rows.length;i++){if(rows[i].r==='W')bmargin++;else if(rows[i].r==='L')bmargin--;}
-    buy=bmargin>0?1:bmargin<0?-1:0;
-    tommy=rem-buy;
+  }else if(Math.abs(beforeFinal)===1){
+    // 1UP/1TOGO table; mirror it when this pair is one down before the final hole.
+    const last=final.r;
+    let total;
+    if(beforeFinal>0) total=RESULT_TABLES[1][last];
+    else {
+      const mirrored=last==='W'?'L':last==='L'?'W':'S';
+      total=-RESULT_TABLES[1][mirrored];
+    }
+    game=final.margin>0?3:final.margin<0?-3:0;
+    tommy=total-game;
+    buy=0;
+  }else if(beforeFinal===0 && final.margin!==0){
+    // The final hole alone decides a previously square match.
+    game=final.margin>0?3:-3;
+    tommy=final.margin>0?1:-1;
+    buy=0;
+  }else{
+    // No decisive winner: agreed all-square settlement.
+    game=-1;tommy=0;buy=0;
   }
   const bonus=bonusBreakdown(aid,mode).bonus-bonusBreakdown(bid,mode).bonus;
   return {game,tommy,buy,bonus,total:game+tommy+buy+bonus};
