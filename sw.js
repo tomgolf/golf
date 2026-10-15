@@ -1,5 +1,5 @@
-const CACHE='golf-game-v30';
-const ASSETS=['./','./index.html','./styles.css?v=30','./app.js?v=30','./manifest.webmanifest'];
+const CACHE='golf-game-v32';
+const ASSETS=['./','./index.html','./styles.css?v=32','./app.js?v=32','./manifest.webmanifest'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
