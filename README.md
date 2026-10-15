@@ -18,3 +18,14 @@ This package is based on v35 and updates the app/cache version to v36.
 
 ## Data safety
 Keep the existing Google Sheet and permanent COURSES data. Match-data cleanup must not delete COURSES. The included Apps Script source is unchanged from v35; no backend redeployment is required for these front-end version/cache changes.
+
+
+## v39 color updates
+- F9/B9 stroke cells: deep red for disadvantage and deep blue for benefit; digits remain black.
+- Baccarat: only cells where that player called UP on that hole are deep red; non-UP cells remain white. Digits remain black.
+
+
+## v40 color correction
+- F9/B9 give-stroke cells: white background, black numbers, deep-red border.
+- F9/B9 receive-stroke cells: white background, black numbers, deep-blue border.
+- Baccarat: only players who called UP on that hole receive a deep-red border; all cells remain white with black numbers.
