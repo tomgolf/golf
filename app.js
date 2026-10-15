@@ -160,7 +160,7 @@ function baccaratTable(){
     const total=vals.reduce((sum,n)=>sum+n,0);
     return `<tr class="player-row ${pi%2?'alt':''}"><td class="player-name">${esc(p.name)}${p.player_id===state.currentPlayer.player_id?'<div class="you">YOU</div>':''}</td>${holes.map((h,i)=>`<td class="baccarat-point ${state.isAdmin||p.player_id===state.currentPlayer.player_id?'editable':''}" onclick="editScore('${p.player_id}',${h})">${vals[i]===0?'<span class="zero-point">0</span>':`<span class="${vals[i]>0?'point-positive':'point-negative'}">${fmtSigned(vals[i])}</span>`}</td>`).join('')}<td class="baccarat-total"><b>${fmtSigned(total)}</b></td></tr>`;
   }).join('');
-  return `<div class="score-scroll baccarat-scroll"><table class="score-table baccarat-table"><thead><tr><th>Player</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th>Total</th></tr><tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th>—</th></tr><tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th>—</th></tr></thead><tbody>${rows}</tbody></table></div><div class="baccarat-note">Points are calculated pair-by-pair after handicap strokes. UP and Birdie/Eagle multipliers apply only to the winner; the loser's UP call doubles the result. Par 3 hole-in-one = 32 points.</div><div class="score-tools"><button class="nav-btn" onclick="prevHole()">‹ Prev</button><span class="hole-count">Hole ${state.currentHole} / 18</span><button class="nav-btn" onclick="nextHole()">Next ›</button></div>`;
+  return `<div class="score-scroll baccarat-scroll"><table class="score-table baccarat-table"><thead><tr><th>Player</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th>Total</th></tr><tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th>—</th></tr><tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th>—</th></tr></thead><tbody>${rows}</tbody></table></div><div class="baccarat-note">Points are calculated pair-by-pair after handicap strokes. UP and Birdie/Eagle multipliers apply only to the winner; the loser's UP call doubles the result. Par 3 Hole-in-One uses base ×16, then applies UP multiplier.</div><div class="score-tools"><button class="nav-btn" onclick="prevHole()">‹ Prev</button><span class="hole-count">Hole ${state.currentHole} / 18</span><button class="nav-btn" onclick="nextHole()">Next ›</button></div>`;
 }
 function baccaratStrokeValueForHole(a,b,hole){
   const hc=getPairHandicap(a,b);if(!hc)return 0;
@@ -171,20 +171,27 @@ function baccaratStrokeValueForHole(a,b,hole){
   return (hc<0?-1:1)*(idx<full?1:0.5);
 }
 function baccaratPairPoints(a,b,hole){
-  const sa=Number(scoreFor(a,hole).score),sb=Number(scoreFor(b,hole).score);
+  const recA=scoreFor(a,hole), recB=scoreFor(b,hole);
+  const sa=Number(recA.score), sb=Number(recB.score);
   if(!sa||!sb)return {a:0,b:0,result:'S'};
   const par=Number(courseHole(hole)?.par||4);
   const adjA=sa-baccaratStrokeValueForHole(a,b,hole);
   const adjB=sb;
   if(adjA===adjB)return {a:0,b:0,result:'S'};
   const winner=adjA<adjB?a:b, loser=winner===a?b:a;
-  const winScore=Number(scoreFor(winner,hole).score), loseScore=Number(scoreFor(loser,hole).score);
-  if(par===3&&winScore===1)return winner===a?{a:32,b:-32,result:'W'}:{a:-32,b:32,result:'L'};
-  let multiplier=scoreFor(winner,hole).up?2:1;
-  if(winScore<=par-2)multiplier*=4;
-  else if(winScore===par-1)multiplier*=2;
-  if(scoreFor(loser,hole).up)multiplier*=2;
-  const points=multiplier;
+  const winRec=winner===a?recA:recB;
+  const loseRec=loser===a?recA:recB;
+  const winScore=Number(winRec.score);
+  // Base multiplier follows the winner's gross score. HIO uses ×16 and still applies UP multipliers.
+  let scoreMultiplier=1;
+  if(par===3 && winScore===1) scoreMultiplier=16;
+  else if(winScore<=par-3) scoreMultiplier=8;       // Albatross or better
+  else if(winScore<=par-2) scoreMultiplier=4;       // Eagle
+  else if(winScore===par-1) scoreMultiplier=2;      // Birdie
+  const winnerUp=!!winRec.up;
+  const loserUp=!!loseRec.up;
+  const upMultiplier=winnerUp&&loserUp?4:(winnerUp||loserUp?2:1);
+  const points=scoreMultiplier*upMultiplier;
   return winner===a?{a:points,b:-points,result:'W'}:{a:-points,b:points,result:'L'};
 }
 function baccaratPoints(pid,hole){
