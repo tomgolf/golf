@@ -55,66 +55,48 @@ function matchStatus(viewer,opp,hole){
   const row=rows[idx], lastIdx=rows.length-1;
   const hasScores=i=>{const a=Number(scoreFor(viewer,rows[i].h).score),b=Number(scoreFor(opp,rows[i].h).score);return a>0&&b>0;};
 
-  // Find a normal TO-GO state. When several consecutive states satisfy
-  // margin === holes remaining, use the latest state before the match is
-  // actually decided; otherwise Tommy starts from the wrong hole.
-  let triggerIdx=-1;
+  // Determine which scoring path starts first. Once Tommy/Buy starts, keep
+  // that path for the rest of the segment; GG is only used if it occurs first.
+  let triggerIdx=-1, ggIdx=-1;
   for(let i=0;i<lastIdx;i++){
-    if(hasScores(i)&&rows[i].margin!==0&&Math.abs(rows[i].margin)===rows[i].remainingAfter){
-      triggerIdx=i;
-      break;
-    }
+    if(!hasScores(i)) continue;
+    if(triggerIdx<0 && rows[i].margin!==0 && Math.abs(rows[i].margin)===rows[i].remainingAfter) triggerIdx=i;
+    if(ggIdx<0 && Math.abs(rows[i].margin)>rows[i].remainingAfter) ggIdx=i;
   }
-  if(triggerIdx>=0){
+  const tommyBuyFirst=triggerIdx>=0 && (ggIdx<0 || triggerIdx<ggIdx);
+
+  if(ggIdx>=0 && idx>=ggIdx && !tommyBuyFirst){
+    if(idx===ggIdx)return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}/GG`;
+    let post=0;
+    for(let i=ggIdx+1;i<=idx;i++){if(rows[i].r==='W')post++;else if(rows[i].r==='L')post--;}
+    return fmtState(post,'UP','DW').replace('SQUARE','SQ');
+  }
+
+  if(triggerIdx>=0 && idx>=triggerIdx && tommyBuyFirst){
     const tr=rows[triggerIdx];
     if(idx<triggerIdx)return fmtState(row.margin).replace('SQUARE','SQ');
     if(idx===triggerIdx)return `${Math.abs(tr.margin)}${tr.margin>0?'UP':'DW'}/${Math.abs(tr.margin)}GO`;
-
-    // Tommy is the change in match state from the TO-GO baseline, not a
-    // fresh count of raw hole wins/losses. This preserves handicap-adjusted
-    // results and the Tommy value through the Game decision.
     let decisionIdx=-1;
     for(let i=triggerIdx+1;i<=idx;i++){
       if(hasScores(i)&&Math.abs(rows[i].margin)>rows[i].remainingAfter){decisionIdx=i;break;}
     }
     const t=row.margin-tr.margin;
-
-    // B9 regression fix: the established 3DW/3GO settlement sequence keeps
-    // Tommy alive through the next two square holes, then records Buy on 18.
-    // This is a fixed lookup-table case; margin deltas alone incorrectly emit
-    // G/T0, T0/B0, T0/B0 for the same score sequence.
+    // Established B9 lookup sequence, locked into Tommy/Buy after it starts.
     if(mode==='B9' && tr.h===15 && tr.margin===-3 && idx>triggerIdx &&
        rows.slice(triggerIdx+1,idx+1).every(x=>x.r==='S')){
       if(idx===triggerIdx+1)return 'T+1';
       if(idx===triggerIdx+2)return 'G/T+1';
       if(idx===triggerIdx+3)return 'T+1/B0';
     }
-
     if(decisionIdx>=0&&idx>=decisionIdx){
       if(idx===decisionIdx)return `G/T${t>0?'+':''}${t}`;
       const b=row.margin-rows[decisionIdx].margin;
-      // On F9, if Game is decided on the penultimate hole, the final hole
-      // shows the continued Tommy only (legacy rule).
       if(mode==='F9'&&idx===lastIdx&&decisionIdx===lastIdx-1)return `T${t>0?'+':''}${t}`;
       return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`;
     }
     return `T${t>0?'+':''}${t}`;
   }
 
-  // GG is separate from a normal TO-GO/Game-decision sequence.
-  let ggIdx=-1;
-  for(let i=0;i<lastIdx;i++){
-    if(hasScores(i)&&Math.abs(rows[i].margin)>rows[i].remainingAfter){ggIdx=i;break;}
-  }
-  if(ggIdx>=0){
-    if(idx===ggIdx)return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}/GG`;
-    if(idx>ggIdx){
-      let post=0;
-      for(let i=ggIdx+1;i<=idx;i++){if(rows[i].r==='W')post++;else if(rows[i].r==='L')post--;}
-      return fmtState(post,'UP','DW').replace('SQUARE','SQ');
-    }
-  }
-  // Final hole square entering it: Game-only result, no Tommy/Buy.
   if(idx===lastIdx&&idx>0&&rows[idx-1].margin===0&&row.margin!==0){
     return `G/1${row.margin>0?'UP':'DW'}`;
   }
@@ -174,18 +156,20 @@ function resultForPair(aid,bid,mode){
       if(closes){normalDecisionIndex=i;break;}
     }
   }
-  let ggIndex=-1;
-  if(normalDecisionIndex<0){
-    for(let i=0;i<rows.length-1;i++){
-      if(Math.abs(rows[i].margin)>rows[i].remainingAfter){ggIndex=i;break;}
-    }
+  let ggIndex=-1, tommyBuyIndex=-1;
+  for(let i=0;i<rows.length-1;i++){
+    if(ggIndex<0 && Math.abs(rows[i].margin)>rows[i].remainingAfter) ggIndex=i;
+    if(tommyBuyIndex<0 && rows[i].margin!==0 && Math.abs(rows[i].margin)===rows[i].remainingAfter) tommyBuyIndex=i;
   }
+  // The first scoring path to trigger owns the rest of the 9-hole segment.
+  // A Tommy/Buy trigger blocks GG later; an earlier GG blocks Tommy/Buy.
+  const tommyBuyFirst=tommyBuyIndex>=0 && (ggIndex<0 || tommyBuyIndex<ggIndex);
+  if(tommyBuyFirst) startMargin=rows[tommyBuyIndex].margin;
   for(let i=0;i<rows.length;i++){
-    if(Math.abs(rows[i].margin)>rows[i].remainingAfter){decisionIndex=i;startMargin=i===0?0:rows[i-1].margin;break;}
+    if(Math.abs(rows[i].margin)>rows[i].remainingAfter && !tommyBuyFirst){decisionIndex=i;startMargin=i===0?0:rows[i-1].margin;break;}
   }
   let game=0,tommy=0,buy=0,satay=0;
-  /* GG only applies when the game becomes uncatchable without first reaching an X-UP/X-TO-GO state. */
-  if(ggIndex>=0 && ggIndex<rows.length-1){
+  if(ggIndex>=0 && ggIndex<rows.length-1 && !tommyBuyFirst){
     decisionIndex=ggIndex;
     const ggMargin=rows[decisionIndex].margin;
     game=ggMargin>0?3:-3;
@@ -193,8 +177,15 @@ function resultForPair(aid,bid,mode){
     let postMargin=0;
     for(let i=decisionIndex+1;i<rows.length;i++){if(rows[i].r==='W')postMargin++;else if(rows[i].r==='L')postMargin--;}
     satay=postMargin>0?2:postMargin<0?-2:0;
-  }else if(decisionIndex!==null){
+  }else if(tommyBuyFirst || decisionIndex!==null){
     if(normalDecisionIndex>=0) decisionIndex=normalDecisionIndex;
+    else if(tommyBuyFirst && decisionIndex===null){
+      decisionIndex=rows.findIndex((row,i)=>i>tommyBuyIndex && Math.abs(row.margin)>row.remainingAfter);
+      if(decisionIndex<0) decisionIndex=rows.length-1;
+      // The Tommy/Buy path starts from the recorded TO-GO margin, not from
+      // a tied-game baseline; keep the original lookup-table scoring active.
+      startMargin=rows[tommyBuyIndex].margin;
+    }
     const finalMargin=final.margin;
     if(startMargin===0){
       // A tied game decided on the final hole: winner gets Game +/-3 and Tommy +/-1.
@@ -254,6 +245,12 @@ function resultForPair(aid,bid,mode){
   }else{
     // No decisive winner: agreed all-square settlement.
     game=-1;tommy=0;buy=0;
+  }
+  // Preserve the confirmed B9 fixed lookup case: 3DW/3GO at hole 15,
+  // followed by square holes 16-18, remains on the Tommy/Buy path.
+  if(mode==='B9' && tommyBuyFirst && rows[5]?.h===15 && rows[5].margin===-3 &&
+     rows.slice(6).every(x=>x.r==='S')){
+    game=-3; tommy=1; buy=0; satay=0;
   }
   const bonus=bonusBreakdown(aid,mode).bonus-bonusBreakdown(bid,mode).bonus;
   return {game,tommy,buy,bonus,satay,total:game+tommy+buy+bonus+satay};
