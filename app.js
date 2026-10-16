@@ -46,7 +46,7 @@ function relative(a,b,hole){const sa=Number(scoreFor(a,hole).score),sb=Number(sc
 function cellClass(viewer,pid,hole){if(pid===viewer){const vals=state.players.filter(p=>p.player_id!==viewer).map(p=>strokesFor(viewer,p.player_id,hole));const hasReceive=vals.some(v=>v>0),hasGive=vals.some(v=>v<0);if(hasReceive&&!hasGive)return 'benefit';if(hasGive&&!hasReceive)return 'disadvantage';return ''}const st=strokesFor(viewer,pid,hole);if(st>0)return 'disadvantage';if(st<0)return 'benefit';return ''}
 function isBirdie(score,par){return score&&score<=par-1}
 function scoreMarkup(pid,hole){const s=scoreFor(pid,hole);if(s.score==='')return '<span style="color:#a1aaa6">–</span>';const par=Number(courseHole(hole)?.par||4);const score=Number(s.score);if(score<par)return `<span class="double-circle">${s.score}</span>`;if(score===par)return `<span class="circle">${s.score}</span>`;return `<span>${s.score}</span>`}
-function pairOutcomes(viewer,opp,mode){const holes=mode==='F9'?Array.from({length:9},(_,i)=>i+1):Array.from({length:9},(_,i)=>i+10);let margin=0;let decisionAt=null;const rows=[];for(const h of holes){const a=Number(scoreFor(viewer,h).score),b=Number(scoreFor(opp,h).score);let r='S';if(a&&b){r=relative(viewer,opp,h);if(r==='W')margin++;else if(r==='L')margin--}const remainingAfter=holes[holes.length-1]-h;if(decisionAt===null&&a&&b&&Math.abs(margin)>remainingAfter)decisionAt=h;rows.push({h,r,margin,decisionAt})}return {holes,rows,decisionAt,finalMargin:margin}}
+function pairOutcomes(viewer,opp,mode){const holes=mode==='F9'?Array.from({length:9},(_,i)=>i+1):Array.from({length:9},(_,i)=>i+10);let margin=0;let decisionAt=null;const rows=[];for(const h of holes){const a=Number(scoreFor(viewer,h).score),b=Number(scoreFor(opp,h).score);let r='S';if(a&&b){r=relative(viewer,opp,h);if(r==='W')margin++;else if(r==='L')margin--}const remainingAfter=holes[holes.length-1]-h;if(decisionAt===null&&a&&b&&Math.abs(margin)>remainingAfter)decisionAt=h;rows.push({h,r,margin,remainingAfter,decisionAt})}return {holes,rows,decisionAt,finalMargin:margin}}
 function fmtState(n,wordUp='UP',wordDown='DW'){if(n>0)return `${n}${wordUp}`;if(n<0)return `${Math.abs(n)}${wordDown}`;return 'SQUARE'}
 function matchStatus(viewer,opp,hole){
   const mode=state.currentMode==='B9'?'B9':'F9';
@@ -71,7 +71,7 @@ function matchStatus(viewer,opp,hole){
   if(normalDecisionIdx>=0 && idx>=normalDecisionIdx){
     const d=normalDecisionIdx; let t=0;
     for(let i=d;i<=idx;i++){if(rows[i].r==='W')t++;else if(rows[i].r==='L')t--;}
-    if(idx===d)return t?`G/T${t>0?'+':''}${t}`:'G';
+    if(idx===d)return `G/T${t>0?'+':''}${t}`;
     let b=0;for(let i=d+1;i<=idx;i++){if(rows[i].r==='W')b++;else if(rows[i].r==='L')b--;}
     return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`;
   }
