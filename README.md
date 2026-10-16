@@ -1,4 +1,4 @@
-# Golf Game PWA v36 — Match Lookup Confirmation
+# Golf Game PWA v46 — Match Lookup Confirmation
 
 This package is based on v35 and updates the app/cache version to v36.
 
