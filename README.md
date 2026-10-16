@@ -71,3 +71,12 @@ Keep the existing Google Sheet and permanent COURSES data. Match-data cleanup mu
 - Updated index asset query versions and service-worker cache asset versions to v51 (v50 had stale v48 asset references).
 - Existing scoring lookup tables and backend remain unchanged.
 - This patch is a targeted correction; it does not claim all score sequences have been exhaustively verified.
+
+## v52 Match status correction
+- Fixed normal TOGO decision handling so a match that has entered the normal `XUP/XGO` decision path is not later incorrectly reclassified as `GG`/Satay.
+- Kept the normal Game/Tommy/Buy sequence separate from the GG/Satay sequence.
+- Final hole from a square match now displays `G/1UP` or `G/1DW` and does not show Tommy/Buy.
+- Shortened TOGO labels to `1UP/1GO`, `2UP/2GO`, `3DW/3GO`, etc. and reduced status text sizing on mobile.
+- Updated asset query strings and service-worker cache names to v52.
+
+Important: syntax validation passed. The supplied scorecard examples have been used to guide the fixes, but the live Google Sheets match has not been loaded into an automated end-to-end test. Verify the listed Lee/Peter, Lee/Piew, and Lee/Dennis examples before publishing.

@@ -52,28 +52,45 @@ function matchStatus(viewer,opp,hole){
   const mode=state.currentMode==='B9'?'B9':'F9';
   const {holes,rows}=pairOutcomes(viewer,opp,mode);
   const idx=rows.findIndex(x=>x.h===hole); if(idx<0)return '–';
-  const row=rows[idx];
-  // If a player reaches X-UP with X holes left, show TOGO. The next completed hole
-  // is the normal Game/Tommy decision (not GG), even if the lead then becomes uncatchable.
-  let normalDecisionIdx=-1;
-  for(let i=1;i<rows.length;i++){
-    if(Math.abs(rows[i-1].margin)>0 && Math.abs(rows[i-1].margin)===rows[i-1].remainingAfter){normalDecisionIdx=i;break;}
+  const row=rows[idx], lastIdx=rows.length-1;
+  // Find the first X-UP/X-TO-GO state, then evaluate the next hole's actual result.
+  let triggerIdx=-1, decisionIdx=-1;
+  for(let i=0;i<lastIdx;i++){
+    if(Math.abs(rows[i].margin)>0 && Math.abs(rows[i].margin)===rows[i].remainingAfter){
+      if(triggerIdx<0) triggerIdx=i;
+      const before=rows[i].margin, next=rows[i+1];
+      // From the leader's perspective, a win or square closes the game; a loss does not.
+      const closes=(before>0 && next.r!=='L') || (before<0 && next.r!=='W');
+      if(closes){decisionIdx=i+1;break;}
+    }
   }
+  // A GG is only for a match that becomes uncatchable without entering the normal TOGO decision.
   let ggIdx=-1;
-  for(let i=0;i<rows.length-1;i++){
-    if(Math.abs(rows[i].margin)>rows[i].remainingAfter && i!==normalDecisionIdx){ggIdx=i;break;}
+  if(decisionIdx<0){
+    for(let i=0;i<lastIdx;i++){
+      if(Math.abs(rows[i].margin)>rows[i].remainingAfter && i!==triggerIdx){ggIdx=i;break;}
+    }
   }
   if(ggIdx>=0){
     if(idx===ggIdx)return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}/GG`;
     if(idx>ggIdx){let post=0;for(let i=ggIdx+1;i<=idx;i++){if(rows[i].r==='W')post++;else if(rows[i].r==='L')post--;}return fmtState(post,'UP','DW').replace('SQUARE','SQ');}
   }
-  if(idx<rows.length-1 && Math.abs(row.margin)>0 && Math.abs(row.margin)===row.remainingAfter)return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'} ${Math.abs(row.margin)}TOGO`;
-  if(normalDecisionIdx>=0 && idx>=normalDecisionIdx){
-    const d=normalDecisionIdx; let t=0;
+  if(idx<lastIdx && Math.abs(row.margin)>0 && Math.abs(row.margin)===row.remainingAfter){return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}/${Math.abs(row.margin)}GO`;}
+  if(decisionIdx>=0 && idx>=decisionIdx){
+    const d=decisionIdx; let t=0;
     for(let i=d;i<=idx;i++){if(rows[i].r==='W')t++;else if(rows[i].r==='L')t--;}
     if(idx===d)return `G/T${t>0?'+':''}${t}`;
     let b=0;for(let i=d+1;i<=idx;i++){if(rows[i].r==='W')b++;else if(rows[i].r==='L')b--;}
     return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`;
+  }
+  // If the match was square entering the final hole, show the Game result without Tommy/Buy.
+  if(idx===lastIdx && idx>0 && rows[idx-1].margin===0 && row.margin!==0){return `G/${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}`;}
+  // A failed TOGO challenge is Tommy only; do not falsely mark it as GG.
+  if(triggerIdx>=0 && idx===triggerIdx+1 && idx!==decisionIdx){
+    const before=rows[triggerIdx].margin;
+    const change=row.r==='W'?1:row.r==='L'?-1:0;
+    const t=(before>0?change:-change);
+    if(t!==0)return `T${t>0?'+':''}${t}`;
   }
   return fmtState(row.margin).replace('SQUARE','SQ');
 }
@@ -119,11 +136,17 @@ function resultForPair(aid,bid,mode){
   let startMargin=0;
   let normalDecisionIndex=-1;
   for(let i=1;i<rows.length;i++){
-    if(Math.abs(rows[i-1].margin)>0 && Math.abs(rows[i-1].margin)===rows[i-1].remainingAfter){normalDecisionIndex=i;break;}
+    if(Math.abs(rows[i-1].margin)>0 && Math.abs(rows[i-1].margin)===rows[i-1].remainingAfter){
+      const prior=rows[i-1].margin, result=rows[i].r;
+      const closes=(prior>0 && result!=='L') || (prior<0 && result!=='W');
+      if(closes){normalDecisionIndex=i;break;}
+    }
   }
   let ggIndex=-1;
-  for(let i=0;i<rows.length;i++){
-    if(Math.abs(rows[i].margin)>rows[i].remainingAfter && i!==normalDecisionIndex){ggIndex=i;break;}
+  if(normalDecisionIndex<0){
+    for(let i=0;i<rows.length-1;i++){
+      if(Math.abs(rows[i].margin)>rows[i].remainingAfter){ggIndex=i;break;}
+    }
   }
   for(let i=0;i<rows.length;i++){
     if(Math.abs(rows[i].margin)>rows[i].remainingAfter){decisionIndex=i;startMargin=i===0?0:rows[i-1].margin;break;}
