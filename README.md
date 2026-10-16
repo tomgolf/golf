@@ -35,3 +35,10 @@ Keep the existing Google Sheet and permanent COURSES data. Match-data cleanup mu
 - When a pair reaches X-UP/X-DW with X holes remaining, subsequent holes switch to Tommy tracking instead of continuing to show shrinking UP/DW states.
 - Example: 4UP with four holes left, then losses on the next two holes, shows T-1 then T-2. A halved hole shows T0; wins show T+1.
 - Cache and asset versions updated to v45. Google Apps Script and Sheets are unchanged.
+
+
+## v47 Baccarat participation
+- Edit Handicap includes a Baccarat checkbox per player.
+- Unticked players are excluded from pairwise Baccarat calculations and their Baccarat points total 0.
+- The setting is stored in PLAYERS.baccarat_enabled. Existing players default to participating.
+- Update Apps Script using `apps-script/Golf_Game_Apps_Script_v20_Baccarat_Participation.gs` and redeploy before using the v47 frontend.

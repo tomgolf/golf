@@ -282,3 +282,5 @@ button:disabled{cursor:wait;opacity:.68}
 .score-cell.disadvantage{background:#fff!important;color:#111!important;box-shadow:inset 0 0 0 2px #b5121b!important}
 .baccarat-table td.baccarat-point,.baccarat-table .player-row.alt td.baccarat-point{background:#fff!important;color:#111!important;box-shadow:none!important}
 .baccarat-table td.baccarat-point.baccarat-up,.baccarat-table .player-row.alt td.baccarat-point.baccarat-up{background:#fff!important;color:#111!important;box-shadow:inset 0 0 0 2px #b5121b!important}
+
+.baccarat-player-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 12px}.baccarat-player-option{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid #d9e4df;border-radius:9px;background:#fff;font-size:13px}.baccarat-player-option input{width:18px;height:18px;accent-color:#176b4d}
