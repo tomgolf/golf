@@ -42,3 +42,12 @@ Keep the existing Google Sheet and permanent COURSES data. Match-data cleanup mu
 - Unticked players are excluded from pairwise Baccarat calculations and their Baccarat points total 0.
 - The setting is stored in PLAYERS.baccarat_enabled. Existing players default to participating.
 - Update Apps Script using `apps-script/Golf_Game_Apps_Script_v20_Baccarat_Participation.gs` and redeploy before using the v47 frontend.
+
+## v48 GG / Satay and Fin
+- Renamed the result-table label `Bonus` to `Fin`; the existing Fin/bonus calculation is unchanged.
+- Added a separate `Satay` result column.
+- GG is triggered only when a lead becomes greater than the number of holes remaining before the final hole (for example, 3UP with two holes left). The GG hole displays `nUP/GG` or `nDW/GG`.
+- After GG, the match-status display resets for the remaining holes and tracks only those holes (UP/DW/SQ). Tommy and Buy are not calculated for that GG match.
+- Satay compares wins in the holes remaining after GG: the side winning more remaining holes receives +2, the other side -2; equal wins means 0 for both.
+- Existing `G/T+1` and `G/T-1` cases for the normal `?UP ?TOGO` flow remain unchanged. Final-hole decisions also remain on the existing path.
+- Frontend cache and asset versions are v48. No Apps Script or Google Sheets schema change is required for this scoring update. Continue using the v47 Apps Script only if Baccarat participation checkboxes are wanted.
