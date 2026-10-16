@@ -288,3 +288,6 @@ button:disabled{cursor:wait;opacity:.68}
 /* v52 compact match status labels */
 .match-status-cell{font-size:9px!important;letter-spacing:-.35px;padding-left:1px;padding-right:1px;}
 @media(max-width:640px){.match-status-cell{font-size:8px!important;letter-spacing:-.45px;}}
+/* v54: compact, stacked TO-GO status for narrow mobile scorecards */
+.match-status-cell .go-status{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.02;white-space:normal;font-size:inherit}
+.match-status-cell .go-status span:last-child{font-size:.9em}

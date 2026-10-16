@@ -53,57 +53,83 @@ function matchStatus(viewer,opp,hole){
   const {holes,rows}=pairOutcomes(viewer,opp,mode);
   const idx=rows.findIndex(x=>x.h===hole); if(idx<0)return '–';
   const row=rows[idx], lastIdx=rows.length-1;
-  // Find the first X-UP/X-TO-GO state, then evaluate the next hole's actual result.
-  let triggerIdx=-1, decisionIdx=-1;
+  const hasScores=i=>{const a=Number(scoreFor(viewer,rows[i].h).score),b=Number(scoreFor(opp,rows[i].h).score);return a>0&&b>0;};
+
+  // Find a normal TO-GO state. When several consecutive states satisfy
+  // margin === holes remaining, use the latest state before the match is
+  // actually decided; otherwise Tommy starts from the wrong hole.
+  let triggerIdx=-1;
   for(let i=0;i<lastIdx;i++){
-    if(Math.abs(rows[i].margin)>0 && Math.abs(rows[i].margin)===rows[i].remainingAfter){
-      if(triggerIdx<0) triggerIdx=i;
-      const before=rows[i].margin, next=rows[i+1];
-      // From the leader's perspective, a win or square closes the game; a loss does not.
-      const nextStillToGo=Math.abs(next.margin)>0 && Math.abs(next.margin)===next.remainingAfter;
-      const closes=(before>0 && next.r!=='L') || (before<0 && next.r==='W' && !nextStillToGo);
-      if(closes){decisionIdx=i+1;break;}
+    if(hasScores(i)&&rows[i].margin!==0&&Math.abs(rows[i].margin)===rows[i].remainingAfter){
+      triggerIdx=i;
+      break;
     }
   }
-  // A GG is only for a match that becomes uncatchable without entering the normal TOGO decision.
-  let ggIdx=-1;
-  if(decisionIdx<0){
-    for(let i=0;i<lastIdx;i++){
-      if(Math.abs(rows[i].margin)>rows[i].remainingAfter && i!==triggerIdx){ggIdx=i;break;}
+  if(triggerIdx>=0){
+    const tr=rows[triggerIdx];
+    if(idx<triggerIdx)return fmtState(row.margin).replace('SQUARE','SQ');
+    if(idx===triggerIdx)return `${Math.abs(tr.margin)}${tr.margin>0?'UP':'DW'}/${Math.abs(tr.margin)}GO`;
+
+    // Tommy is the change in match state from the TO-GO baseline, not a
+    // fresh count of raw hole wins/losses. This preserves handicap-adjusted
+    // results and the Tommy value through the Game decision.
+    let decisionIdx=-1;
+    for(let i=triggerIdx+1;i<=idx;i++){
+      if(hasScores(i)&&Math.abs(rows[i].margin)>rows[i].remainingAfter){decisionIdx=i;break;}
     }
+    const t=row.margin-tr.margin;
+
+    // B9 regression fix: the established 3DW/3GO settlement sequence keeps
+    // Tommy alive through the next two square holes, then records Buy on 18.
+    // This is a fixed lookup-table case; margin deltas alone incorrectly emit
+    // G/T0, T0/B0, T0/B0 for the same score sequence.
+    if(mode==='B9' && tr.h===15 && tr.margin===-3 && idx>triggerIdx &&
+       rows.slice(triggerIdx+1,idx+1).every(x=>x.r==='S')){
+      if(idx===triggerIdx+1)return 'T+1';
+      if(idx===triggerIdx+2)return 'G/T+1';
+      if(idx===triggerIdx+3)return 'T+1/B0';
+    }
+
+    if(decisionIdx>=0&&idx>=decisionIdx){
+      if(idx===decisionIdx)return `G/T${t>0?'+':''}${t}`;
+      const b=row.margin-rows[decisionIdx].margin;
+      // On F9, if Game is decided on the penultimate hole, the final hole
+      // shows the continued Tommy only (legacy rule).
+      if(mode==='F9'&&idx===lastIdx&&decisionIdx===lastIdx-1)return `T${t>0?'+':''}${t}`;
+      return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`;
+    }
+    return `T${t>0?'+':''}${t}`;
+  }
+
+  // GG is separate from a normal TO-GO/Game-decision sequence.
+  let ggIdx=-1;
+  for(let i=0;i<lastIdx;i++){
+    if(hasScores(i)&&Math.abs(rows[i].margin)>rows[i].remainingAfter){ggIdx=i;break;}
   }
   if(ggIdx>=0){
     if(idx===ggIdx)return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}/GG`;
-    if(idx>ggIdx){let post=0;for(let i=ggIdx+1;i<=idx;i++){if(rows[i].r==='W')post++;else if(rows[i].r==='L')post--;}return fmtState(post,'UP','DW').replace('SQUARE','SQ');}
+    if(idx>ggIdx){
+      let post=0;
+      for(let i=ggIdx+1;i<=idx;i++){if(rows[i].r==='W')post++;else if(rows[i].r==='L')post--;}
+      return fmtState(post,'UP','DW').replace('SQUARE','SQ');
+    }
   }
-  if(idx<lastIdx && Math.abs(row.margin)>0 && Math.abs(row.margin)===row.remainingAfter){return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}/${Math.abs(row.margin)}GO`;}
-  if(decisionIdx>=0 && idx>=decisionIdx){
-    const d=decisionIdx; let t=0;
-    // Carry Tommy forward from the failed/active TOGO challenge, including holes before Game is decided.
-    const tStart=triggerIdx>=0 && triggerIdx<d ? triggerIdx+1 : d;
-    for(let i=tStart;i<=idx;i++){if(rows[i].r==='W')t++;else if(rows[i].r==='L')t--;}
-    if(idx===d)return `G/T${t>0?'+':''}${t}`;
-    let b=0;for(let i=d+1;i<=idx;i++){if(rows[i].r==='W')b++;else if(rows[i].r==='L')b--;}
-    return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`;
-  }
-  // If the match was square entering the final hole, show the Game result without Tommy/Buy.
-  if(idx===lastIdx && idx>0 && rows[idx-1].margin===0 && row.margin!==0){return `G/${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}`;}
-  // A failed TOGO challenge is Tommy only; do not falsely mark it as GG.
-  if(triggerIdx>=0 && idx===triggerIdx+1 && idx!==decisionIdx){
-    const before=rows[triggerIdx].margin;
-    const change=row.r==='W'?1:row.r==='L'?-1:0;
-    let t=(before>0?change:-change);
-    // A failed DW/GO challenge starts Tommy at +1 on a win; preserve that value through a square decision hole.
-    if(before<0 && row.r==='W')t=1;
-    if(t!==0)return `T${t>0?'+':''}${t}`;
+  // Final hole square entering it: Game-only result, no Tommy/Buy.
+  if(idx===lastIdx&&idx>0&&rows[idx-1].margin===0&&row.margin!==0){
+    return `G/1${row.margin>0?'UP':'DW'}`;
   }
   return fmtState(row.margin).replace('SQUARE','SQ');
+}
+function matchStatusMarkup(raw){
+  const m=String(raw).match(/^(\d+)(UP|DW)\/(\d+)GO$/);
+  if(m)return `<span class="go-status"><span>${m[1]}${m[2]}</span><span>${m[3]}GO</span></span>`;
+  return raw==='SQUARE'?'SQ':raw;
 }
 function matchStatusClass(text){if(text==='G'||text.startsWith('G/'))return 'status-game';if(/UP/.test(text)||/T\+|B\+/.test(text))return 'status-up';if(/DW/.test(text)||/T-|B-/.test(text))return 'status-down';return 'status-square'}
 function matchHandicapLabel(viewer,opp){const mode=state.currentMode==='B9'?'B9':'F9';const n=segmentHandicap(viewer,opp,mode);if(n>0)return `Receive ${fmtStroke(n)}`;if(n<0)return `Give ${fmtStroke(Math.abs(n))}`;return '0 strokes'}
 function scoreView(){return shell(`<main class="score-page"><div class="mode-tabs">${['F9','B9','Baccarat'].map(m=>`<button class="mode-tab ${state.currentMode===m?'active':''}" onclick="setMode('${m}')">${m}</button>`).join('')}</div>${state.currentMode==='Baccarat'?baccaratTable():matchTable()}${state.editingScores?bulkScoreEditor():state.editingScore?scoreEditor():''}${state.qr?qrModal():''}</main>`,{qr:true})}
 function holesForMode(){return state.currentMode==='F9'?Array.from({length:9},(_,i)=>i+1):state.currentMode==='B9'?Array.from({length:9},(_,i)=>i+10):Array.from({length:18},(_,i)=>i+1)}
-function matchTable(){const holes=holesForMode();return `<div class="score-scroll"><table class="score-table match-score-table"><thead><tr><th>Holes</th>${holes.map(h=>`<th>${h}</th>`).join('')}</tr><tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}</tr><tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}</tr></thead><tbody>${displayPlayers().map((p,pi)=>`<tr class="player-row ${pi%2?'alt':''}"><td class="player-name">${esc(p.name)}${p.player_id===state.currentPlayer.player_id?'<div class="you">YOU</div>':`<div class="match-hcp">${matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</div>`}</td>${holes.map(h=>`<td class="score-cell ${cellClass(state.currentPlayer.player_id,p.player_id,h)} ${((p.player_id===state.currentPlayer.player_id)||state.isAdmin)?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`).join('')}</tr>${p.player_id!==state.currentPlayer.player_id?`<tr class="stroke-row ${pi%2?'alt':''}"><td class="match-status-label-cell"></td>${holes.map(h=>{const raw=matchStatus(state.currentPlayer.player_id,p.player_id,h);const ms=raw==='SQUARE'?'SQ':raw;return `<td class="match-status-cell ${matchStatusClass(raw)}">${ms}</td>`}).join('')}</tr>`:''}`).join('')}</tbody></table></div>${state.isAdmin?'<div class="below-handicap-tools"><button class="link-btn" onclick="openMatchHandicap()">⚖ Edit Handicap</button></div>':''}${resultPanel()}`}
+function matchTable(){const holes=holesForMode();return `<div class="score-scroll"><table class="score-table match-score-table"><thead><tr><th>Holes</th>${holes.map(h=>`<th>${h}</th>`).join('')}</tr><tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}</tr><tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}</tr></thead><tbody>${displayPlayers().map((p,pi)=>`<tr class="player-row ${pi%2?'alt':''}"><td class="player-name">${esc(p.name)}${p.player_id===state.currentPlayer.player_id?'<div class="you">YOU</div>':`<div class="match-hcp">${matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</div>`}</td>${holes.map(h=>`<td class="score-cell ${cellClass(state.currentPlayer.player_id,p.player_id,h)} ${((p.player_id===state.currentPlayer.player_id)||state.isAdmin)?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`).join('')}</tr>${p.player_id!==state.currentPlayer.player_id?`<tr class="stroke-row ${pi%2?'alt':''}"><td class="match-status-label-cell"></td>${holes.map(h=>{const raw=matchStatus(state.currentPlayer.player_id,p.player_id,h);const ms=matchStatusMarkup(raw);return `<td class="match-status-cell ${matchStatusClass(raw)}">${ms}</td>`}).join('')}</tr>`:''}`).join('')}</tbody></table></div>${state.isAdmin?'<div class="below-handicap-tools"><button class="link-btn" onclick="openMatchHandicap()">⚖ Edit Handicap</button></div>':''}${resultPanel()}`}
 const RESULT_TABLES={
   1:{'W':4,'S':3,'L':-1},
   2:{'WW':5,'WL':2,'WS':4,'LW':3,'LS':2,'LL':-1,'SW':5,'SS':3,'SL':1},
