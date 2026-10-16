@@ -51,3 +51,10 @@ Keep the existing Google Sheet and permanent COURSES data. Match-data cleanup mu
 - Satay compares wins in the holes remaining after GG: the side winning more remaining holes receives +2, the other side -2; equal wins means 0 for both.
 - Existing `G/T+1` and `G/T-1` cases for the normal `?UP ?TOGO` flow remain unchanged. Final-hole decisions also remain on the existing path.
 - Frontend cache and asset versions are v48. No Apps Script or Google Sheets schema change is required for this scoring update. Continue using the v47 Apps Script only if Baccarat participation checkboxes are wanted.
+
+
+## v49 Match status fixes
+- Display XUP XTOGO (and XDW XTOGO) when the current lead equals the remaining holes.
+- If the next hole resolves a match after a TOGO state, preserve normal G/T then Tommy/Buy progression; do not mislabel it GG.
+- GG/Satay is reserved for an uncatchable match that was not entered through a prior X-up/X-to-go trigger.
+- Bump frontend and service-worker cache versions to v49.

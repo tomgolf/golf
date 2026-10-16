@@ -48,7 +48,35 @@ function isBirdie(score,par){return score&&score<=par-1}
 function scoreMarkup(pid,hole){const s=scoreFor(pid,hole);if(s.score==='')return '<span style="color:#a1aaa6">–</span>';const par=Number(courseHole(hole)?.par||4);const score=Number(s.score);if(score<par)return `<span class="double-circle">${s.score}</span>`;if(score===par)return `<span class="circle">${s.score}</span>`;return `<span>${s.score}</span>`}
 function pairOutcomes(viewer,opp,mode){const holes=mode==='F9'?Array.from({length:9},(_,i)=>i+1):Array.from({length:9},(_,i)=>i+10);let margin=0;let decisionAt=null;const rows=[];for(const h of holes){const a=Number(scoreFor(viewer,h).score),b=Number(scoreFor(opp,h).score);let r='S';if(a&&b){r=relative(viewer,opp,h);if(r==='W')margin++;else if(r==='L')margin--}const remainingAfter=holes[holes.length-1]-h;if(decisionAt===null&&a&&b&&Math.abs(margin)>remainingAfter)decisionAt=h;rows.push({h,r,margin,decisionAt})}return {holes,rows,decisionAt,finalMargin:margin}}
 function fmtState(n,wordUp='UP',wordDown='DW'){if(n>0)return `${n}${wordUp}`;if(n<0)return `${Math.abs(n)}${wordDown}`;return 'SQUARE'}
-function matchStatus(viewer,opp,hole){const mode=state.currentMode==='B9'?'B9':'F9';const {holes,rows,decisionAt}=pairOutcomes(viewer,opp,mode);const idx=rows.findIndex(x=>x.h===hole);if(idx<0)return '–';const row=rows[idx];const dIdx=decisionAt===null?-1:rows.findIndex(x=>x.h===decisionAt);/* GG is only used when the game is clinched before the final hole. After GG, reset the displayed Match state and track only subsequent holes; no Tommy/Buy states. */if(dIdx>=0&&dIdx<rows.length-1){if(idx===dIdx)return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}/GG`;if(idx>dIdx){let post=0;for(let i=dIdx+1;i<=idx;i++){if(rows[i].r==='W')post++;else if(rows[i].r==='L')post--}return fmtState(post,'UP','DW').replace('SQUARE','SQ')}}/* Preserve known-good flow: Tommy accumulates from the first X-UP/X-TO-GO state; Buy begins only after the decisive hole. */let triggerIdx=-1;for(let i=0;i<rows.length-1;i++){const remaining=rows.length-i-1;if(Math.abs(rows[i].margin)>=remaining&&Math.abs(rows[i].margin)>0){triggerIdx=i;break}}if(triggerIdx>=0&&idx>triggerIdx){const tEnd=dIdx>=0?Math.min(idx,dIdx):idx;let t=0;for(let i=triggerIdx+1;i<=tEnd;i++){const r=rows[i].r;if(r==='W')t++;else if(r==='L')t--}if(dIdx>=0&&idx===dIdx){return t?`G/T${t>0?'+':''}${t}`:'G'}if(dIdx>=0&&idx>dIdx){let b=0;for(let i=dIdx+1;i<=idx;i++){const r=rows[i].r;if(r==='W')b++;else if(r==='L')b--}return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`}return `T${t>0?'+':''}${t}`}if(dIdx<0||idx<dIdx)return fmtState(row.margin);if(idx===dIdx){const priorMargin=idx>0?rows[idx-1].margin:0;const isFinalHole=idx===rows.length-1;if(isFinalHole&&priorMargin===0)return 'G';const t=row.r==='W'?1:row.r==='L'?-1:0;return t?`G/T${t>0?'+':''}${t}`:'G'}const decisionResult=rows[dIdx].r;const t=decisionResult==='W'?1:decisionResult==='L'?-1:0;let b=0;for(let i=dIdx+1;i<=idx;i++){const r=rows[i].r;if(r==='W')b++;else if(r==='L')b--}return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`}
+function matchStatus(viewer,opp,hole){
+  const mode=state.currentMode==='B9'?'B9':'F9';
+  const {holes,rows}=pairOutcomes(viewer,opp,mode);
+  const idx=rows.findIndex(x=>x.h===hole); if(idx<0)return '–';
+  const row=rows[idx];
+  // If a player reaches X-UP with X holes left, show TOGO. The next completed hole
+  // is the normal Game/Tommy decision (not GG), even if the lead then becomes uncatchable.
+  let normalDecisionIdx=-1;
+  for(let i=1;i<rows.length;i++){
+    if(Math.abs(rows[i-1].margin)>0 && Math.abs(rows[i-1].margin)===rows[i-1].remainingAfter){normalDecisionIdx=i;break;}
+  }
+  let ggIdx=-1;
+  for(let i=0;i<rows.length-1;i++){
+    if(Math.abs(rows[i].margin)>rows[i].remainingAfter && i!==normalDecisionIdx){ggIdx=i;break;}
+  }
+  if(ggIdx>=0){
+    if(idx===ggIdx)return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}/GG`;
+    if(idx>ggIdx){let post=0;for(let i=ggIdx+1;i<=idx;i++){if(rows[i].r==='W')post++;else if(rows[i].r==='L')post--;}return fmtState(post,'UP','DW').replace('SQUARE','SQ');}
+  }
+  if(idx<rows.length-1 && Math.abs(row.margin)>0 && Math.abs(row.margin)===row.remainingAfter)return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'} ${Math.abs(row.margin)}TOGO`;
+  if(normalDecisionIdx>=0 && idx>=normalDecisionIdx){
+    const d=normalDecisionIdx; let t=0;
+    for(let i=d;i<=idx;i++){if(rows[i].r==='W')t++;else if(rows[i].r==='L')t--;}
+    if(idx===d)return t?`G/T${t>0?'+':''}${t}`:'G';
+    let b=0;for(let i=d+1;i<=idx;i++){if(rows[i].r==='W')b++;else if(rows[i].r==='L')b--;}
+    return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`;
+  }
+  return fmtState(row.margin).replace('SQUARE','SQ');
+}
 function matchStatusClass(text){if(text==='G'||text.startsWith('G/'))return 'status-game';if(/UP/.test(text)||/T\+|B\+/.test(text))return 'status-up';if(/DW/.test(text)||/T-|B-/.test(text))return 'status-down';return 'status-square'}
 function matchHandicapLabel(viewer,opp){const mode=state.currentMode==='B9'?'B9':'F9';const n=segmentHandicap(viewer,opp,mode);if(n>0)return `Receive ${fmtStroke(n)}`;if(n<0)return `Give ${fmtStroke(Math.abs(n))}`;return '0 strokes'}
 function scoreView(){return shell(`<main class="score-page"><div class="mode-tabs">${['F9','B9','Baccarat'].map(m=>`<button class="mode-tab ${state.currentMode===m?'active':''}" onclick="setMode('${m}')">${m}</button>`).join('')}</div>${state.currentMode==='Baccarat'?baccaratTable():matchTable()}${state.editingScores?bulkScoreEditor():state.editingScore?scoreEditor():''}${state.qr?qrModal():''}</main>`,{qr:true})}
@@ -89,17 +117,21 @@ function resultForPair(aid,bid,mode){
   const beforeFinal=rows.length>1?rows[rows.length-2].margin:0;
   let decisionIndex=null;
   let startMargin=0;
+  let normalDecisionIndex=-1;
+  for(let i=1;i<rows.length;i++){
+    if(Math.abs(rows[i-1].margin)>0 && Math.abs(rows[i-1].margin)===rows[i-1].remainingAfter){normalDecisionIndex=i;break;}
+  }
+  let ggIndex=-1;
   for(let i=0;i<rows.length;i++){
-    // A game is decided when the lead is greater than the holes remaining.
-    if(Math.abs(rows[i].margin)>rows[i].remainingAfter){
-      decisionIndex=i;
-      startMargin=i===0?0:rows[i-1].margin;
-      break;
-    }
+    if(Math.abs(rows[i].margin)>rows[i].remainingAfter && i!==normalDecisionIndex){ggIndex=i;break;}
+  }
+  for(let i=0;i<rows.length;i++){
+    if(Math.abs(rows[i].margin)>rows[i].remainingAfter){decisionIndex=i;startMargin=i===0?0:rows[i-1].margin;break;}
   }
   let game=0,tommy=0,buy=0,satay=0;
-  /* GG: the game is mathematically uncatchable before the final hole. Keep Game +/-3, suppress Tommy and Buy entirely, and score Satay from the remaining holes only. */
-  if(decisionIndex!==null && decisionIndex<rows.length-1 && Math.abs(rows[decisionIndex].margin)>rows[decisionIndex].remainingAfter){
+  /* GG only applies when the game becomes uncatchable without first reaching an X-UP/X-TO-GO state. */
+  if(ggIndex>=0 && ggIndex<rows.length-1){
+    decisionIndex=ggIndex;
     const ggMargin=rows[decisionIndex].margin;
     game=ggMargin>0?3:-3;
     tommy=0; buy=0;
@@ -107,6 +139,7 @@ function resultForPair(aid,bid,mode){
     for(let i=decisionIndex+1;i<rows.length;i++){if(rows[i].r==='W')postMargin++;else if(rows[i].r==='L')postMargin--;}
     satay=postMargin>0?2:postMargin<0?-2:0;
   }else if(decisionIndex!==null){
+    if(normalDecisionIndex>=0) decisionIndex=normalDecisionIndex;
     const finalMargin=final.margin;
     if(startMargin===0){
       // A tied game decided on the final hole: winner gets Game +/-3 and Tommy +/-1.
