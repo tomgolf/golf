@@ -60,7 +60,8 @@ function matchStatus(viewer,opp,hole){
       if(triggerIdx<0) triggerIdx=i;
       const before=rows[i].margin, next=rows[i+1];
       // From the leader's perspective, a win or square closes the game; a loss does not.
-      const closes=(before>0 && next.r!=='L') || (before<0 && next.r!=='W');
+      const nextStillToGo=Math.abs(next.margin)>0 && Math.abs(next.margin)===next.remainingAfter;
+      const closes=(before>0 && next.r!=='L') || (before<0 && next.r==='W' && !nextStillToGo);
       if(closes){decisionIdx=i+1;break;}
     }
   }
@@ -78,7 +79,9 @@ function matchStatus(viewer,opp,hole){
   if(idx<lastIdx && Math.abs(row.margin)>0 && Math.abs(row.margin)===row.remainingAfter){return `${Math.abs(row.margin)}${row.margin>0?'UP':'DW'}/${Math.abs(row.margin)}GO`;}
   if(decisionIdx>=0 && idx>=decisionIdx){
     const d=decisionIdx; let t=0;
-    for(let i=d;i<=idx;i++){if(rows[i].r==='W')t++;else if(rows[i].r==='L')t--;}
+    // Carry Tommy forward from the failed/active TOGO challenge, including holes before Game is decided.
+    const tStart=triggerIdx>=0 && triggerIdx<d ? triggerIdx+1 : d;
+    for(let i=tStart;i<=idx;i++){if(rows[i].r==='W')t++;else if(rows[i].r==='L')t--;}
     if(idx===d)return `G/T${t>0?'+':''}${t}`;
     let b=0;for(let i=d+1;i<=idx;i++){if(rows[i].r==='W')b++;else if(rows[i].r==='L')b--;}
     return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`;
@@ -89,7 +92,9 @@ function matchStatus(viewer,opp,hole){
   if(triggerIdx>=0 && idx===triggerIdx+1 && idx!==decisionIdx){
     const before=rows[triggerIdx].margin;
     const change=row.r==='W'?1:row.r==='L'?-1:0;
-    const t=(before>0?change:-change);
+    let t=(before>0?change:-change);
+    // A failed DW/GO challenge starts Tommy at +1 on a win; preserve that value through a square decision hole.
+    if(before<0 && row.r==='W')t=1;
     if(t!==0)return `T${t>0?'+':''}${t}`;
   }
   return fmtState(row.margin).replace('SQUARE','SQ');
@@ -138,7 +143,8 @@ function resultForPair(aid,bid,mode){
   for(let i=1;i<rows.length;i++){
     if(Math.abs(rows[i-1].margin)>0 && Math.abs(rows[i-1].margin)===rows[i-1].remainingAfter){
       const prior=rows[i-1].margin, result=rows[i].r;
-      const closes=(prior>0 && result!=='L') || (prior<0 && result!=='W');
+      const nextStillToGo=Math.abs(rows[i].margin)>0 && Math.abs(rows[i].margin)===rows[i].remainingAfter;
+      const closes=(prior>0 && result!=='L') || (prior<0 && result==='W' && !nextStillToGo);
       if(closes){normalDecisionIndex=i;break;}
     }
   }
