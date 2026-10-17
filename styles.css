@@ -324,3 +324,47 @@ button:disabled{cursor:wait;opacity:.68}
 .baccarat-table td.baccarat-point,.baccarat-table .player-row.alt td.baccarat-point{background:inherit!important;color:#111!important;box-shadow:none!important}
 .baccarat-table .baccarat-up-circle{display:inline-flex;align-items:center;justify-content:center;min-width:1.8em;height:1.8em;padding:0 .12em;border:2px solid #e21d2b;border-radius:50%;box-sizing:border-box;line-height:1}
 .baccarat-table .baccarat-up{background:inherit!important;box-shadow:none!important}
+
+/* v61 mobile-first Tom & Jerry Golf Game home page */
+.home-v61{padding-top:16px;max-width:1040px;min-height:calc(100vh - 68px);}
+.home-v61:before{display:none}
+.home-v61:after{inset:30% -10% -20%;background:linear-gradient(180deg,rgba(244,248,246,0),rgba(220,239,228,.62));}
+.home-hero{position:relative;isolation:isolate;width:100%;aspect-ratio:2/1;min-height:190px;max-height:420px;border-radius:24px;overflow:hidden;background:#7dc6ef;box-shadow:0 12px 30px rgba(5,56,43,.16);}
+.home-hero img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 48%;}
+.home-hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,35,27,.42),rgba(0,35,27,.05) 66%,transparent);pointer-events:none;}
+.home-hero-caption{position:absolute;left:clamp(16px,3.4vw,34px);bottom:clamp(16px,3vw,28px);color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.35);max-width:70%;}
+.home-hero-caption .home-eyebrow{margin:0 0 8px;color:#fff;font-size:clamp(9px,1.2vw,12px);letter-spacing:1.3px;}
+.home-hero-caption .home-dot{background:#8df0b5;box-shadow:0 0 0 4px rgba(141,240,181,.25);}
+.home-hero-caption h1{font-size:clamp(24px,4.2vw,44px);line-height:1.04;margin:0;font-weight:950;letter-spacing:-1px;}
+.home-hero-caption h1 small{font-size:.45em;opacity:.85;letter-spacing:0;margin-left:5px;}
+.home-hero-caption p{font-size:clamp(11px,1.5vw,15px);font-weight:650;margin:8px 0 0;}
+.home-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px;}
+.home-menu-card{min-width:0;min-height:88px;display:flex;align-items:center;gap:12px;text-align:left;padding:15px 16px;border-radius:20px;background:rgba(255,255,255,.94);border:1px solid #e0ebe7;box-shadow:0 7px 20px rgba(12,59,47,.07);color:var(--ink);}
+.home-menu-card:active{transform:scale(.99);}
+.home-menu-icon{display:flex;align-items:center;justify-content:center;flex:0 0 46px;width:46px;height:46px;border-radius:15px;background:#e6f4ee;font-size:25px;}
+.new-card .home-menu-icon{background:#fff3d6;}
+.course-card .home-menu-icon{background:#e7f0ff;}
+.home-menu-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;}
+.home-menu-copy strong{font-size:clamp(14px,1.8vw,18px);font-weight:900;line-height:1.15;}
+.home-menu-copy small{font-size:11px;line-height:1.35;color:#64756f;}
+.home-menu-card .arrow{color:#71827c;font-size:27px;line-height:1;}
+.home-mode-chips{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:18px 0 0;}
+.home-mode-chips span{border:1px solid #cfe3dc;background:rgba(225,241,235,.86);color:#285849;padding:7px 13px;border-radius:999px;font-size:12px;font-weight:850;}
+.home-v61 .home-footnote{text-align:center;margin:15px 0 4px;font-size:11px;}
+@media(max-width:640px){
+ .home-v61{padding:12px 12px 28px;}
+ .home-hero{aspect-ratio:1.08/1;min-height:255px;max-height:410px;border-radius:20px;}
+ .home-hero img{object-position:47% center;}
+ .home-hero-shade{background:linear-gradient(0deg,rgba(0,37,28,.68),rgba(0,37,28,.08) 62%,rgba(0,37,28,.02));}
+ .home-hero-caption{left:16px;right:14px;bottom:17px;max-width:92%;}
+ .home-hero-caption h1{font-size:32px;}
+ .home-hero-caption p{font-size:12px;margin-top:5px;}
+ .home-menu{grid-template-columns:1fr;gap:10px;margin-top:14px;}
+ .home-menu-card{min-height:74px;border-radius:17px;padding:12px 14px;gap:11px;}
+ .home-menu-icon{flex-basis:42px;width:42px;height:42px;font-size:23px;border-radius:13px;}
+ .home-menu-copy strong{font-size:16px;}
+ .home-menu-copy small{font-size:11px;}
+ .home-mode-chips{margin-top:14px;gap:7px;}
+ .home-mode-chips span{padding:6px 11px;font-size:11px;}
+}
+@media(min-width:641px){.home-menu-card{min-height:100px}.home-menu-copy small{font-size:12px}}
