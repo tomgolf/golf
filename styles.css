@@ -301,3 +301,26 @@ button:disabled{cursor:wait;opacity:.68}
 .result-table .f9b9-total .result-even{color:#18251f}
 .result-table .f9b9-plus{display:inline-block;margin:0 3px;color:#7a8882;font-weight:600}
 .result-table:has(th:nth-child(8)){min-width:690px}
+
+/* v60: F9+B9 result column shown in both result panels, vertically stacked without separator */
+.result-table .f9b9-total{white-space:normal!important;min-width:54px}
+.result-table .f9b9-total .f9b9-pair{display:block;line-height:1.15;font-weight:900;margin:1px 0}
+.result-table .f9b9-total .result-win{color:#d52d2d!important}
+.result-table .f9b9-total .result-loss{color:#145bd7!important}
+.result-table .f9b9-total .result-even{color:#18251f!important}
+.result-table .f9b9-heading,.result-table .f9b9-total{background:#fff7df}
+.result-table .f9b9-heading{border-top:2px solid #c9232d;border-left:2px solid #c9232d;border-right:2px solid #c9232d;border-radius:10px 10px 0 0;color:#15223a!important}
+.result-table .f9b9-total{border-left:2px solid #c9232d;border-right:2px solid #c9232d}
+.result-table tbody tr:last-child .f9b9-total{border-bottom:2px solid #c9232d;border-radius:0 0 10px 10px}
+.result-table:has(th:nth-child(8)){min-width:0!important}
+.result-table th:not(:first-child),.result-table td:not(:first-child){width:auto}
+.result-table th:first-child,.result-table td:first-child{width:25%}
+
+/* v60: Baccarat UP is a red circle around the score, not a red cell/box */
+.baccarat-table .player-row.alt td{background:#f4f0df!important}
+.baccarat-table .player-row.alt td:first-child{background:#f4f0df!important}
+.baccarat-table .player-row:not(.alt) td{background:#fff!important}
+.baccarat-table .player-row:not(.alt) td:first-child{background:#fff!important}
+.baccarat-table td.baccarat-point,.baccarat-table .player-row.alt td.baccarat-point{background:inherit!important;color:#111!important;box-shadow:none!important}
+.baccarat-table .baccarat-up-circle{display:inline-flex;align-items:center;justify-content:center;min-width:1.8em;height:1.8em;padding:0 .12em;border:2px solid #e21d2b;border-radius:50%;box-sizing:border-box;line-height:1}
+.baccarat-table .baccarat-up{background:inherit!important;box-shadow:none!important}
