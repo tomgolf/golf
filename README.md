@@ -27,3 +27,12 @@ JavaScript syntax checked with `node --check app.js`. The match-status scenarios
 This release updates both the PWA frontend and the Google Apps Script backend.
 
 Important: updating GitHub Pages alone is not enough for this fix. Copy `apps-script/Golf_Game_Apps_Script_v20_Baccarat_Participation.gs` into the Apps Script project connected to the Google Sheet, save, then create a new deployment version of the Web App and ensure the PWA's API URL points to that deployment. The save action now verifies that every selected match player row was updated and reports a failure instead of silently accepting a partial save.
+
+
+## v66 Baccarat participation fix (important)
+
+This release fixes the New Game Handicap Matrix so reopening it preserves the Baccarat player selections during setup.
+
+The live Apps Script must also be updated: the frontend uses the `saveBaccaratPlayers` POST action. If the site shows `Unknown action: saveBaccaratPlayers`, the deployed Apps Script version is older than this package. Open `apps-script/Golf_Game_Apps_Script_v20_Baccarat_Participation.gs`, replace the code in the Apps Script project, save, then Deploy > Manage deployments > Edit > select New version > Deploy. Keep the same `/exec` deployment URL configured in `app.js` (or update it if you created a new deployment).
+
+Test: in New Game, enter all player names, open Handicap, untick Piew and Dennis, Save, reopen Handicap and verify they remain unticked, then Start. For an existing match, repeat in the in-game Handicap Matrix and verify the PLAYERS sheet `baccarat_enabled` column stores TRUE/FALSE.
