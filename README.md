@@ -21,3 +21,9 @@ JavaScript syntax checked with `node --check app.js`. The match-status scenarios
 - GG has priority over normal TO-GO / Tommy / Buy calculation once lead margin is greater than holes remaining after a completed hole.
 - On GG, Tommy and Buy are zero; Satay compares the remaining holes after GG and settles +2 / -2 / 0.
 - Service worker cache bumped to v57.
+
+## v65 Baccarat participation persistence fix
+
+This release updates both the PWA frontend and the Google Apps Script backend.
+
+Important: updating GitHub Pages alone is not enough for this fix. Copy `apps-script/Golf_Game_Apps_Script_v20_Baccarat_Participation.gs` into the Apps Script project connected to the Google Sheet, save, then create a new deployment version of the Web App and ensure the PWA's API URL points to that deployment. The save action now verifies that every selected match player row was updated and reports a failure instead of silently accepting a partial save.
