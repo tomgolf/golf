@@ -311,9 +311,14 @@ function baccaratPairPoints(a,b,hole){
   return winner===a?{a:points,b:-points,result:'W'}:{a:-points,b:points,result:'L'};
 }
 function baccaratPoints(pid,hole){
+  // A player who opted out of Baccarat must not earn or lose Baccarat points.
+  // Check both the row owner and each opponent, since the UI still lists all match players.
+  const owner=state.players.find(p=>p.player_id===pid);
+  const isEnabled=p=>!!p && p.baccarat_enabled!==false && String(p.baccarat_enabled).toLowerCase()!=='false';
+  if(!isEnabled(owner))return 0;
   let total=0;
   for(const p of state.players){
-    if(p.player_id===pid||p.baccarat_enabled===false)continue;
+    if(p.player_id===pid||!isEnabled(p))continue;
     const pair=baccaratPairPoints(pid,p.player_id,hole);
     total+=pair.a;
   }
