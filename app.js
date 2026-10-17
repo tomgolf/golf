@@ -103,11 +103,19 @@ function matchStatus(viewer,opp,hole){
   return fmtState(row.margin).replace('SQUARE','SQ');
 }
 function matchStatusMarkup(raw){
-  const m=String(raw).match(/^(\d+)(UP|DW)\/(\d+)GO$/);
-  if(m)return `<span class="go-status"><span>${m[1]}${m[2]}</span><span>${m[3]}GO</span></span>`;
-  return raw==='SQUARE'?'SQ':raw;
+  const text=String(raw);
+  const go=text.match(/^(\d+)(UP|DW)\/(\d+)GO$/);
+  if(go)return `<span class="status-stack"><span>${go[1]}${go[2]}</span><span>${go[3]}GO</span></span>`;
+  const gg=text.match(/^(\d+)(UP|DW)\/GG$/);
+  if(gg)return `<span class="status-stack"><span>${gg[1]}${gg[2]}</span><span>Game Over</span></span>`;
+  if(text==='G')return 'Game';
+  const gamePair=text.match(/^G\/(.+)$/);
+  if(gamePair)return `<span class="status-stack"><span>Game</span><span>${gamePair[1]}</span></span>`;
+  const tommyBuy=text.match(/^(T[+-]?\d+)\/(B[+-]?\d+)$/);
+  if(tommyBuy)return `<span class="status-stack"><span>${tommyBuy[1]}</span><span>${tommyBuy[2]}</span></span>`;
+  return text==='SQUARE'?'SQ':text;
 }
-function matchStatusClass(text){if(text==='G'||text.startsWith('G/'))return 'status-game';if(/UP/.test(text)||/T\+|B\+/.test(text))return 'status-up';if(/DW/.test(text)||/T-|B-/.test(text))return 'status-down';return 'status-square'}
+function matchStatusClass(text){if(text==='G'||text.startsWith('G/')||text.endsWith('/GG'))return 'status-game';if(/UP/.test(text)||/T\+|B\+/.test(text))return 'status-up';if(/DW/.test(text)||/T-|B-/.test(text))return 'status-down';return 'status-square'}
 function matchHandicapLabel(viewer,opp){const mode=state.currentMode==='B9'?'B9':'F9';const n=segmentHandicap(viewer,opp,mode);if(n>0)return `Receive ${fmtStroke(n)}`;if(n<0)return `Give ${fmtStroke(Math.abs(n))}`;return '0 strokes'}
 function scoreView(){return shell(`<main class="score-page"><div class="mode-tabs">${['F9','B9','Baccarat'].map(m=>`<button class="mode-tab ${state.currentMode===m?'active':''}" onclick="setMode('${m}')">${m}</button>`).join('')}</div>${state.currentMode==='Baccarat'?baccaratTable():matchTable()}${state.editingScores?bulkScoreEditor():state.editingScore?scoreEditor():''}${state.qr?qrModal():''}</main>`,{qr:true})}
 function holesForMode(){return state.currentMode==='F9'?Array.from({length:9},(_,i)=>i+1):state.currentMode==='B9'?Array.from({length:9},(_,i)=>i+10):Array.from({length:18},(_,i)=>i+1)}
@@ -256,7 +264,7 @@ function resultForPair(aid,bid,mode){
   return {game,tommy,buy,bonus,satay,total:game+tommy+buy+bonus+satay};
 }
 function resultForOpponent(pid,mode){const me=state.currentPlayer.player_id;return resultForPair(me,pid,mode)}
-function resultPanel(){const mode=state.currentMode==='B9'?'B9':'F9';const pairs=[];for(let i=0;i<state.players.length;i++){for(let j=i+1;j<state.players.length;j++){const a=state.players[i],b=state.players[j];const r=resultForPair(a.player_id,b.player_id,mode);pairs.push({label:`${a.name} v ${b.name}`,r})}}return `<div class="result-card"><div class="result-title">${mode==='F9'?'Front 9 Result':'Back 9 Result'}</div><div class="result-scroll"><table class="result-table"><thead><tr><th>Opponent</th><th>Game</th><th>Tommy</th><th>Buy</th><th>Fin</th><th>Satay</th><th>Total</th></tr></thead><tbody>${pairs.map(x=>{const r=x.r;return `<tr><td>${esc(x.label)}</td><td>${fmtSigned(r.game)}</td><td>${fmtSigned(r.tommy)}</td><td>${fmtSigned(r.buy)}</td><td>${fmtSigned(r.bonus)}</td><td>${fmtSigned(r.satay||0)}</td><td><b>${fmtSigned(r.total)}</b></td></tr>`}).join('')}</tbody></table></div></div>`}
+function resultPanel(){const mode=state.currentMode==='B9'?'B9':'F9';const pairs=[];for(let i=0;i<state.players.length;i++){for(let j=i+1;j<state.players.length;j++){const a=state.players[i],b=state.players[j];const r=resultForPair(a.player_id,b.player_id,mode);const f9=mode==='F9'?r.total:resultForPair(a.player_id,b.player_id,'F9').total;const b9=mode==='F9'?resultForPair(a.player_id,b.player_id,'B9').total:r.total;pairs.push({label:`${a.name} v ${b.name}`,r,f9,b9})}}const combined=mode==='F9'?'<th>F9+B9</th>':'';return `<div class="result-card"><div class="result-title">${mode==='F9'?'Front 9 Result':'Back 9 Result'}</div><div class="result-scroll"><table class="result-table"><thead><tr><th>Opponent</th><th>Game</th><th>Tommy</th><th>Buy</th><th>Fin</th><th>Satay</th><th>Total</th>${combined}</tr></thead><tbody>${pairs.map(x=>{const r=x.r;const combinedCell=mode==='F9'?`<td class="f9b9-total"><span class="${resultTone(x.f9)}">${fmtSigned(x.f9)}</span><span class="f9b9-plus">+</span><span class="${resultTone(x.b9)}">${fmtSigned(x.b9)}</span></td>`:'';return `<tr><td>${esc(x.label)}</td><td>${fmtSigned(r.game)}</td><td>${fmtSigned(r.tommy)}</td><td>${fmtSigned(r.buy)}</td><td>${fmtSigned(r.bonus)}</td><td>${fmtSigned(r.satay||0)}</td><td><b>${fmtSigned(r.total)}</b></td>${combinedCell}</tr>`}).join('')}</tbody></table></div></div>`}
 function bonusBreakdown(pid,mode){const holes=mode==='F9'?Array.from({length:9},(_,i)=>i+1):Array.from({length:9},(_,i)=>i+10);const data={double3:0,double5:0,birdie:0,eagle:0,hio:0,bonus:0};const rows=holes.map(h=>{const score=Number(scoreFor(pid,h).score);const par=Number(courseHole(h)?.par||0);return {score,par}});const par3=rows.filter(x=>x.par===3);const par5=rows.filter(x=>x.par===5);if(par3.length===2&&par3.every(x=>x.score>0&&x.score<=x.par))data.double3=1;if(par5.length===2&&par5.every(x=>x.score>0&&x.score<=x.par))data.double5=1;rows.forEach(x=>{if(!x.score||!x.par)return;if(x.par===3&&x.score===1){data.hio+=12;return}if(x.score<=x.par-2){data.eagle+=6;return}if(x.score===x.par-1)data.birdie+=1});data.bonus=data.double3+data.double5+data.birdie+data.eagle+data.hio;return data}
 function fmtSigned(n){return n>0?`+${n}`:String(n)}
 function resultTone(n){return Number(n)>0?'result-win':Number(n)<0?'result-loss':'result-even'}

@@ -291,3 +291,13 @@ button:disabled{cursor:wait;opacity:.68}
 /* v54: compact, stacked TO-GO status for narrow mobile scorecards */
 .match-status-cell .go-status{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.02;white-space:normal;font-size:inherit}
 .match-status-cell .go-status span:last-child{font-size:.9em}
+
+/* v59: stacked match status labels and F9+B9 combined total */
+.match-status-cell .status-stack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.02;white-space:normal;font-size:inherit}
+.match-status-cell .status-stack span:last-child{font-size:.9em}
+.result-table .f9b9-total{font-weight:900;white-space:nowrap}
+.result-table .f9b9-total .result-win{color:#16803c}
+.result-table .f9b9-total .result-loss{color:#d52d2d}
+.result-table .f9b9-total .result-even{color:#18251f}
+.result-table .f9b9-plus{display:inline-block;margin:0 3px;color:#7a8882;font-weight:600}
+.result-table:has(th:nth-child(8)){min-width:690px}
