@@ -380,3 +380,14 @@ button:disabled{cursor:wait;opacity:.68}
 .baccarat-table .baccarat-up-circle { display:inline-flex; align-items:center; justify-content:center; min-width:1.8em; height:1.8em; padding:0 .12em; border:2px solid #e21d2b; border-radius:50%; box-sizing:border-box; line-height:1; }
 .home-hero-caption h1 { overflow-wrap:anywhere; }
 @media(max-width:640px){ .home-hero-caption h1{font-size:clamp(25px,7vw,32px);max-width:100%;} }
+
+
+/* v63: enforce the alternating Baccarat row background across every cell, including score and total cells. */
+table.baccarat-table tbody tr.player-row.alt > td,
+table.baccarat-table tbody tr.player-row.alt > td.baccarat-point,
+table.baccarat-table tbody tr.player-row.alt > td.baccarat-total { background-color:#f4f0df !important; }
+table.baccarat-table tbody tr.player-row:not(.alt) > td,
+table.baccarat-table tbody tr.player-row:not(.alt) > td.baccarat-point,
+table.baccarat-table tbody tr.player-row:not(.alt) > td.baccarat-total { background-color:#ffffff !important; }
+table.baccarat-table tbody tr.player-row.alt > td:first-child { background-color:#f4f0df !important; }
+table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background-color:#ffffff !important; }
