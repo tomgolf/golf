@@ -368,3 +368,15 @@ button:disabled{cursor:wait;opacity:.68}
  .home-mode-chips span{padding:6px 11px;font-size:11px;}
 }
 @media(min-width:641px){.home-menu-card{min-height:100px}.home-menu-copy small{font-size:12px}}
+
+
+/* v62: approved Baccarat rows and UP circles; Tom & Jerry Group branding */
+.baccarat-table .player-row.alt td,
+.baccarat-table .player-row.alt td:first-child { background:#f4f0df!important; }
+.baccarat-table .player-row:not(.alt) td,
+.baccarat-table .player-row:not(.alt) td:first-child { background:#fff!important; }
+.baccarat-table td.baccarat-point,
+.baccarat-table .player-row.alt td.baccarat-point { background:inherit!important; color:#111!important; box-shadow:none!important; }
+.baccarat-table .baccarat-up-circle { display:inline-flex; align-items:center; justify-content:center; min-width:1.8em; height:1.8em; padding:0 .12em; border:2px solid #e21d2b; border-radius:50%; box-sizing:border-box; line-height:1; }
+.home-hero-caption h1 { overflow-wrap:anywhere; }
+@media(max-width:640px){ .home-hero-caption h1{font-size:clamp(25px,7vw,32px);max-width:100%;} }
