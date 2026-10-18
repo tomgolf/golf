@@ -206,9 +206,9 @@ function resultForPair(aid,bid,mode){
     const finalMargin=final.margin;
     if(startMargin===0){
       // A tied game decided on the final hole: winner gets Game +/-3 and Tommy +/-1.
-      // If the final hole is square, the match remains square and Game is -1.
+      // If the final hole is square, the Game result is a tie (0), not -1.
       if(finalMargin!==0){game=finalMargin>0?3:finalMargin<0?-3:0;tommy=0;buy=0;}
-      else {game=-1;tommy=0;buy=0;}
+      else {game=0;tommy=0;buy=0;}
     }else{
       // Look up the complete sequence from the initial X-UP / X-TO-GO state,
       // not merely the final holes after the game becomes mathematically decided.
@@ -260,8 +260,8 @@ function resultForPair(aid,bid,mode){
     tommy=0;
     buy=0;
   }else{
-    // No decisive winner: agreed all-square settlement.
-    game=-1;tommy=0;buy=0;
+    // No decisive winner and the match finishes square: Game is tied (0).
+    game=0;tommy=0;buy=0;
   }
   // Preserve the confirmed B9 fixed lookup case: 3DW/3GO at hole 15,
   // followed by square holes 16-18, remains on the Tommy/Buy path.
