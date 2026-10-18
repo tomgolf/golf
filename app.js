@@ -150,8 +150,16 @@ function pairHoleResults(aid,bid,mode){
   return {holes,rows};
 }
 function resultForPair(aid,bid,mode){
+  // Before play starts, an empty scorecard must show zero rather than the
+  // all-square settlement value (-1). Keep the existing settlement once scores exist.
+  const holes=mode==='F9'?Array.from({length:9},(_,i)=>i+1):Array.from({length:9},(_,i)=>i+10);
+  const hasAnyPairScores=holes.some(h=>{
+    const a=Number(scoreFor(aid,h).score), b=Number(scoreFor(bid,h).score);
+    return a>0 && b>0;
+  });
+  if(!hasAnyPairScores) return {game:0,tommy:0,buy:0,bonus:0,satay:0,total:0};
   // Calculate each pair only from its own scores and directional handicap.
-  const {holes,rows}=pairHoleResults(aid,bid,mode);
+  const {holes:playedHoles,rows}=pairHoleResults(aid,bid,mode);
   const final=rows[rows.length-1];
   const beforeFinal=rows.length>1?rows[rows.length-2].margin:0;
   let decisionIndex=null;
