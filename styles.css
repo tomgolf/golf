@@ -406,3 +406,12 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .result-table .grand-total{border-left:2px solid #c9232d;border-right:2px solid #c9232d}
 .result-table tbody tr:last-child .grand-total{border-bottom:2px solid #c9232d}
 .result-table:has(th:nth-child(9)){min-width:760px}
+/* v73: remove combined F9+B9 column; show independent F9, B9, and Total */
+.result-table .grand-total-heading,.result-table .grand-total{background:#fff7df;font-weight:900}
+.result-table .grand-total-heading{border-top:2px solid #c9232d;border-left:2px solid #c9232d;border-right:2px solid #c9232d;color:#15223a!important}
+.result-table .grand-total{border-left:2px solid #c9232d;border-right:2px solid #c9232d}
+.result-table tbody tr:last-child .grand-total{border-bottom:2px solid #c9232d}
+.result-table .segment-total{font-weight:900}
+.result-table .segment-total.result-win{color:#d52d2d}
+.result-table .segment-total.result-loss{color:#145bd7}
+.result-table .segment-total.result-even{color:#18251f}
