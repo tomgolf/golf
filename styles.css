@@ -391,3 +391,8 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td.baccarat-point,
 table.baccarat-table tbody tr.player-row:not(.alt) > td.baccarat-total { background-color:#ffffff !important; }
 table.baccarat-table tbody tr.player-row.alt > td:first-child { background-color:#f4f0df !important; }
 table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background-color:#ffffff !important; }
+
+/* v68: handicap perspective colors — receive is blue, give is red */
+.match-hcp .hcp-receive{color:#1260c4!important}
+.match-hcp .hcp-give{color:#d51d2a!important}
+.match-hcp .hcp-zero{color:#586b64!important}
