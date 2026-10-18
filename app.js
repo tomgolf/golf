@@ -304,12 +304,15 @@ function resultTone(n){return Number(n)>0?'result-win':Number(n)<0?'result-loss'
 function baccaratTable(){
   const holes=Array.from({length:18},(_,i)=>i+1);
   const ordered=displayPlayers();
-  const rows=ordered.map((p,pi)=>{
-    const vals=holes.map(h=>baccaratPoints(p.player_id,h));
-    const total=vals.reduce((sum,n)=>sum+n,0);
-    return `<tr class="player-row ${pi%2?'alt':''}"><td class="player-name">${esc(p.name)}${p.player_id===state.currentPlayer.player_id?'<div class="you">YOU</div>':''}</td>${holes.map((h,i)=>`<td class="baccarat-point ${state.isAdmin||p.player_id===state.currentPlayer.player_id?'editable':''}" onclick="editScore('${p.player_id}',${h})">${vals[i]===0?`<span class="zero-point ${scoreFor(p.player_id,h).up?'baccarat-up-circle':''}">0</span>`:`<span class="${vals[i]>0?'point-positive':'point-negative'} ${scoreFor(p.player_id,h).up?'baccarat-up-circle':''}">${fmtSigned(vals[i])}</span>`}</td>`).join('')}<td class="baccarat-total"><b>${fmtSigned(total)}</b></td></tr>`;
-  }).join('');
-  return `<div class="score-scroll baccarat-scroll"><table class="score-table baccarat-table"><thead><tr><th>Player</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th>Total</th></tr><tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th>—</th></tr><tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th>—</th></tr></thead><tbody>${rows}</tbody></table></div><div class="baccarat-note">Red tint marks a player's UP call for that hole. Points are calculated pair-by-pair after handicap strokes.</div>`;
+  const pointCell=(p,h)=>{
+    const value=baccaratPoints(p.player_id,h);
+    const up=!!scoreFor(p.player_id,h).up;
+    const editable=state.isAdmin||p.player_id===state.currentPlayer.player_id;
+    return `<td class="baccarat-point ${editable?'editable':''}" onclick="editScore('${p.player_id}',${h})"><span class="${value===0?'zero-point':value>0?'point-positive':'point-negative'} ${up?'baccarat-up-circle':''}">${value===0?'0':fmtSigned(value)}</span></td>`;
+  };
+  const rows=holes.map(h=>`<tr><th scope="row" class="baccarat-hole-label">${h}</th>${ordered.map(p=>pointCell(p,h)).join('')}</tr>`).join('');
+  const totals=ordered.map(p=>`<td class="baccarat-total"><b>${fmtSigned(holes.reduce((sum,h)=>sum+baccaratPoints(p.player_id,h),0))}</b></td>`).join('');
+  return `<div class="score-scroll baccarat-scroll baccarat-vertical-scroll"><table class="score-table baccarat-table baccarat-vertical-table"><thead><tr><th>Holes</th>${ordered.map(p=>`<th>${esc(p.name)}${p.player_id===state.currentPlayer.player_id?'<div class="you">YOU</div>':''}</th>`).join('')}</tr></thead><tbody>${rows}<tr class="baccarat-vertical-total"><th scope="row">Total</th>${totals}</tr></tbody></table></div><div class="baccarat-note">A red circle marks a player's UP call. Points are calculated pair-by-pair after handicap strokes.</div>`;
 }
 function baccaratStrokeValueForHole(a,b,hole){
   const hc=getPairHandicap(a,b);if(!hc)return 0;
