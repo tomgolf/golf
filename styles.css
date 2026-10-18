@@ -398,8 +398,9 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .match-hcp .hcp-zero{color:#586b64!important}
 /* v72 result columns: preserve the existing F9+B9 stacked values and highlight; add a separate grand Total. */
 .result-table .segment-total{font-weight:900}
-.result-table .segment-total.result-win,.result-table .grand-total.result-win{color:#d52d2d}
-.result-table .segment-total.result-loss,.result-table .grand-total.result-loss{color:#145bd7}
+/* v74: positive results are blue; negative results are red. */
+.result-table .segment-total.result-win,.result-table .grand-total.result-win{color:#145bd7!important}
+.result-table .segment-total.result-loss,.result-table .grand-total.result-loss{color:#d52d2d!important}
 .result-table .segment-total.result-even,.result-table .grand-total.result-even{color:#18251f}
 .result-table .grand-total-heading,.result-table .grand-total{background:#fff7df;font-weight:900}
 .result-table .grand-total-heading{border-top:2px solid #c9232d;border-left:2px solid #c9232d;border-right:2px solid #c9232d;color:#15223a!important}
