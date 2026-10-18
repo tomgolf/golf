@@ -416,3 +416,27 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .result-table .segment-total.result-win{color:#d52d2d}
 .result-table .segment-total.result-loss{color:#145bd7}
 .result-table .segment-total.result-even{color:#18251f}
+
+/* v76: Baccarat vertical scorecard optimized for up to 6 players and iPhone 16 Pro width. */
+.baccarat-vertical-scroll{width:100%;max-width:100%;overflow-x:hidden;box-sizing:border-box;padding-left:4px!important;padding-right:4px!important}
+.baccarat-vertical-table{width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important;border-collapse:collapse}
+.baccarat-vertical-table th:first-child,.baccarat-vertical-table td:first-child{width:43px!important;min-width:43px!important;max-width:43px!important;padding:3px 2px!important;white-space:normal;overflow-wrap:anywhere}
+.baccarat-vertical-table th:not(:first-child),.baccarat-vertical-table td:not(:first-child){width:auto!important;min-width:0!important;max-width:none!important;padding:2px 1px!important;overflow:hidden;text-overflow:clip}
+.baccarat-vertical-table thead th{font-size:clamp(9px,2.7vw,12px)!important;line-height:1.1;padding-top:6px!important;padding-bottom:6px!important;overflow-wrap:anywhere}
+.baccarat-vertical-table tbody tr:not(.baccarat-vertical-total) th,.baccarat-vertical-table tbody tr:not(.baccarat-vertical-total) td{height:29px!important;min-height:29px!important;font-size:clamp(10px,2.8vw,13px)!important;line-height:1.05}
+.baccarat-vertical-table .baccarat-point>span{font-size:clamp(10px,2.8vw,13px)!important}
+.baccarat-vertical-table .baccarat-up-circle{min-width:1.55em!important;height:1.55em!important;padding:0!important;border-width:1.5px!important}
+.baccarat-vertical-table .baccarat-vertical-total th,.baccarat-vertical-table .baccarat-vertical-total td{height:34px!important;padding:3px 1px!important;font-size:clamp(10px,2.8vw,12px)!important}
+.baccarat-vertical-table .baccarat-vertical-total b{font-size:clamp(10px,2.8vw,12px)!important}
+.baccarat-note{font-size:10px;line-height:1.25;margin:6px 4px 0}
+@media(max-width:430px){
+ .score-page{padding-left:0!important;padding-right:0!important}
+ .baccarat-vertical-scroll{margin:0!important}
+ .baccarat-vertical-table th:first-child,.baccarat-vertical-table td:first-child{width:38px!important;min-width:38px!important;max-width:38px!important}
+ .baccarat-vertical-table thead th{font-size:9px!important;letter-spacing:-.25px}
+ .baccarat-vertical-table tbody tr:not(.baccarat-vertical-total) th,.baccarat-vertical-table tbody tr:not(.baccarat-vertical-total) td{height:27px!important;min-height:27px!important}
+}
+@media(max-width:370px){
+ .baccarat-vertical-table th:first-child,.baccarat-vertical-table td:first-child{width:34px!important;min-width:34px!important;max-width:34px!important}
+ .baccarat-vertical-table thead th{font-size:8px!important}
+}
