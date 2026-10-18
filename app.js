@@ -92,7 +92,7 @@ function matchStatus(viewer,opp,hole){
     if(decisionIdx>=0&&idx>=decisionIdx){
       if(idx===decisionIdx)return `G/T${t>0?'+':''}${t}`;
       const b=row.margin-rows[decisionIdx].margin;
-      if(mode==='F9'&&idx===lastIdx&&decisionIdx===lastIdx-1)return `T${t>0?'+':''}${t}`;
+      // Show both Tommy and Buy on the final hole after Game is decided.
       return `T${t>0?'+':''}${t}/B${b>0?'+':''}${b}`;
     }
     return `T${t>0?'+':''}${t}`;
