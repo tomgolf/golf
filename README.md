@@ -36,3 +36,9 @@ This release fixes the New Game Handicap Matrix so reopening it preserves the Ba
 The live Apps Script must also be updated: the frontend uses the `saveBaccaratPlayers` POST action. If the site shows `Unknown action: saveBaccaratPlayers`, the deployed Apps Script version is older than this package. Open `apps-script/Golf_Game_Apps_Script_v20_Baccarat_Participation.gs`, replace the code in the Apps Script project, save, then Deploy > Manage deployments > Edit > select New version > Deploy. Keep the same `/exec` deployment URL configured in `app.js` (or update it if you created a new deployment).
 
 Test: in New Game, enter all player names, open Handicap, untick Piew and Dennis, Save, reopen Handicap and verify they remain unticked, then Start. For an existing match, repeat in the in-game Handicap Matrix and verify the PLAYERS sheet `baccarat_enabled` column stores TRUE/FALSE.
+
+## v67 Join Game remembered details
+- Join Game restores the last successful Game ID and player name from this device.
+- Successful Join Game and New Game actions update the remembered Game ID/name.
+- The fields remain editable, so a different game can be entered at any time.
+- This is device-local storage; it does not automatically log the user in or bypass server validation.
