@@ -523,3 +523,16 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
  .pnl-mobile-line.pnl-mobile-net{background:#fff6d9;font-weight:900;border-top:2px solid #e4c969}
  .pnl-mobile-line.pnl-mobile-net span{color:#18251f}
 }
+
+/* P&L colors must remain visible in every player's own-view table. */
+.pnl-own td.result-win, .pnl-own td.result-win b, .pnl-own .pnl-positive, .pnl-own .pnl-positive b, .pnl-own .pnl-net.result-win, .pnl-own .pnl-net.result-win b { color: #145bd7 !important; }
+.pnl-own td.result-loss, .pnl-own td.result-loss b, .pnl-own .pnl-negative, .pnl-own .pnl-negative b, .pnl-own .pnl-net.result-loss, .pnl-own .pnl-net.result-loss b { color: #d52d2d !important; }
+.pnl-own td.result-even, .pnl-own td.result-even b, .pnl-own .pnl-zero, .pnl-own .pnl-zero b { color: #18251f !important; }
+
+/* v85 P&L: force win/loss colors in every player's own view and creator view */
+.pnl-page .pnl-own td.result-win, .pnl-page .pnl-own td.result-win b { color:#145bd7 !important; }
+.pnl-page .pnl-own td.result-loss, .pnl-page .pnl-own td.result-loss b { color:#d52d2d !important; }
+.pnl-page .pnl-own td.result-even, .pnl-page .pnl-own td.result-even b { color:#18251f !important; }
+.pnl-page .pnl-table td.result-win, .pnl-page .pnl-table td.result-win b { color:#145bd7 !important; }
+.pnl-page .pnl-table td.result-loss, .pnl-page .pnl-table td.result-loss b { color:#d52d2d !important; }
+.pnl-page .pnl-table td.result-even, .pnl-page .pnl-table td.result-even b { color:#18251f !important; }
