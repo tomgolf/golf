@@ -588,3 +588,13 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .published-player{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;border:1px solid #dce9e3;background:#fff;border-radius:10px;padding:12px;font-weight:800;color:#18382e;text-align:left;overflow-wrap:anywhere}
 .published-player span{color:#16835f;font-size:20px;flex:0 0 auto}.join-entry-management{margin-top:22px;padding:16px;border:1px solid #e0c7c7;border-radius:14px;background:#fffafa}.join-entry-management h3{margin:0 0 8px;font-size:16px}.join-entry-management p{font-size:13px;color:#5c6964}.danger-outline{width:100%;border:1px solid #c42d38;background:#fff;color:#b4232f;border-radius:10px;padding:12px;font-weight:800}
 @media(max-width:380px){.published-player-grid{grid-template-columns:1fr}.published-player{padding:10px}}
+
+
+/* v89: give the Baccarat UP-call ring more breathing room around the score */
+.baccarat-vertical-table .baccarat-up-circle {
+  min-width: 1.9em !important;
+  height: 1.9em !important;
+  padding: 0 0.16em !important;
+  border-width: 1.6px !important;
+  line-height: 1 !important;
+}
