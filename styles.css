@@ -440,3 +440,6 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
  .baccarat-vertical-table th:first-child,.baccarat-vertical-table td:first-child{width:34px!important;min-width:34px!important;max-width:34px!important}
  .baccarat-vertical-table thead th{font-size:8px!important}
 }
+
+/* Creator-controlled per-segment double marker */
+.db-cell{background:#fff7df!important;border-left:1px solid #d92b35!important;border-right:1px solid #d92b35!important;display:table-cell;text-align:center}.db-check{display:flex;align-items:center;justify-content:center;gap:4px;margin:0 auto 3px;color:#c9232d;font-size:11px;font-weight:900}.db-check input{width:17px;height:17px;accent-color:#087f5b}.db-mark{display:block;color:#d71920;font-size:12px;font-weight:900}.db-empty{display:block;color:transparent;height:0}.db-cell .grand-total{display:block;font-weight:900}.db-cell .result-win{color:#075bd8}.db-cell .result-loss{color:#d71920}.db-cell .result-even{color:#111}

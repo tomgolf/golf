@@ -273,6 +273,8 @@ function resultForPair(aid,bid,mode){
   return {game,tommy,buy,bonus,satay,total:game+tommy+buy+bonus+satay};
 }
 function resultForOpponent(pid,mode){const me=state.currentPlayer.player_id;return resultForPair(me,pid,mode)}
+function resultPairKey(mode,a,b){return `${mode}|${[String(a),String(b)].sort().join('|')}`}
+async function toggleResultDouble(mode,a,b,checked){if(!state.isAdmin)return;const key=resultPairKey(mode,a,b);const next={...(state.match.result_doubles||{})};if(checked)next[key]=true;else delete next[key];state.match.result_doubles=next;render();try{const r=await post({action:'saveResultDouble',match_id:state.match.match_id,admin:state.currentPlayer.name,mode,p1:a,p2:b,checked});if(!r.success)throw new Error(r.error||'Save failed');showToast('Double saved')}catch(e){if(checked)delete next[key];else next[key]=true;state.match.result_doubles=next;render();alert('Could not save DB setting: '+(e.message||e));}}
 function resultPanel(){
   const mode=state.currentMode==='B9'?'B9':'F9';
   const pairs=[];
@@ -283,7 +285,7 @@ function resultPanel(){
       const r=resultForPair(a.player_id,b.player_id,mode);
       const f9=resultForPair(a.player_id,b.player_id,'F9').total;
       const b9=resultForPair(a.player_id,b.player_id,'B9').total;
-      pairs.push({label:`${a.name} v ${b.name}`,r,f9,b9});
+      pairs.push({label:`${a.name} v ${b.name}`,r,f9,b9,a:a.player_id,b:b.player_id});
     }
   }else{
     // Non-admin players can only see their own matchups, calculated from their perspective.
@@ -293,10 +295,10 @@ function resultPanel(){
       const r=resultForPair(me.player_id,opponent.player_id,mode);
       const f9=resultForPair(me.player_id,opponent.player_id,'F9').total;
       const b9=resultForPair(me.player_id,opponent.player_id,'B9').total;
-      pairs.push({label:`${me.name} v ${opponent.name}`,r,f9,b9});
+      pairs.push({label:`${me.name} v ${opponent.name}`,r,f9,b9,a:me.player_id,b:opponent.player_id});
     }
   }
-  return `<div class="result-card"><div class="result-title">${mode==='F9'?'Front 9 Result':'Back 9 Result'}</div><div class="result-scroll"><table class="result-table"><thead><tr><th>Opponent</th><th>Game</th><th>Tommy</th><th>Buy</th><th>Fin</th><th>Satay</th><th>F9</th><th>B9</th><th class="grand-total-heading">Total</th></tr></thead><tbody>${pairs.map(x=>{const r=x.r;const sum=Number(x.f9)+Number(x.b9);return `<tr><td>${esc(x.label)}</td><td>${fmtSigned(r.game)}</td><td>${fmtSigned(r.tommy)}</td><td>${fmtSigned(r.buy)}</td><td>${fmtSigned(r.bonus)}</td><td>${fmtSigned(r.satay||0)}</td><td class="segment-total ${resultTone(x.f9)}"><b>${fmtSigned(x.f9)}</b></td><td class="segment-total ${resultTone(x.b9)}"><b>${fmtSigned(x.b9)}</b></td><td class="grand-total ${resultTone(sum)}"><b>${fmtSigned(sum)}</b></td></tr>`}).join('')}</tbody></table></div></div>`
+  return `<div class="result-card"><div class="result-title">${mode==='F9'?'Front 9 Result':'Back 9 Result'}</div><div class="result-scroll"><table class="result-table"><thead><tr><th>Opponent</th><th>Game</th><th>Tommy</th><th>Buy</th><th>Fin</th><th>Satay</th><th>F9</th><th>B9</th><th class="grand-total-heading">Total</th></tr></thead><tbody>${pairs.map(x=>{const r=x.r;const key=resultPairKey(mode,x.a,x.b);const doubled=!!state.match.result_doubles?.[key];const segment=mode==='F9'?Number(x.f9):Number(x.b9);const adjusted=segment*(doubled?2:1);const sum=Number(x.f9)+Number(x.b9);const mark=state.isAdmin?`<label class="db-check"><input type="checkbox" ${doubled?'checked':''} onchange="toggleResultDouble('${mode}','${x.a}','${x.b}',this.checked)"><span>DB</span></label>`:(doubled?'<b class="db-mark">DB</b>':'<span class="db-empty">–</span>');return `<tr><td>${esc(x.label)}</td><td>${fmtSigned(r.game)}</td><td>${fmtSigned(r.tommy)}</td><td>${fmtSigned(r.buy)}</td><td>${fmtSigned(r.bonus)}</td><td>${fmtSigned(r.satay||0)}</td><td class="segment-total ${resultTone(x.f9)}"><b>${fmtSigned(x.f9)}</b></td><td class="segment-total ${resultTone(x.b9)}"><b>${fmtSigned(x.b9)}</b></td><td class="db-cell">${mark}<b class="grand-total ${resultTone(adjusted)}">${fmtSigned(adjusted)}</b></td></tr>`}).join('')}</tbody></table></div></div>`
 }
 function bonusBreakdown(pid,mode){const holes=mode==='F9'?Array.from({length:9},(_,i)=>i+1):Array.from({length:9},(_,i)=>i+10);const data={double3:0,double5:0,birdie:0,eagle:0,hio:0,bonus:0};const rows=holes.map(h=>{const score=Number(scoreFor(pid,h).score);const par=Number(courseHole(h)?.par||0);return {score,par}});const par3=rows.filter(x=>x.par===3);const par5=rows.filter(x=>x.par===5);if(par3.length===2&&par3.every(x=>x.score>0&&x.score<=x.par))data.double3=1;if(par5.length===2&&par5.every(x=>x.score>0&&x.score<=x.par))data.double5=1;rows.forEach(x=>{if(!x.score||!x.par)return;if(x.par===3&&x.score===1){data.hio+=12;return}if(x.score<=x.par-2){data.eagle+=6;return}if(x.score===x.par-1)data.birdie+=1});data.bonus=data.double3+data.double5+data.birdie+data.eagle+data.hio;return data}
 function fmtSigned(n){return n>0?`+${n}`:String(n)}
