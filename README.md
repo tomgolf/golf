@@ -53,3 +53,8 @@ Test: in New Game, enter all player names, open Handicap, untick Piew and Dennis
 - Adds P&L tab after Baccarat. Creator can view all players and change shared multipliers; regular players can view only their own P&L.
 - Default Game multiplier 10 and Baccarat multiplier 5. Settings are stored in the MATCHES sheet in the `pnl_settings` column.
 - Update both GitHub Pages frontend and Apps Script backend, then redeploy Apps Script as a new Web App version.
+
+
+## v84 Join Game feedback fix
+- Join now shows validation, API errors, and a timeout message instead of failing silently.
+- The Join button shows “Joining…” while the request is in progress.
