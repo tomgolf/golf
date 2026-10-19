@@ -443,3 +443,13 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 
 /* Creator-controlled per-segment double marker */
 .db-cell{background:#fff7df!important;border-left:1px solid #d92b35!important;border-right:1px solid #d92b35!important;display:table-cell;text-align:center}.db-check{display:flex;align-items:center;justify-content:center;gap:4px;margin:0 auto 3px;color:#c9232d;font-size:11px;font-weight:900}.db-check input{width:17px;height:17px;accent-color:#087f5b}.db-mark{display:block;color:#d71920;font-size:12px;font-weight:900}.db-empty{display:block;color:transparent;height:0}.db-cell .grand-total{display:block;font-weight:900}.db-cell .result-win{color:#075bd8}.db-cell .result-loss{color:#d71920}.db-cell .result-even{color:#111}
+
+/* v78: DB checkbox/marker belongs immediately beside each matchup label, not in Total. */
+.result-table:has(th.db-heading){min-width:800px!important}
+.result-table th.db-heading,.result-table td.db-toggle-cell{width:42px!important;text-align:center;vertical-align:middle}
+.result-table .db-toggle-cell{background:transparent!important;border-left:0!important;border-right:0!important}
+.result-table .db-check{display:flex;align-items:center;justify-content:center;margin:0;padding:0;min-height:24px}
+.result-table .db-check input{width:18px;height:18px;margin:0;accent-color:#087f5b}
+.result-table .db-mark{color:#d71920!important;font-weight:900;font-size:12px}
+.result-table .db-empty{color:#8a9691}
+.result-table td .grand-total{display:block;background:#fff7df}

@@ -42,3 +42,8 @@ Test: in New Game, enter all player names, open Handicap, untick Piew and Dennis
 - Successful Join Game and New Game actions update the remembered Game ID/name.
 - The fields remain editable, so a different game can be entered at any time.
 - This is device-local storage; it does not automatically log the user in or bypass server validation.
+
+
+## v78 DB checkbox placement and Apps Script deployment
+- The DB checkbox/DB marker is now in a dedicated column immediately after Opponent, as in the approved design. It is no longer inside the Total cell.
+- The Apps Script source in `apps-script/Golf_Game_Apps_Script_v20_Baccarat_Participation.gs` includes the `saveResultDouble` action. The screenshot error `Unknown action: saveResultDouble` means the deployed Apps Script Web App is still running an older version (or a different script project). Replace the deployed script source with this file, then use Deploy > Manage deployments > Edit > New version > Deploy. Keep the same Web App URL configured in the frontend.
