@@ -1,4 +1,4 @@
-const API='https://script.google.com/macros/s/AKfycbzIr3lOr5a8IaA51ixM8xta_RgOjLooxmlk2mRosDti5jJIMTKEVUR2qeSPckzhQo1T/exec';
+const API='https://script.google.com/macros/s/AKfycbyqhh0p4Cp1toE8iQAkMmlS6jGb-LCkfW4J2Pwe1gNQ7PYXXL7luQFxEGaB4ESGH9KN/exec';
 const state={view:'home',courses:[],match:null,course:null,players:[],scores:[],handicaps:{},selectedPlayers:4,currentMode:'F9',gameMultiplier:10,baccaratMultiplier:5,currentHole:1,currentPlayer:null,isAdmin:false,adminName:'',editingScore:null,editingScores:null,editingHole:null,scoreMap:{},courseMap:{},qr:false,error:''};
 const $=id=>document.getElementById(id); const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 function post(data){return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error(`API request failed (${r.status})`);const out=await r.json();if(!out||typeof out!=='object')throw new Error('Invalid API response');return out})}

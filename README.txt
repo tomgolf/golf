@@ -5,6 +5,7 @@ This package contains the two replacement files based on the files provided:
 - styles.css
 
 Changes:
+- Updated the Google Apps Script API endpoint to the new URL supplied by the user.
 - Creator view keeps the full P&L matrix on desktop/tablet.
 - On screens <= 640px, Creator view switches to independent player cards.
 - Positive P&L values are blue; negative values are red; zero/dash values are dark neutral.
