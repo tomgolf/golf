@@ -454,25 +454,31 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .result-table .db-empty{color:#8a9691}
 .result-table td .grand-total{display:block;background:#fff7df}
 
-/* v79: fit complete F9/B9 result tables on iPhone screens */
-@media (max-width: 640px){
+/* v86: mobile-friendly result table with horizontal scroll, compact Opponent column, and full grid lines */
+.result-scroll{width:100%;overflow-x:auto!important;-webkit-overflow-scrolling:touch;}
+.result-table{border-collapse:collapse!important;border-spacing:0!important;}
+.result-table th,.result-table td{border:1px solid #d5e1dd!important;}
+.result-table th:first-child,.result-table td:first-child{text-align:left;}
+.result-table th:nth-child(4),.result-table td:nth-child(4){white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all!important;}
+@media(max-width:640px){
   .result-card{margin:10px 8px;padding:0;max-width:calc(100vw - 16px);}
-  .result-scroll{overflow-x:hidden!important;width:100%;}
-  .result-table,.result-table:has(th:nth-child(8)){width:100%!important;min-width:0!important;table-layout:fixed!important;}
-  .result-table th,.result-table td{padding:7px 1px!important;font-size:clamp(8px,2.45vw,10px)!important;white-space:normal;overflow-wrap:anywhere;}
-  .result-table th:first-child,.result-table td:first-child{width:26%!important;white-space:normal;overflow-wrap:anywhere;text-align:left;padding-left:3px!important;}
-  .result-table th:nth-child(2),.result-table td:nth-child(2){width:7%!important;}
-  .result-table th:nth-child(n+3),.result-table td:nth-child(n+3){width:8.375%!important;}
+  .result-scroll{overflow-x:auto!important;width:100%;}
+  .result-table,.result-table:has(th.db-heading){width:max-content!important;min-width:720px!important;table-layout:fixed!important;}
+  .result-table th,.result-table td{padding:8px 5px!important;font-size:11px!important;white-space:nowrap;overflow-wrap:normal;word-break:normal;text-align:center;}
+  .result-table th:first-child,.result-table td:first-child{width:100px!important;min-width:100px!important;max-width:100px!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:left;padding-left:7px!important;}
+  .result-table th:nth-child(2),.result-table td:nth-child(2){width:38px!important;min-width:38px!important;max-width:38px!important;}
+  .result-table th:nth-child(n+3),.result-table td:nth-child(n+3){width:62px!important;min-width:62px!important;}
+  .result-table th:nth-child(4),.result-table td:nth-child(4){min-width:62px!important;white-space:nowrap!important;word-break:keep-all!important;}
   .result-table .db-check{margin:0;display:flex;justify-content:center;align-items:center;}
   .result-table .db-check input{width:14px;height:14px;margin:0;padding:0;}
-  .result-table .db-mark{font-size:9px!important;}
+  .result-table .db-mark{font-size:10px!important;}
   .result-table .grand-total{font-size:inherit;}
 }
-@media (max-width: 390px){
-  .result-table th,.result-table td{font-size:8px!important;padding:6px 0!important;letter-spacing:-.2px;}
-  .result-table th:first-child,.result-table td:first-child{width:25%!important;}
-  .result-table th:nth-child(2),.result-table td:nth-child(2){width:7%!important;}
-  .result-table th:nth-child(n+3),.result-table td:nth-child(n+3){width:8.5%!important;}
+@media(max-width:390px){
+  .result-table th,.result-table td{font-size:10px!important;padding:7px 4px!important;letter-spacing:0!important;}
+  .result-table th:first-child,.result-table td:first-child{width:94px!important;min-width:94px!important;max-width:94px!important;}
+  .result-table th:nth-child(2),.result-table td:nth-child(2){width:34px!important;min-width:34px!important;max-width:34px!important;}
+  .result-table th:nth-child(n+3),.result-table td:nth-child(n+3){width:58px!important;min-width:58px!important;}
 }
 
 /* v80: DB-adjusted segment values stay consistent across both result views; continuous Total column fill */
