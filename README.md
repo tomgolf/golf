@@ -47,3 +47,9 @@ Test: in New Game, enter all player names, open Handicap, untick Piew and Dennis
 ## v78 DB checkbox placement and Apps Script deployment
 - The DB checkbox/DB marker is now in a dedicated column immediately after Opponent, as in the approved design. It is no longer inside the Total cell.
 - The Apps Script source in `apps-script/Golf_Game_Apps_Script_v20_Baccarat_Participation.gs` includes the `saveResultDouble` action. The screenshot error `Unknown action: saveResultDouble` means the deployed Apps Script Web App is still running an older version (or a different script project). Replace the deployed script source with this file, then use Deploy > Manage deployments > Edit > New version > Deploy. Keep the same Web App URL configured in the frontend.
+
+
+## v83 P&L
+- Adds P&L tab after Baccarat. Creator can view all players and change shared multipliers; regular players can view only their own P&L.
+- Default Game multiplier 10 and Baccarat multiplier 5. Settings are stored in the MATCHES sheet in the `pnl_settings` column.
+- Update both GitHub Pages frontend and Apps Script backend, then redeploy Apps Script as a new Web App version.
