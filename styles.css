@@ -474,3 +474,9 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
   .result-table th:nth-child(2),.result-table td:nth-child(2){width:7%!important;}
   .result-table th:nth-child(n+3),.result-table td:nth-child(n+3){width:8.5%!important;}
 }
+
+/* v80: DB-adjusted segment values stay consistent across both result views; continuous Total column fill */
+.result-table td.grand-total-cell{background:#fff7df!important;border-left:2px solid #c9232d!important;border-right:2px solid #c9232d!important;padding-left:0!important;padding-right:0!important}
+.result-table td.grand-total-cell .grand-total{display:block;width:100%;box-sizing:border-box;background:transparent!important;margin:0;padding:0;font-weight:900}
+.result-table thead th.grand-total-heading{background:#fff7df!important}
+.result-table tbody tr:last-child td.grand-total-cell{border-bottom:2px solid #c9232d!important}
