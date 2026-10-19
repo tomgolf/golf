@@ -578,3 +578,13 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
   .result-table th, .result-table td { font-size: 7.5px !important; padding: 6px 0 !important; }
   .result-table th:first-child, .result-table td:first-child { padding-left: 3px !important; }
 }
+
+/* v88: creator-controlled published Join Game entries */
+.join-manual-title{margin:22px 0 14px;padding-top:18px;border-top:2px solid #dce9e3;font-size:17px;font-weight:900;color:#174f3f}
+.published-game{border:1px solid #d6e8df;border-radius:14px;padding:12px;margin:12px 0;background:#f7fbf9}
+.published-game-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.published-game-head strong{font-size:17px;color:#145740}.published-game-head span{font-size:12px;color:#62736c}
+.published-player-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.published-player{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;border:1px solid #dce9e3;background:#fff;border-radius:10px;padding:12px;font-weight:800;color:#18382e;text-align:left;overflow-wrap:anywhere}
+.published-player span{color:#16835f;font-size:20px;flex:0 0 auto}.join-entry-management{margin-top:22px;padding:16px;border:1px solid #e0c7c7;border-radius:14px;background:#fffafa}.join-entry-management h3{margin:0 0 8px;font-size:16px}.join-entry-management p{font-size:13px;color:#5c6964}.danger-outline{width:100%;border:1px solid #c42d38;background:#fff;color:#b4232f;border-radius:10px;padding:12px;font-weight:800}
+@media(max-width:380px){.published-player-grid{grid-template-columns:1fr}.published-player{padding:10px}}
