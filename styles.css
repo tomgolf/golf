@@ -598,3 +598,11 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
   border-width: 1.6px !important;
   line-height: 1 !important;
 }
+
+/* v90 Tom & Jerry golf intro overlay */
+.intro-overlay{position:fixed;inset:0;z-index:99999;background:#082f25;display:flex;align-items:center;justify-content:center;opacity:1;visibility:visible;transition:opacity .35s ease,visibility .35s ease;overflow:hidden}
+.intro-overlay.intro-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.intro-video{display:block;width:100%;height:100%;object-fit:contain;background:#082f25}
+.intro-skip{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:2;border:1px solid rgba(255,255,255,.65);border-radius:999px;background:rgba(0,0,0,.48);color:#fff;padding:11px 18px;font-size:15px;font-weight:700;letter-spacing:.2px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer}
+.intro-skip:active{transform:scale(.97)}
+@media(prefers-reduced-motion:reduce){.intro-overlay{transition:none}}
