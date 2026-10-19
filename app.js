@@ -1,4 +1,4 @@
-const API='https://script.google.com/macros/s/AKfycbyqhh0p4Cp1toE8iQAkMmlS6jGb-LCkfW4J2Pwe1gNQ7PYXXL7luQFxEGaB4ESGH9KN/exec';
+const API='https://script.google.com/macros/s/AKfycbzIr3lOr5a8IaA51ixM8xta_RgOjLooxmlk2mRosDti5jJIMTKEVUR2qeSPckzhQo1T/exec';
 const state={view:'home',courses:[],match:null,course:null,players:[],scores:[],handicaps:{},selectedPlayers:4,currentMode:'F9',gameMultiplier:10,baccaratMultiplier:5,currentHole:1,currentPlayer:null,isAdmin:false,adminName:'',editingScore:null,editingScores:null,editingHole:null,scoreMap:{},courseMap:{},qr:false,error:''};
 const $=id=>document.getElementById(id); const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 function post(data){return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error(`API request failed (${r.status})`);const out=await r.json();if(!out||typeof out!=='object')throw new Error('Invalid API response');return out})}
@@ -330,8 +330,24 @@ function pnlView(){
  let body='';
  if(state.isAdmin){
   const head=`<tr><th>Player</th>${opponents.map(p=>`<th>vs ${esc(p.name)}</th>`).join('')}<th>Baccarat</th><th class="pnl-net-head">NET TOTAL</th></tr>`;
-  body=state.players.map(a=>{let gameSum=0,bacSum=0;const cells=opponents.map(b=>{if(a.player_id===b.player_id)return '<td class="pnl-zero">—</td>';const v=gameAmount(a,b);gameSum+=v;return `<td class="${resultTone(v)}"><b>${money(v)}</b></td>`}).join('');for(const b of opponents)if(a.player_id!==b.player_id)bacSum+=baccaratAmount(a,b);const net=gameSum+bacSum;return `<tr><th>${esc(a.name)}</th>${cells}<td class="${resultTone(bacSum)}"><b>${money(bacSum)}</b></td><td class="pnl-net ${resultTone(net)}"><b>${money(net)}</b></td></tr>`}).join('');
-  return `<section class="pnl-page"><div class="pnl-heading"><h2>P&amp;L <span>(Total Win / Loss)</span></h2></div>${settings}<div class="pnl-table-wrap"><h3>All Players' P&amp;L <small>(Creator view)</small></h3><div class="pnl-scroll"><table class="pnl-table"><thead>${head}</thead><tbody>${body}</tbody></table></div></div><div class="pnl-help"><h3>Calculation</h3><p>Game = (F9 Total + B9 Total after each DB multiplier) × Game multiplier.</p><p>Baccarat = sum of this player's pairwise Baccarat points × Baccarat multiplier.</p><p>NET TOTAL = Game amounts + Baccarat amount. Players can only view their own P&amp;L.</p></div></section>`;
+  let mobileBody='';
+  body=state.players.map(a=>{
+   let gameSum=0,bacSum=0;
+   const cells=opponents.map(b=>{
+    if(a.player_id===b.player_id)return '<td class="pnl-zero">—</td>';
+    const v=gameAmount(a,b);gameSum+=v;
+    return `<td class="${resultTone(v)}"><b>${money(v)}</b></td>`;
+   }).join('');
+   const pairRows=opponents.filter(b=>a.player_id!==b.player_id).map(b=>{
+    const v=gameAmount(a,b);
+    return `<div class="pnl-mobile-line"><span>vs ${esc(b.name)}</span><strong class="${resultTone(v)}">${money(v)}</strong></div>`;
+   }).join('');
+   for(const b of opponents)if(a.player_id!==b.player_id)bacSum+=baccaratAmount(a,b);
+   const net=gameSum+bacSum;
+   mobileBody+=`<article class="pnl-mobile-player"><h4>${esc(a.name)}</h4>${pairRows}<div class="pnl-mobile-line"><span>Baccarat</span><strong class="${resultTone(bacSum)}">${money(bacSum)}</strong></div><div class="pnl-mobile-line pnl-mobile-net"><span>NET TOTAL</span><strong class="${resultTone(net)}">${money(net)}</strong></div></article>`;
+   return `<tr><th>${esc(a.name)}</th>${cells}<td class="${resultTone(bacSum)}"><b>${money(bacSum)}</b></td><td class="pnl-net ${resultTone(net)}"><b>${money(net)}</b></td></tr>`;
+  }).join('');
+  return `<section class="pnl-page"><div class="pnl-heading"><h2>P&amp;L <span>(Total Win / Loss)</span></h2></div>${settings}<div class="pnl-table-wrap"><h3>All Players' P&amp;L <small>(Creator view)</small></h3><div class="pnl-scroll pnl-desktop-only"><table class="pnl-table"><thead>${head}</thead><tbody>${body}</tbody></table></div><div class="pnl-mobile-list">${mobileBody}</div></div><div class="pnl-help"><h3>Calculation</h3><p>Game = (F9 Total + B9 Total after each DB multiplier) × Game multiplier.</p><p>Baccarat = sum of this player's pairwise Baccarat points × Baccarat multiplier.</p><p>NET TOTAL = Game amounts + Baccarat amount. Players can only view their own P&amp;L.</p></div></section>`;
  }
  const a=me; if(!a)return '<div class="notice">Player not found.</div>';
  let gameSum=0,bacSum=0;const rows=opponents.map(b=>{const g=gameAmount(a,b),bac=baccaratAmount(a,b);gameSum+=g;bacSum+=bac;return `<tr><td>vs ${esc(b.name)} (Game)</td><td class="${resultTone(g)}"><b>${money(g)}</b></td></tr>`}).join('');

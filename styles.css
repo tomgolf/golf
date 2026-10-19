@@ -505,3 +505,21 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .pnl-multipliers{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.pnl-multipliers label{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px}.pnl-multipliers input{width:76px;height:40px;border:1px solid #cbded7;border-radius:10px;background:#fff;text-align:center;font-weight:900}.pnl-multipliers.read-only input{background:#edf3f1;color:#65746f}.pnl-save{height:40px;border-radius:10px;padding:0 18px;font-weight:900}
 .pnl-table-wrap{background:#fff;border:1px solid #dbe9e4;border-radius:16px;overflow:hidden;margin-bottom:14px}.pnl-table-wrap h3{font-size:17px;margin:0;padding:14px;background:#f4faf8}.pnl-table-wrap h3 small{font-size:12px;color:var(--muted)}.pnl-table-wrap h3 strong{color:var(--blue)}.pnl-scroll{overflow:auto}.pnl-table{border-collapse:collapse;width:100%;min-width:560px}.pnl-table th,.pnl-table td{border:1px solid #e0ebe7;padding:12px 10px;text-align:center;font-size:14px;white-space:nowrap}.pnl-table thead th{background:#f2faf7;font-size:12px}.pnl-table tbody th{text-align:left}.pnl-table .pnl-net-head,.pnl-table .pnl-net,.pnl-net-row{background:#fff6d9}.pnl-table .pnl-net{font-size:16px;border-left:2px solid #e4c969}.pnl-table .pnl-zero,.pnl-table .result-even{color:#172620}.pnl-help{background:#e4f2ed;border-radius:14px;padding:14px 16px;font-size:13px;line-height:1.55}.pnl-help h3{margin:0 0 8px}.pnl-help p{margin:5px 0}.pnl-own{min-width:0}.pnl-own th:first-child,.pnl-own td:first-child{text-align:left}.pnl-own .pnl-net-row th{font-size:15px}
 @media(max-width:640px){.mode-tabs{gap:5px;padding:10px 10px}.mode-tab{font-size:12px;padding:0 2px}.pnl-page{margin:10px 8px 24px;padding:10px;border-radius:16px}.pnl-heading h2{font-size:21px}.pnl-heading h2 span{font-size:12px}.pnl-settings{padding:10px}.pnl-multipliers{gap:8px}.pnl-multipliers label{font-size:11px;gap:4px}.pnl-multipliers input{width:48px;height:36px;padding:4px}.pnl-save{height:36px;padding:0 12px}.pnl-table{min-width:520px}.pnl-table th,.pnl-table td{font-size:11px;padding:9px 5px}.pnl-own{min-width:0;width:100%}.pnl-own th,.pnl-own td{font-size:12px}.pnl-help{font-size:11px;padding:11px}}
+
+
+/* v84: responsive Creator P&L — matrix on desktop, independent player cards on phones */
+.pnl-mobile-list{display:none}
+.pnl-mobile-line .result-win,.pnl-mobile-line .pnl-positive{color:#145bd7!important}
+.pnl-mobile-line .result-loss,.pnl-mobile-line .pnl-negative{color:#d52d2d!important}
+.pnl-mobile-line .result-even,.pnl-mobile-line .pnl-zero{color:#18251f!important}
+@media(max-width:640px){
+ .pnl-desktop-only{display:none!important}
+ .pnl-mobile-list{display:grid;gap:10px;padding:10px;background:#f7fbf9}
+ .pnl-mobile-player{min-width:0;border:1px solid #dbe9e4;border-radius:13px;overflow:hidden;background:#fff}
+ .pnl-mobile-player h4{margin:0;padding:11px 12px;background:#eaf7f3;font-size:16px;font-weight:900}
+ .pnl-mobile-line{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-top:1px solid #edf2ef;font-size:13px}
+ .pnl-mobile-line span{min-width:0;overflow-wrap:anywhere;color:#53655e}
+ .pnl-mobile-line strong{flex:0 0 auto;font-size:14px;font-variant-numeric:tabular-nums}
+ .pnl-mobile-line.pnl-mobile-net{background:#fff6d9;font-weight:900;border-top:2px solid #e4c969}
+ .pnl-mobile-line.pnl-mobile-net span{color:#18251f}
+}
