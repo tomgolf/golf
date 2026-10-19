@@ -20,3 +20,12 @@ How to deploy:
 
 Important:
 This package only includes the two files uploaded in the conversation and the changes applied to them. It does not include index.html, icons, manifest, service worker, or other repository assets because those files were not provided here. Keep all other project files unchanged.
+
+
+FULL RE-CHECKED PACKAGE (v84)
+- Built from the complete golf-main(2).zip supplied for review.
+- All existing root files retained, including README.md, README.txt, app.js, styles.css, style.css, both manifests, both service-worker files, home-course.svg and home-golf-hero.jpg.
+- Added icons/icon-192.png and icons/icon-512.png and linked them from both manifests.
+- index.html now uses app.js/styles.css/sw.js cache-busting version 84.
+- Apps Script API URL in app.js is the one supplied by the user.
+- Existing Google Sheets data is not included in this ZIP.
