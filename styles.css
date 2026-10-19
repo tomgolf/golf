@@ -480,3 +480,10 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .result-table td.grand-total-cell .grand-total{display:block;width:100%;box-sizing:border-box;background:transparent!important;margin:0;padding:0;font-weight:900}
 .result-table thead th.grand-total-heading{background:#fff7df!important}
 .result-table tbody tr:last-child td.grand-total-cell{border-bottom:2px solid #c9232d!important}
+
+
+/* v81: Total border belongs to the table cell only; avoid doubled inner red bars. */
+.result-table td.grand-total-cell{background:#fff7df!important;border-left:2px solid #c9232d!important;border-right:2px solid #c9232d!important;position:relative;overflow:hidden}
+.result-table td.grand-total-cell .grand-total{display:block;width:100%;box-sizing:border-box;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;margin:0;padding:0;font-weight:900}
+.result-table thead th.grand-total-heading{background:#fff7df!important;border-top:2px solid #c9232d!important;border-left:2px solid #c9232d!important;border-right:2px solid #c9232d!important}
+.result-table tbody tr:last-child td.grand-total-cell{border-bottom:2px solid #c9232d!important}
