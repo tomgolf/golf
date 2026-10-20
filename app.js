@@ -443,4 +443,33 @@ function openQR(){state.qr=true;render()}
 function newCoursePrompt(){state.courseDraft={course_id:'',course_name:'',holes:Array.from({length:18},(_,i)=>({hole:i+1,par:4,si:i+1}))};state.view='courseEditor';render()}
 function editCourse(id){const c=state.courses.find(x=>x.course_id===id);if(!c)return;state.courseDraft={course_id:c.course_id,course_name:c.course_name,holes:c.holes.map(h=>({...h}))};state.view='courseEditor';render()}
 async function saveCourse(){if(state.savingCourse)return;const name=$('courseName').value.trim(),err=$('course-error');err.innerHTML='';if(!name){err.innerHTML='<div class="error">Enter a course name.</div>';return}const pars=[...document.querySelectorAll('.course-par')].map(x=>Number(x.value));const sis=[...document.querySelectorAll('.course-si')].map(x=>Number(x.value));if(pars.length!==18||sis.length!==18||new Set(sis).size!==18){err.innerHTML='<div class="error">Please set a unique SI from 1 to 18 for all holes.</div>';return}const holes=pars.map((par,i)=>({hole:i+1,par,si:sis[i]}));const payload={action:state.courseDraft.course_id?'updateCourse':'createCourse',course_id:state.courseDraft.course_id,course_name:name,holes};const btn=document.querySelector('.course-editor .start');state.savingCourse=true;if(btn){btn.disabled=true;btn.textContent='Saving…'}try{const r=await post(payload);if(!r.success){err.innerHTML=`<div class="error">${esc(r.error||'Unable to save course.')}</div>`;return}const fresh=await get('getCourses');if(fresh.success)state.courses=fresh.courses||[];state.view='courses';render();showToast(state.courseDraft.course_id?'Course updated':'Course added')}catch(e){err.innerHTML=`<div class="error">${esc(e.message||'Network error. Please try again.')}</div>`}finally{state.savingCourse=false;const b=document.querySelector('.course-editor .start');if(b){b.disabled=false;b.textContent='Save Course'}}}
+
+/* v96: Garmin-style loading feedback for save/join actions. No game logic changed. */
+(function installGarminLoading(){
+  let loadingDepth=0, activeLabel='Please wait…';
+  function ensureLoading(){
+    let el=document.getElementById('garmin-loading-overlay');
+    if(el)return el;
+    el=document.createElement('div');el.id='garmin-loading-overlay';el.className='garmin-loading-overlay';el.setAttribute('role','status');el.setAttribute('aria-live','polite');
+    el.innerHTML='<section class="garmin-loading-card"><div class="garmin-loading-ring"><span></span></div><div class="garmin-loading-title" id="garmin-loading-title">Please wait…</div><div class="garmin-loading-subtitle">Please wait. Do not tap again.</div><div class="garmin-loading-track"><span></span></div><div class="garmin-loading-foot"><span>PROCESSING</span><span class="garmin-loading-dots">•••</span></div></section>';
+    document.body.appendChild(el);return el;
+  }
+  window.__golfShowLoading=function(label){loadingDepth++;activeLabel=label||'Please wait…';const el=ensureLoading();const title=document.getElementById('garmin-loading-title');if(title)title.textContent=activeLabel;el.classList.add('visible');document.body.classList.add('golf-loading-active');};
+  window.__golfHideLoading=function(){loadingDepth=Math.max(0,loadingDepth-1);if(loadingDepth===0){const el=document.getElementById('garmin-loading-overlay');if(el)el.classList.remove('visible');document.body.classList.remove('golf-loading-active');}};
+  const actions={
+    startGame:'Creating Game…', joinGame:'Joining Game…', saveCourse:'Saving Course…',
+    saveHandicap:'Saving Settings…', saveEditedScore:'Saving Score…', saveBulkScores:'Saving Scores…',
+    savePnlSettings:'Saving P&L…', confirmRemoveJoinEntry:'Updating Join Game…', toggleResultDouble:'Saving Result…'
+  };
+  Object.entries(actions).forEach(([name,label])=>{
+    const original=window[name];if(typeof original!=='function')return;
+    window[name]=async function(...args){
+      if(window.__golfLoadingBusy && name!=='joinGame')return;
+      window.__golfLoadingBusy=true;window.__golfShowLoading(label);
+      try{return await original.apply(this,args)}
+      finally{window.__golfHideLoading();window.__golfLoadingBusy=false}
+    };
+  });
+})();
+
 loadCoursesIfNeeded();render();
