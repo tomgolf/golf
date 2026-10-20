@@ -644,3 +644,28 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
  .course-hole-side .course-hole-row .field{height:33px;font-size:11px;padding:0 1px}
 }
 @media(max-width:350px){.course-nine-title small{display:none}.course-hole-columns{gap:5px}}
+
+/* v94 Admin read-only player perspective switcher */
+.header-brand-wrap{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
+.header-actions{display:flex;align-items:center;gap:8px}
+.header .player-view-btn{font-size:0!important;position:relative;display:inline-flex;align-items:center;justify-content:center}
+.header .player-view-btn:before{content:'◉';font-size:23px;line-height:1;color:var(--garmin-lime,#a8f02a)}
+.header .player-view-return{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--garmin-lime,#a8f02a);background:#17221c;color:var(--garmin-lime,#a8f02a);font-size:13px;font-weight:900;white-space:nowrap}
+.viewing-player-label{display:inline-flex;align-items:center;padding:5px 8px;border:1px solid rgba(168,240,42,.55);border-radius:999px;color:var(--garmin-lime,#a8f02a);font-size:9px;font-weight:950;letter-spacing:.35px;white-space:nowrap}
+.player-view-overlay{position:fixed;inset:0;z-index:1000;background:rgba(2,7,5,.72);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px}
+.player-view-dialog{width:min(100%,440px);max-height:min(80vh,700px);overflow:auto;background:#f8fbf9;border:1px solid #cbdad2;border-radius:22px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,.35);color:#15231c}
+.player-view-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.player-view-dialog-head h2{font-size:22px;line-height:1.15;margin:0 0 6px;font-weight:950;letter-spacing:-.4px}
+.player-view-dialog-head p{font-size:12px;line-height:1.45;color:#63746b;margin:0}
+.player-view-close{width:36px;height:36px;flex:0 0 36px;border-radius:50%;background:#e8efeb;color:#1b3a2d;font-size:25px;line-height:1}
+.player-view-list{display:grid;gap:8px}
+.player-view-option{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;text-align:left;padding:9px 12px;border:1px solid #d9e5df;border-radius:14px;background:#fff;color:#15231c}
+.player-view-option:active{background:#eaf4ee}
+.player-view-option.admin-player{border-color:#9bc9a8;background:#edf7ef}
+.player-view-avatar{width:38px;height:38px;flex:0 0 38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#dcefe4;color:#145b3d;font-weight:950;font-size:16px}
+.player-view-name{display:flex;flex:1;flex-direction:column;gap:3px;font-size:15px;font-weight:800}
+.player-view-name small{font-size:10px;color:#547363;font-weight:700}
+.player-view-arrow{font-size:26px;color:#6d8276}
+.player-view-note{margin-top:14px;padding:11px 12px;border-radius:12px;background:#e8f2ed;color:#51675b;font-size:11px;line-height:1.5}
+.viewing-as-player .score-cell.editable{cursor:default}
+@media(max-width:420px){.header-brand-wrap{gap:6px}.viewing-player-label{font-size:8px;padding:4px 6px}.header .player-view-return{font-size:12px;padding:0 9px;min-height:38px}.header-actions{gap:6px}.player-view-dialog{padding:16px}}
