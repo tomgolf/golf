@@ -669,3 +669,53 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .player-view-note{margin-top:14px;padding:11px 12px;border-radius:12px;background:#e8f2ed;color:#51675b;font-size:11px;line-height:1.5}
 .viewing-as-player .score-cell.editable{cursor:default}
 @media(max-width:420px){.header-brand-wrap{gap:6px}.viewing-player-label{font-size:8px;padding:4px 6px}.header .player-view-return{font-size:12px;padding:0 9px;min-height:38px}.header-actions{gap:6px}.player-view-dialog{padding:16px}}
+/* v95 Full Garmin-inspired dark UI: consistent black + neon-lime across all screens */
+:root{--garmin-lime:#b7ff35;--garmin-lime-dim:#8bcf22;--garmin-bg:#080d0c;--garmin-panel:#101816;--garmin-panel-2:#151f1b;--garmin-panel-3:#1b2822;--garmin-line:#31443a;--garmin-text:#f2f7f3;--garmin-muted:#a4b3aa;--green:#b7ff35;--green2:#92d629;--mint:#17231d;--mint2:#1c2a23;--line:#304239;--ink:#f2f7f3;--muted:#a4b3aa;--bg:#080d0c;--white:#101816;--gray:#1a241f;--shadow:0 10px 30px rgba(0,0,0,.32);--red:#ff5555;--blue:#55a8ff}
+html,body{background:var(--garmin-bg)!important;color:var(--garmin-text)!important;color-scheme:dark}
+body,.app-shell{background:radial-gradient(ellipse at 50% -18%,#1a3025 0,#080d0c 55%)!important;color:var(--garmin-text)!important}
+.header{background:linear-gradient(110deg,#050908,#101814 70%,#17251d)!important;color:#fff!important;border-bottom:1px solid #3b5b28;box-shadow:0 5px 22px rgba(0,0,0,.48)!important}
+.header:before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:4px;border-radius:0 4px 4px 0;background:var(--garmin-lime);box-shadow:0 0 12px rgba(183,255,53,.45)}
+.brand,.brand small,.back{color:#f6faf7!important}.brand small{color:var(--garmin-lime)!important}
+.qr-btn,.header button{border-color:#3c5145}
+.container{color:var(--garmin-text)}
+.card,.course-item,.course-detail,.course-editor,.home-menu-card,.join-game-card,.new-game-card,.player-card,.result-card,.pnl-page,.pnl-table-wrap,.pnl-mobile-player,.baccarat-settings,.course-list-card{background:linear-gradient(155deg,#15201b,#0e1512)!important;border:1px solid var(--garmin-line)!important;color:var(--garmin-text)!important;box-shadow:var(--shadow)!important}
+.home:after{background:radial-gradient(ellipse at center,rgba(143,205,52,.12) 0,rgba(30,61,41,.07) 55%,transparent 56%)!important}
+.home-title,.section-title,.pnl-title,.pnl-heading h2,.result-title,.editor-title,.course-item strong,.course-detail h2,.card h2,.card h3,.pnl-table-wrap h3{color:#f4f8f5!important}
+.sub,.label,.help,.pnl-subtitle,.pnl-help,.pnl-note,.baccarat-note,.course-item small,.editor-sub,.pnl-help p{color:var(--garmin-muted)!important}
+.primary,.start,.save,.save-score,.pnl-save,.mode-tab.active,.num-btn.active,.score-option.active,.bulk-score-btn.active{background:var(--garmin-lime)!important;color:#10170b!important;border:1px solid var(--garmin-lime)!important;box-shadow:0 0 16px rgba(183,255,53,.12)!important}
+.secondary,.tertiary,.num-btn,.nav-btn,.cancel,.cancel-score,.bulk-score-btn{background:#1b2822!important;color:#e3eee7!important;border:1px solid #34483c!important}
+button{transition:background .15s ease,border-color .15s ease,transform .15s ease}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--garmin-lime)!important;outline-offset:2px}
+.field,input,select,textarea,.handicap-select,.pnl-multipliers input{background:#0a100d!important;color:#f4f8f5!important;border:1px solid #3b5144!important;accent-color:var(--garmin-lime)}
+.field::placeholder,input::placeholder,textarea::placeholder{color:#7f9186!important}
+.mode-tabs{background:rgba(8,13,12,.94)!important;border-bottom:1px solid #26382d!important;backdrop-filter:blur(12px)}
+.mode-tab{background:#18231d!important;color:#b8c8bd!important;border:1px solid #304239!important}
+.mode-tab.active{color:#10170b!important}
+.score-table,.result-table,.baccarat-table,.matrix,.pnl-table,.course-detail table{background:#0e1512!important;color:var(--garmin-text)!important;box-shadow:0 6px 22px rgba(0,0,0,.22)}
+.score-table th,.score-table td,.result-table th,.result-table td,.baccarat-table th,.baccarat-table td,.matrix th,.matrix td,.pnl-table th,.pnl-table td,.course-detail th,.course-detail td{background:#101815!important;color:#e9f0eb!important;border-color:#2b3b32!important}
+.score-table thead th,.result-table th,.baccarat-table thead th,.matrix th,.pnl-table thead th,.course-detail th,.stroke-row td{background:#19271f!important;color:#c5d5ca!important}
+.score-table th:first-child,.score-table td:first-child,.baccarat-table th:first-child,.baccarat-table td:first-child,.matrix td:first-child,.matrix th:first-child{background:#141f19!important;color:#f1f6f2!important}
+.player-row.alt td,.player-row.alt td:first-child,.stroke-row.alt td{background:#17221c!important}
+.score-cell.benefit{background:rgba(47,130,255,.13)!important}.score-cell.disadvantage{background:rgba(255,75,75,.12)!important}
+.score-cell .circle,.score-cell .double-circle{background:transparent!important}
+.score-cell .circle.blue,.score-cell .double-circle.blue{color:#62adff!important;border-color:#62adff!important}.score-cell .circle.red,.score-cell .double-circle.red{color:#ff6666!important;border-color:#ff6666!important}
+.score-tools,.result-title{color:#f4f8f5!important}
+.result-card{background:#101815!important;border-color:#304239!important}.result-title{background:#19271f!important}
+.result-table th{color:#a9bbb0!important}
+.handicap-modal,.score-editor{background:rgba(0,0,0,.76)!important;backdrop-filter:blur(5px)}
+.handicap-panel,.editor-panel,.player-view-dialog{background:linear-gradient(155deg,#18231d,#0d1310)!important;border:1px solid #3a5043!important;color:#f3f8f4!important}
+.handicap-panel h2,.handicap-panel h3,.editor-panel h2,.player-view-dialog h2{color:#f5faf6!important}
+.close,.player-view-close{background:#24332a!important;color:var(--garmin-lime)!important}
+.handicap-select.neg,.neg,.pnl-negative,.result-loss{color:#ff6464!important}.handicap-select.pos,.pos,.pnl-positive,.result-win{color:#61adff!important}.handicap-select.zero,.zero,.pnl-zero,.result-even{color:#b7c5bb!important}
+.legend{color:#c1d0c5!important}.notice{background:#252312!important;border-color:#63541b!important;color:#f3db7d!important}.error{background:#301718!important;border-color:#743638!important;color:#ffaaaa!important}
+.course-item{color:#f3f8f4!important}.course-item:active,.player-view-option:active{background:#203027!important}
+.course-detail th{background:#19271f!important}
+.course-nine-title{background:#1a2a20!important;color:var(--garmin-lime)!important;border-color:#344b37!important}.course-hole-side .course-hole-head{background:#19271f!important;color:#c7d7cc!important}.course-hole-side .course-hole-row:nth-of-type(even){background:#121b16!important}.course-hole-side .course-hole-row{background:#0e1512!important}
+.baccarat-player-option,.player-view-option{background:#111a15!important;border-color:#34483b!important;color:#f0f6f1!important}.baccarat-player-option input{accent-color:var(--garmin-lime)}
+.baccarat-table .baccarat-up-circle{border-color:#ff5e63!important;color:#f5f8f6!important;background:transparent!important}
+.baccarat-total,.baccarat-vertical-total{background:#19271f!important;color:var(--garmin-lime)!important}
+.pnl-page{padding:14px!important}.pnl-heading{background:transparent!important;color:#f3f8f4!important}.pnl-settings{background:#111a15!important;border:1px solid #304239!important;color:#eef5ef!important}.pnl-settings small{color:#a4b3aa!important}.pnl-table-wrap{overflow:hidden}.pnl-table-wrap h3{background:#19271f!important;color:#f1f7f2!important}.pnl-table-wrap h3 small{color:#a4b3aa!important}.pnl-table-wrap h3 strong{color:var(--garmin-lime)!important}.pnl-table .pnl-net-head,.pnl-table .pnl-net,.pnl-net-row,.pnl-table .pnl-summary th,.pnl-table .pnl-summary td,.pnl-mobile-line.pnl-mobile-net{background:#202b19!important;color:var(--garmin-lime)!important;border-color:#52672b!important}.pnl-mobile-list{background:transparent!important}.pnl-mobile-player h4{background:#1b2a20!important;color:var(--garmin-lime)!important}.pnl-mobile-line{background:#101815!important;border-color:#2b3b32!important}.pnl-mobile-line span{color:#bdcbc1!important}.pnl-help{background:#121d17!important;border:1px solid #304239!important;color:#c0cec4!important}.pnl-total{background:#202b19!important;border-color:#536c2d!important}.pnl-total small{color:#c3d3b8!important}.pnl-total strong{color:var(--garmin-lime)!important}
+.admin-badge{background:#362326!important;color:#ffb3b3!important}.viewing-player-label{color:var(--garmin-lime)!important;border-color:rgba(183,255,53,.55)!important}.player-view-dialog-head p,.player-view-note{color:#b6c6bb!important}.player-view-note{background:#1b2a20!important}.player-view-avatar{background:#253a2b!important;color:var(--garmin-lime)!important}.player-view-option.admin-player{background:#1d2d20!important;border-color:#7a9f36!important}
+.intro-overlay{background:#050907!important}
+hr, .divider{border-color:#2e4035!important}
+@media(max-width:640px){.mode-tabs{padding:10px 8px;gap:5px}.mode-tab{font-size:11px;border-radius:10px}.card{padding:14px}.pnl-page{padding:10px!important}.score-table th,.score-table td{font-size:12px}.header{padding:0 13px}}
