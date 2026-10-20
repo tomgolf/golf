@@ -606,3 +606,19 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .intro-skip{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:2;border:1px solid rgba(255,255,255,.65);border-radius:999px;background:rgba(0,0,0,.48);color:#fff;padding:11px 18px;font-size:15px;font-weight:700;letter-spacing:.2px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer}
 .intro-skip:active{transform:scale(.97)}
 @media(prefers-reduced-motion:reduce){.intro-overlay{transition:none}}
+
+
+/* v92 Garmin-inspired black + lime header and mode tabs */
+:root{--garmin-black:#080d0c;--garmin-panel:#111917;--garmin-lime:#a8f02a;--garmin-muted:#9aa9a2}
+.header{height:76px!important;padding:0 18px!important;background:linear-gradient(105deg,#080c0b 0%,#111a17 68%,#080d0c 100%)!important;color:#f7fbf8!important;border-bottom:2px solid var(--garmin-lime);box-shadow:0 5px 18px rgba(0,0,0,.22)!important}
+.brand{font-size:21px!important;font-weight:850!important;letter-spacing:-.45px;color:#f8fbf9;display:flex;align-items:center;gap:10px}
+.brand::before{content:"";display:inline-block;width:4px;height:25px;background:var(--garmin-lime);border-radius:3px;box-shadow:0 0 10px rgba(168,240,42,.3)}
+.brand small{font-size:12px!important;letter-spacing:.8px;font-weight:900!important;color:var(--garmin-lime)!important;opacity:1!important;margin-left:2px!important;padding:5px 9px;background:#202b24;border:1px solid #3c512b;border-radius:7px}
+.header .back{color:#f6faf7!important;font-weight:800}
+.header .header-icon-btn,.header .qr-btn{width:42px;height:42px;border-radius:50%;border:1px solid #46564d;background:#18211d;color:var(--garmin-lime);font-size:25px;font-weight:700;box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)}
+.header .header-icon-btn:active,.header .qr-btn:active{transform:scale(.96);background:#253327}
+.mode-tabs{top:76px!important;padding:10px 12px!important;gap:6px!important;background:rgba(8,13,12,.97)!important;border-bottom:1px solid #28352d;backdrop-filter:blur(12px)!important}
+.mode-tab{height:44px!important;min-height:44px!important;border-radius:9px!important;background:#1b2420!important;color:#bdc9c2!important;border:1px solid #2b3830!important;font-size:13px!important;font-weight:850!important;letter-spacing:.1px;transition:background .15s ease,border-color .15s ease,color .15s ease}
+.mode-tab.active{background:var(--garmin-lime)!important;color:#10170b!important;border-color:var(--garmin-lime)!important;box-shadow:0 0 14px rgba(168,240,42,.13)!important}
+.mode-tab:active{transform:translateY(1px)}
+@media(max-width:640px){.header{height:72px!important;padding-left:14px!important;padding-right:14px!important}.brand{font-size:20px!important}.brand small{font-size:11px!important;padding:4px 7px}.mode-tabs{top:72px!important;padding:9px 8px!important;gap:5px!important}.mode-tab{height:42px!important;min-height:42px!important;font-size:12px!important;border-radius:8px!important}}
