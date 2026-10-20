@@ -622,3 +622,25 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .mode-tab.active{background:var(--garmin-lime)!important;color:#10170b!important;border-color:var(--garmin-lime)!important;box-shadow:0 0 14px rgba(168,240,42,.13)!important}
 .mode-tab:active{transform:translateY(1px)}
 @media(max-width:640px){.header{height:72px!important;padding-left:14px!important;padding-right:14px!important}.brand{font-size:20px!important}.brand small{font-size:11px!important;padding:4px 7px}.mode-tabs{top:72px!important;padding:9px 8px!important;gap:5px!important}.mode-tab{height:42px!important;min-height:42px!important;font-size:12px!important;border-radius:8px!important}}
+
+/* v93 navigation + course editor layout */
+.header .back{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:0 14px;border:1px solid #46564d;border-radius:999px;background:#18211d;color:#f8fbf9!important;font-size:14px;font-weight:850;letter-spacing:.1px}
+.header .back:active{background:#253327;transform:scale(.98)}
+.course-hole-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin:12px 0 18px}
+.course-hole-side{min-width:0;border:1px solid #d8e4de;border-radius:13px;overflow:hidden;background:#fff}
+.course-nine-title{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px 9px;background:#111a16;color:var(--garmin-lime,#a8f02a);font-size:14px;font-weight:950;letter-spacing:.5px}
+.course-nine-title small{font-size:10px;color:#e1e9e4;font-weight:700;letter-spacing:0}
+.course-hole-side .course-hole-head{grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);gap:5px;padding:8px 5px;background:#edf4f0;color:#53655f;text-align:center;font-size:10px}
+.course-hole-side .course-hole-row{grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);gap:5px;padding:4px 5px;border-radius:0;min-height:42px}
+.course-hole-side .course-hole-row:nth-of-type(even){background:#f7faf9}
+.course-hole-side .course-hole-row>b{font-size:12px}
+.course-hole-side .course-hole-row .field{height:34px;min-width:0;padding:0 2px;font-size:12px}
+@media(max-width:640px){
+ .course-hole-columns{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px}
+ .course-nine-title{padding:9px 6px;font-size:13px}
+ .course-nine-title small{font-size:9px}
+ .course-hole-side .course-hole-head,.course-hole-side .course-hole-row{grid-template-columns:22px minmax(0,1fr) minmax(0,1fr);gap:3px;padding-left:3px;padding-right:3px}
+ .course-hole-side .course-hole-row{min-height:40px}
+ .course-hole-side .course-hole-row .field{height:33px;font-size:11px;padding:0 1px}
+}
+@media(max-width:350px){.course-nine-title small{display:none}.course-hole-columns{gap:5px}}
