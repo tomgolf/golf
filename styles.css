@@ -757,3 +757,56 @@ body.golf-loading-active{overflow:hidden}
 .score-ring { position:relative; display:inline-flex; align-items:center; justify-content:center; width:clamp(42px,4.5vw,58px); height:clamp(42px,4.5vw,58px); border:3px solid #b8ff00; border-radius:50%; background:rgba(184,255,0,.14); color:#172000; box-shadow:0 0 8px rgba(184,255,0,.42),inset 0 0 7px rgba(184,255,0,.18); font-weight:800; line-height:1; }
 .score-plain { position:relative; display:inline-block; min-width:1.2em; }
 .reward-dot { position:absolute; width:10px; height:10px; top:-3px; right:-3px; border-radius:50%; background:#ff2929; border:1.5px solid #fff; box-shadow:0 0 4px rgba(255,41,41,.45); display:block; }
+
+/* v109: align the neon ring wholly inside and centered within its score cell */
+.score-ring-wrap, .score-plain-wrap {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+}
+.score-ring {
+  box-sizing: border-box !important;
+  position: relative !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: clamp(34px, 3.4vw, 46px) !important;
+  height: clamp(34px, 3.4vw, 46px) !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  max-width: 100% !important;
+  border: 3px solid #b8ff00 !important;
+  border-radius: 50% !important;
+  background: rgba(184,255,0,.14) !important;
+  color: #172000 !important;
+  box-shadow: 0 0 7px rgba(184,255,0,.4), inset 0 0 5px rgba(184,255,0,.16) !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  z-index: 1 !important;
+}
+.score-plain {
+  position: relative !important;
+  display: inline-block !important;
+  min-width: 1.2em !important;
+}
+.reward-dot {
+  position: absolute !important;
+  width: 9px !important;
+  height: 9px !important;
+  top: calc(50% - 23px) !important;
+  left: calc(50% + 12px) !important;
+  right: auto !important;
+  border-radius: 50% !important;
+  background: #ff2929 !important;
+  border: 1.5px solid #fff !important;
+  box-shadow: 0 0 4px rgba(255,41,41,.45) !important;
+  display: block !important;
+  z-index: 2 !important;
+}
+.score-empty { color: #a1aaa6; }
