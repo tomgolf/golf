@@ -705,14 +705,17 @@ body.golf-loading-active{overflow:hidden}
 .delete-data-warning{margin:10px 0 0;color:#aebbb2;font-size:12px;line-height:1.5}
 .delete-data-warning strong{color:#b7ff35}
 
-/* v103: preserve the existing scorecard and add a separate 9-hole total column */
+/* v104: Total column matches hole-column width, beige background, no neon divider */
+.score-table.match-score-table{table-layout:fixed;width:100%}
+.score-table.match-score-table th:first-child,
+.score-table.match-score-table td:first-child{width:112px;min-width:112px}
 .score-table.match-score-table .nine-total-heading,
 .score-table.match-score-table .nine-total-cell,
-.score-table.match-score-table .nine-result-cell{background:#e2f4eb;color:#123d2d;border-left:2px solid #a8ff18;font-weight:900;min-width:72px;width:72px}
-.score-table.match-score-table .nine-total-heading{font-size:10px;line-height:1.1;white-space:normal}
-.score-table.match-score-table .nine-total-cell{font-size:15px}
-.score-table.match-score-table .nine-result-cell{font-size:10px;white-space:normal;line-height:1.15}
+.score-table.match-score-table .nine-result-cell{background:#f5edcf;color:#173b2c;font-weight:900;border-left:1px solid #d8d0b6;min-width:0;width:auto}
+.score-table.match-score-table .nine-total-heading{font-size:11px;line-height:1.1;white-space:normal;text-align:center}
+.score-table.match-score-table .nine-total-cell{font-size:15px;text-align:center}
+.score-table.match-score-table .nine-result-cell{font-size:12px;white-space:normal;line-height:1.15;text-align:center;overflow-wrap:anywhere}
 .score-table.match-score-table .nine-result-cell.result-win{color:#087b45}
 .score-table.match-score-table .nine-result-cell.result-loss{color:#d22f2f}
 .score-table.match-score-table .nine-result-cell.result-even{color:#66736d}
-@media(max-width:640px){.score-table.match-score-table .nine-total-heading,.score-table.match-score-table .nine-total-cell,.score-table.match-score-table .nine-result-cell{min-width:54px!important;width:54px!important;max-width:54px!important;font-size:9px!important;padding:0 1px!important}.score-table.match-score-table .nine-total-cell{font-size:12px!important}.score-table.match-score-table .nine-result-cell{overflow-wrap:anywhere}}
+@media(max-width:640px){.score-table.match-score-table th:first-child,.score-table.match-score-table td:first-child{width:88px;min-width:88px}.score-table.match-score-table .nine-total-heading,.score-table.match-score-table .nine-total-cell,.score-table.match-score-table .nine-result-cell{min-width:0!important;width:auto!important;max-width:none!important;padding:0 1px!important}.score-table.match-score-table .nine-total-heading{font-size:10px!important}.score-table.match-score-table .nine-total-cell{font-size:12px!important}.score-table.match-score-table .nine-result-cell{font-size:10px!important;overflow-wrap:anywhere}}
