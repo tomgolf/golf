@@ -704,3 +704,15 @@ body.golf-loading-active{overflow:hidden}
 .delete-old-data-btn{display:block;width:100%;margin-top:10px;background:rgba(255,70,70,.06)}
 .delete-data-warning{margin:10px 0 0;color:#aebbb2;font-size:12px;line-height:1.5}
 .delete-data-warning strong{color:#b7ff35}
+
+/* v103: preserve the existing scorecard and add a separate 9-hole total column */
+.score-table.match-score-table .nine-total-heading,
+.score-table.match-score-table .nine-total-cell,
+.score-table.match-score-table .nine-result-cell{background:#e2f4eb;color:#123d2d;border-left:2px solid #a8ff18;font-weight:900;min-width:72px;width:72px}
+.score-table.match-score-table .nine-total-heading{font-size:10px;line-height:1.1;white-space:normal}
+.score-table.match-score-table .nine-total-cell{font-size:15px}
+.score-table.match-score-table .nine-result-cell{font-size:10px;white-space:normal;line-height:1.15}
+.score-table.match-score-table .nine-result-cell.result-win{color:#087b45}
+.score-table.match-score-table .nine-result-cell.result-loss{color:#d22f2f}
+.score-table.match-score-table .nine-result-cell.result-even{color:#66736d}
+@media(max-width:640px){.score-table.match-score-table .nine-total-heading,.score-table.match-score-table .nine-total-cell,.score-table.match-score-table .nine-result-cell{min-width:54px!important;width:54px!important;max-width:54px!important;font-size:9px!important;padding:0 1px!important}.score-table.match-score-table .nine-total-cell{font-size:12px!important}.score-table.match-score-table .nine-result-cell{overflow-wrap:anywhere}}
