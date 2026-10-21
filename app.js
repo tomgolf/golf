@@ -99,7 +99,22 @@ function segmentHandicap(a,b,mode){const hc=getPairHandicap(a,b);const n=segment
 function relative(a,b,hole){const sa=Number(scoreFor(a,hole).score),sb=Number(scoreFor(b,hole).score);if(!sa||!sb)return 'S';const stroke=strokesFor(a,b,hole);const adjA=sa-stroke;return adjA<sb?'W':adjA>sb?'L':'S'}
 function cellClass(viewer,pid,hole){/* Handicap borders describe the opponent's stroke advantage from the current viewer's perspective. Never paint the viewer's own score cells red/blue. */if(pid===viewer)return '';const st=strokesFor(viewer,pid,hole);if(st>0)return 'benefit';if(st<0)return 'disadvantage';return ''}
 function isBirdie(score,par){return score&&score<=par-1}
-function scoreMarkup(pid,hole){const s=scoreFor(pid,hole);if(s.score==='')return '<span style="color:#a1aaa6">–</span>';const par=Number(courseHole(hole)?.par||4);const score=Number(s.score);const rel=score-par;const label=scoreInputLabel(rel);if(score<par)return `<span class="double-circle">${label}</span>`;if(score===par)return `<span class="circle">${label}</span>`;return `<span>${label}</span>`}
+function scoreRewardMarker(pid,hole,grossScore){
+  const course=courseHole(hole);if(!course)return false;
+  const par=Number(course.par||4), score=Number(grossScore), rel=score-par;
+  // Birdie, Eagle, Albatross (or better), and Par-3 hole-in-one mark their own cell.
+  if(par===3 && score===1)return true;
+  if(rel<=-3 || rel===-2 || rel===-1)return true;
+  // Double 3 / Double 5 is judged using both holes of that par and marked only on the second.
+  if(par!==3 && par!==5)return false;
+  const holes=Object.keys(state.courseMap||{}).map(Number).sort((a,b)=>a-b);
+  const samePar=holes.filter(h=>Number(courseHole(h)?.par)===par);
+  if(samePar.length<2 || Number(hole)!==samePar[1])return false;
+  const first=scoreFor(pid,samePar[0]), second=scoreFor(pid,samePar[1]);
+  if(first.score===''||first.score===null||first.score===undefined||second.score===''||second.score===null||second.score===undefined)return false;
+  return Number(first.score)<=par && Number(second.score)<=par;
+}
+function scoreMarkup(pid,hole){const s=scoreFor(pid,hole);if(s.score===''||s.score===null||s.score===undefined)return '<span style="color:#a1aaa6">–</span>';const par=Number(courseHole(hole)?.par||4);const score=Number(s.score);const rel=score-par;const label=scoreInputLabel(rel);const dot=scoreRewardMarker(pid,hole,score)?'<i class="reward-dot" aria-label="Reward condition"></i>':'';if(score<=par)return `<span class="score-ring">${label}${dot}</span>`;return `<span class="score-plain">${label}${dot}</span>`}
 function pairOutcomes(viewer,opp,mode){const holes=mode==='F9'?Array.from({length:9},(_,i)=>i+1):Array.from({length:9},(_,i)=>i+10);let margin=0;let decisionAt=null;const rows=[];for(const h of holes){const a=Number(scoreFor(viewer,h).score),b=Number(scoreFor(opp,h).score);let r='S';if(a&&b){r=relative(viewer,opp,h);if(r==='W')margin++;else if(r==='L')margin--}const remainingAfter=holes[holes.length-1]-h;if(decisionAt===null&&a&&b&&Math.abs(margin)>remainingAfter)decisionAt=h;rows.push({h,r,margin,remainingAfter,decisionAt})}return {holes,rows,decisionAt,finalMargin:margin}}
 function fmtState(n,wordUp='UP',wordDown='DW'){if(n>0)return `${n}${wordUp}`;if(n<0)return `${Math.abs(n)}${wordDown}`;return 'SQUARE'}
 function matchStatus(viewer,opp,hole){

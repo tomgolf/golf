@@ -720,3 +720,40 @@ body.golf-loading-active{overflow:hidden}
  .score-table.match-score-table .nine-total-cell{font-size:12px!important}
  .score-table.match-score-table .nine-result-cell{overflow-wrap:anywhere;font-size:10px!important}
 }
+
+
+/* v107: larger neon score rings and reward-condition dots */
+.score-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(42px, 4.5vw, 58px);
+  height: clamp(42px, 4.5vw, 58px);
+  border: 3px solid #b8ff00;
+  border-radius: 50%;
+  background: rgba(184, 255, 0, 0.14);
+  color: #172000;
+  box-shadow: 0 0 8px rgba(184,255,0,.42), inset 0 0 7px rgba(184,255,0,.18);
+  font-weight: 800;
+  line-height: 1;
+}
+.score-plain { position: relative; display: inline-block; min-width: 1.2em; }
+.reward-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -3px;
+  right: -3px;
+  border-radius: 50%;
+  background: #ff2929;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 4px rgba(255,41,41,.45);
+  display: block;
+}
+
+
+/* v108: large neon rings and per-player reward markers */
+.score-ring { position:relative; display:inline-flex; align-items:center; justify-content:center; width:clamp(42px,4.5vw,58px); height:clamp(42px,4.5vw,58px); border:3px solid #b8ff00; border-radius:50%; background:rgba(184,255,0,.14); color:#172000; box-shadow:0 0 8px rgba(184,255,0,.42),inset 0 0 7px rgba(184,255,0,.18); font-weight:800; line-height:1; }
+.score-plain { position:relative; display:inline-block; min-width:1.2em; }
+.reward-dot { position:absolute; width:10px; height:10px; top:-3px; right:-3px; border-radius:50%; background:#ff2929; border:1.5px solid #fff; box-shadow:0 0 4px rgba(255,41,41,.45); display:block; }
