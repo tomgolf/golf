@@ -102,13 +102,15 @@ function isBirdie(score,par){return score&&score<=par-1}
 function scoreRewardMarker(pid,hole,grossScore){
   const course=courseHole(hole);if(!course)return false;
   const par=Number(course.par||4), score=Number(grossScore), rel=score-par;
-  // Birdie, Eagle, Albatross (or better), and Par-3 hole-in-one mark their own cell.
-  if(par===3 && score===1)return true;
-  if(rel<=-3 || rel===-2 || rel===-1)return true;
-  // Double 3 / Double 5 is judged using both holes of that par and marked only on the second.
+  // Individual rewards are marked on the hole where they occur.
+  if(par===3 && score===1)return true; // hole-in-one
+  if(rel<=-3 || rel===-2 || rel===-1)return true; // albatross, eagle, birdie
+  // Double 3 / Double 5 is evaluated within the current nine, not across all 18 holes.
   if(par!==3 && par!==5)return false;
-  const holes=Object.keys(state.courseMap||{}).map(Number).sort((a,b)=>a-b);
-  const samePar=holes.filter(h=>Number(courseHole(h)?.par)===par);
+  const roundStart=Number(hole)<=9?1:10;
+  const roundEnd=roundStart+8;
+  const roundHoles=Array.from({length:9},(_,i)=>roundStart+i);
+  const samePar=roundHoles.filter(h=>Number(courseHole(h)?.par)===par);
   if(samePar.length<2 || Number(hole)!==samePar[1])return false;
   const first=scoreFor(pid,samePar[0]), second=scoreFor(pid,samePar[1]);
   if(first.score===''||first.score===null||first.score===undefined||second.score===''||second.score===null||second.score===undefined)return false;

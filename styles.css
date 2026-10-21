@@ -810,3 +810,54 @@ body.golf-loading-active{overflow:hidden}
   z-index: 2 !important;
 }
 .score-empty { color: #a1aaa6; }
+
+/* v110: compact mobile-safe circles; dot is anchored to the circle, not cell coordinates */
+.score-ring-wrap, .score-plain-wrap {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+.score-ring {
+  box-sizing: border-box !important;
+  position: relative !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: clamp(28px, 7vw, 36px) !important;
+  height: clamp(28px, 7vw, 36px) !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  max-width: 100% !important;
+  border: 2.5px solid #b8ff00 !important;
+  border-radius: 50% !important;
+  background: rgba(184,255,0,.12) !important;
+  color: #172000 !important;
+  box-shadow: 0 0 5px rgba(184,255,0,.36), inset 0 0 4px rgba(184,255,0,.12) !important;
+  font-size: inherit !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  z-index: 1 !important;
+}
+.score-plain { position: relative !important; display: inline-block !important; min-width: 1.2em !important; }
+.reward-dot {
+  position: absolute !important;
+  width: 9px !important;
+  height: 9px !important;
+  top: -2px !important;
+  right: -2px !important;
+  left: auto !important;
+  border-radius: 50% !important;
+  background: #ff2929 !important;
+  border: 1.5px solid #fff !important;
+  box-shadow: 0 0 3px rgba(255,41,41,.4) !important;
+  display: block !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
