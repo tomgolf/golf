@@ -861,3 +861,25 @@ body.golf-loading-active{overflow:hidden}
   z-index: 5 !important;
   pointer-events: none !important;
 }
+
+/* v111: solid neon-lime filled circles, smaller for mobile cells */
+.score-ring {
+  box-sizing: border-box !important;
+  width: clamp(25px, 6vw, 31px) !important;
+  height: clamp(25px, 6vw, 31px) !important;
+  min-width: 25px !important;
+  min-height: 25px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #b8ff00 !important;
+  color: #152000 !important;
+  box-shadow: 0 0 5px rgba(184,255,0,.5) !important;
+  font-weight: 800 !important;
+}
+.reward-dot {
+  width: 8px !important;
+  height: 8px !important;
+  top: -1px !important;
+  right: -1px !important;
+  border: 1px solid #fff !important;
+}
