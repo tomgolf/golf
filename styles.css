@@ -587,7 +587,18 @@ table.baccarat-table tbody tr.player-row:not(.alt) > td:first-child { background
 .published-player-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .published-player{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;border:1px solid #dce9e3;background:#fff;border-radius:10px;padding:12px;font-weight:800;color:#18382e;text-align:left;overflow-wrap:anywhere}
 .published-player span{color:#16835f;font-size:20px;flex:0 0 auto}.join-entry-management{margin-top:22px;padding:16px;border:1px solid #e0c7c7;border-radius:14px;background:#fffafa}.join-entry-management h3{margin:0 0 8px;font-size:16px}.join-entry-management p{font-size:13px;color:#5c6964}.danger-outline{width:100%;border:1px solid #c42d38;background:#fff;color:#b4232f;border-radius:10px;padding:12px;font-weight:800}
-@media(max-width:380px){.published-player-grid{grid-template-columns:1fr}.published-player{padding:10px}}
+/* v102: Garmin-inspired two-column Join Game buttons on phones; desktop remains unchanged */
+@media(max-width:600px){
+ .published-game{background:#f1f7f4;border-color:#d6e8df;border-radius:18px;padding:12px;margin:12px 0}
+ .published-game-head{margin-bottom:12px;align-items:center}
+ .published-game-head strong{font-size:20px;color:#064d3c}
+ .published-game-head span{font-size:13px;color:#4c5a55}
+ .published-player-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .published-player{min-height:64px;padding:13px 12px;background:linear-gradient(145deg,#111b18,#050908);border:1.5px solid #b7ff00;border-radius:14px;color:#fff;font-size:17px;font-weight:900;box-shadow:0 2px 0 rgba(183,255,0,.15);-webkit-tap-highlight-color:transparent}
+ .published-player:active{background:#203329;transform:scale(.985)}
+ .published-player span{color:#b7ff00;font-size:25px;font-weight:900}
+}
+@media(max-width:340px){.published-player{padding:11px 8px;font-size:15px;min-height:58px}.published-player span{font-size:21px}}
 
 
 /* v89: give the Baccarat UP-call ring more breathing room around the score */
