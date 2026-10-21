@@ -688,3 +688,8 @@ body.golf-loading-active{overflow:hidden}
 @keyframes garmin-load-bar{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}
 @keyframes garmin-load-pulse{0%,100%{opacity:.35}50%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.garmin-loading-ring,.garmin-loading-track span,.garmin-loading-dots{animation-duration:2.5s}}
+
+/* v99 manual cleanup controls */
+.delete-old-data-btn{display:block;width:100%;margin-top:10px;background:rgba(255,70,70,.06)}
+.delete-data-warning{margin:10px 0 0;color:#aebbb2;font-size:12px;line-height:1.5}
+.delete-data-warning strong{color:#b7ff35}
