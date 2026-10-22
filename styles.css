@@ -883,3 +883,129 @@ body.golf-loading-active{overflow:hidden}
   right: -1px !important;
   border: 1px solid #fff !important;
 }
+
+/* v113 UI-only patch based on known-working v111: dark headers and current-player highlight */
+.score-table.match-score-table thead th,
+.score-table.match-score-table thead th:first-child,
+.score-table.match-score-table thead .nine-total-heading {
+  background: #343a3d !important;
+  color: #f7fbfa !important;
+  border-color: #50585b !important;
+}
+.score-table.match-score-table tbody tr.player-row.current-player td {
+  background: #DDF8EE !important;
+}
+.score-table.match-score-table tbody tr.player-row.current-player td:first-child {
+  background: #DDF8EE !important;
+  box-shadow: inset 5px 0 0 #B8FF00;
+}
+.score-table.match-score-table thead tr:nth-child(3) th.nine-total-heading {
+  color: transparent !important;
+}
+
+/* Responsive score tables: use the available viewport while preserving all 9 holes. */
+.score-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.score-table.match-score-table {
+  width: 100% !important;
+  min-width: 0 !important;
+  table-layout: fixed !important;
+}
+.score-table.match-score-table th,
+.score-table.match-score-table td {
+  min-width: 0 !important;
+  overflow-wrap: anywhere;
+}
+.score-table.match-score-table th:first-child,
+.score-table.match-score-table td:first-child {
+  width: 76px !important;
+  min-width: 76px !important;
+  max-width: 76px !important;
+}
+.score-table.match-score-table .nine-total-heading,
+.score-table.match-score-table .nine-total-cell,
+.score-table.match-score-table .nine-result-cell {
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+}
+@media (max-width: 640px) {
+  .score-scroll { padding-left: 6px !important; padding-right: 6px !important; }
+  .score-table.match-score-table th,
+  .score-table.match-score-table td {
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+    font-size: clamp(9px, 2.7vw, 12px) !important;
+  }
+  .score-table.match-score-table th:first-child,
+  .score-table.match-score-table td:first-child {
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
+    padding-left: 6px !important;
+    font-size: 10px !important;
+  }
+  .score-table.match-score-table .nine-total-heading,
+  .score-table.match-score-table .nine-total-cell,
+  .score-table.match-score-table .nine-result-cell {
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+  }
+  .score-table.match-score-table th { height: 38px !important; }
+  .score-table.match-score-table td { height: 42px !important; }
+  .score-table.match-score-table .stroke-row td {
+    height: 30px !important;
+    font-size: clamp(8px, 2.4vw, 10px) !important;
+  }
+  .score-table.match-score-table .score-ring {
+    width: clamp(23px, 6.2vw, 29px) !important;
+    height: clamp(23px, 6.2vw, 29px) !important;
+    min-width: 23px !important;
+    min-height: 23px !important;
+    font-size: 11px !important;
+  }
+  .score-table.match-score-table .reward-dot { width: 7px !important; height: 7px !important; }
+  .baccarat-scroll { width: 100% !important; overflow-x: auto !important; }
+  .baccarat-table {
+    min-width: 0 !important;
+    width: 100% !important;
+    table-layout: fixed !important;
+  }
+  .baccarat-table th, .baccarat-table td {
+    padding: 5px 2px !important;
+    font-size: clamp(8px, 2.45vw, 11px) !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+  .baccarat-table th:first-child, .baccarat-table td:first-child {
+    min-width: 68px !important;
+    width: 68px !important;
+    max-width: 68px !important;
+  }
+}
+@media (max-width: 640px) and (orientation: landscape) {
+  .score-table.match-score-table th:first-child,
+  .score-table.match-score-table td:first-child {
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+  }
+  .score-table.match-score-table .nine-total-heading,
+  .score-table.match-score-table .nine-total-cell,
+  .score-table.match-score-table .nine-result-cell {
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+  }
+  .score-table.match-score-table th, .score-table.match-score-table td { font-size: 11px !important; }
+  .baccarat-table th:first-child, .baccarat-table td:first-child {
+    min-width: 82px !important;
+    width: 82px !important;
+    max-width: 82px !important;
+  }
+}
