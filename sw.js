@@ -1,23 +1,5 @@
-const CACHE='golf-game-ipad-offline-v21';
-const ASSETS=[
-  './','./index.html','./styles.css?v=210','./app.js?v=210','./manifest.webmanifest?v=210',
-  './home-golf-hero.jpg','./home-course.svg','./tom-jerry-golf-intro.mp4',
-  './icons/icon-192.png','./icons/icon-512.png'
-];
-self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('golf-game-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',event=>{
- const request=event.request;
- if(request.method!=='GET')return;
- const url=new URL(request.url);
- if(url.origin!==self.location.origin)return;
- event.respondWith((async()=>{
-  const cache=await caches.open(CACHE);
-  const cached=await cache.match(request,{ignoreSearch:false})||await cache.match(url.pathname,{ignoreSearch:true});
-  if(cached)return cached;
-  try{const response=await fetch(request);if(response&&response.ok)await cache.put(request,response.clone());return response;}
-  catch(error){if(request.mode==='navigate')return (await cache.match('./index.html'))||Response.error();return Response.error();}
- })());
-});
-
-self.addEventListener('message',function(event){if(event.data==='SKIP_WAITING'){self.skipWaiting();}});
+const CACHE='golf-game-v111';
+const ASSETS=['./','./index.html','./styles.css?v=103','./app.js?v=103','./manifest.webmanifest','./home-golf-hero.jpg','./home-course.svg','./tom-jerry-golf-intro.mp4','./icons/icon-192.png','./icons/icon-512.png'];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(url.hostname==='script.google.com'||url.hostname==='script.googleusercontent.com'){event.respondWith(fetch(new Request(event.request,{cache:'no-store'})));return;}if(event.request.mode==='navigate'){event.respondWith(fetch(new Request(event.request,{cache:'no-store'})).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));return r;}).catch(()=>caches.match('./index.html')));}else{event.respondWith(fetch(event.request).then(r=>{if(r.ok){const copy=r.clone();caches.open(CACHE).then(c=>c.put(event.request,copy));}return r;}).catch(()=>caches.match(event.request)));}});
