@@ -6,46 +6,41 @@
   <meta name="theme-color" content="#080d0c">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="styles.css?v=111">
+  <link rel="manifest" href="manifest.webmanifest?v=210">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css?v=210">
   <title>Golf Game</title>
 </head>
 <body>
-<div id="intro-overlay" class="intro-overlay" aria-label="Golf Game intro">
-  <video id="intro-video" class="intro-video" autoplay muted playsinline preload="auto">
-    <source src="./tom-jerry-golf-intro.mp4" type="video/mp4">
-  </video>
-  <button id="intro-skip" class="intro-skip" type="button">Skip ›</button>
-</div>
-<div id="app"></div>
-<script src="app.js?v=111"></script>
+<div id="app"><div id="golf-boot-status" style="margin:18px;padding:16px;border:1px solid #c8ded8;border-radius:12px;background:#fff;color:#10201b;font:16px/1.45 -apple-system,BlinkMacSystemFont,sans-serif">Starting Golf Game…</div></div>
 <script>
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=93').catch(()=>{});
-</script>
-<script>
+// Install diagnostics before app.js, especially for iOS 12 Home Screen mode.
 (function(){
-  const overlay=document.getElementById('intro-overlay');
-  const video=document.getElementById('intro-video');
-  const skip=document.getElementById('intro-skip');
-  if(!overlay||!video||!skip)return;
-  let closed=false;
-  function closeIntro(){
-    if(closed)return;
-    closed=true;
-    overlay.classList.add('intro-hidden');
-    window.setTimeout(()=>{overlay.remove();},350);
-    try{video.pause();}catch(e){}
+  function showError(message){
+    var box=document.getElementById('golf-startup-error');
+    if(!box){box=document.createElement('div');box.id='golf-startup-error';box.style.cssText='position:fixed;z-index:999999;top:12px;right:12px;bottom:auto;left:12px;padding:14px;background:#fff3cd;color:#542;font:16px/1.45 -apple-system,BlinkMacSystemFont,sans-serif;border:2px solid #d99;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere';document.body.appendChild(box)}
+    box.textContent='Golf Game startup error\n'+String(message||'Unknown error');
   }
-  video.addEventListener('ended',closeIntro,{once:true});
-  skip.addEventListener('click',closeIntro);
-  video.addEventListener('error',closeIntro,{once:true});
-  const playAttempt=video.play();
-  if(playAttempt&&typeof playAttempt.catch==='function'){
-    playAttempt.catch(()=>{ /* muted inline autoplay may be restricted; Skip remains available */ });
-  }
-  // Safety fallback in case a browser does not fire ended.
-  window.setTimeout(closeIntro,6500);
+  window.addEventListener('error',function(e){showError((e.message||'Script failed')+'\n'+(e.filename||'')+':'+(e.lineno||''))});
+  window.addEventListener('unhandledrejection',function(e){showError('Unhandled promise: '+(e.reason&&e.reason.message||e.reason||'unknown'))});
+  // A visible fallback instead of an unexplained white screen if app.js never renders.
+  window.setTimeout(function(){
+    var app=document.getElementById('app');
+    if(app && app.children.length===1 && app.firstElementChild && app.firstElementChild.id==='golf-boot-status'){
+      var b=app.firstElementChild;
+      b.innerHTML='Golf Game did not start.<br>Check that the latest files were uploaded, then reopen this Home Screen icon.<br><button onclick="location.reload()" style="margin-top:12px;padding:10px 16px;background:#084f3c;color:white;border-radius:8px">Reload</button>';
+    }
+  },4000);
 })();
+</script>
+<script src="app.js?v=210"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function(e){
+    var app=document.getElementById('app');
+    if(app && !app.textContent) app.textContent='Golf Game opened, but offline setup failed: '+e;
+  });
+}
 </script>
 </body>
 </html>
