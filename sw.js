@@ -1,5 +1,39 @@
-const CACHE='golf-game-v115';
-const ASSETS=['./','./index.html','./styles.css?v=115','./app.js?v=115','./manifest.webmanifest','./home-golf-hero.jpg','./home-course.svg','./tom-jerry-golf-intro.mp4','./icons/icon-192.png','./icons/icon-512.png'];
-self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(url.hostname==='script.google.com'||url.hostname==='script.googleusercontent.com'){event.respondWith(fetch(new Request(event.request,{cache:'no-store'})));return;}if(event.request.mode==='navigate'){event.respondWith(fetch(new Request(event.request,{cache:'no-store'})).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));return r;}).catch(()=>caches.match('./index.html')));}else{event.respondWith(fetch(event.request).then(r=>{if(r.ok){const copy=r.clone();caches.open(CACHE).then(c=>c.put(event.request,copy));}return r;}).catch(()=>caches.match(event.request)));}});
+const CACHE='live-golf-game-v1';
+const CORE_ASSETS=[
+  './',
+  './index.html',
+  './styles.css?v=live-golf-game-v1',
+  './app.js?v=live-golf-game-v1',
+  './manifest.webmanifest'
+];
+const API_HOSTS=new Set(['script.google.com','script.googleusercontent.com']);
+self.addEventListener('install',event=>{
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE_ASSETS)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',event=>{
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',event=>{
+  const request=event.request;
+  if(request.method!=='GET') return;
+  const url=new URL(request.url);
+  if(url.origin!==self.location.origin) {
+    if(API_HOSTS.has(url.hostname)) event.respondWith(fetch(new Request(request,{cache:'no-store'})));
+    return;
+  }
+  if(request.mode==='navigate') {
+    event.respondWith(fetch(new Request(request,{cache:'no-store'})).then(response=>{
+      if(response&&response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put('./index.html',copy));}
+      return response;
+    }).catch(()=>caches.match('./index.html')));
+    return;
+  }
+  // Cache-first for versioned static files: fast repeat visits; cache newly used images/video on first fetch.
+  event.respondWith(caches.match(request).then(cached=>{
+    if(cached) return cached;
+    return fetch(request).then(response=>{
+      if(response&&response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(request,copy));}
+      return response;
+    }).catch(()=>caches.match(request));
+  }));
+});

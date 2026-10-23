@@ -1,4 +1,4 @@
-Golf Game PWA — v113 Safe Cleanup Build
+Live Golf Game v1 — Speed Optimized Build
 
 Purpose
 - Online PWA frontend for GitHub Pages.
@@ -14,7 +14,7 @@ What is included
 
 Safe cleanup changes in this package
 - Removed obsolete version-specific README files and historical Apps Script source copies that duplicated or could be confused with the current reference copy.
-- Aligned the service-worker registration query and pre-cached CSS/JavaScript resource query strings with v113 to avoid stale/mismatched asset keys.
+- Aligned the service-worker registration query and pre-cached CSS/JavaScript resource query strings with Live Golf Game v1 to avoid stale/mismatched asset keys.
 - Kept app.js, styles.css, manifest.webmanifest, all referenced media/icons, and apps-script/Code.gs byte-for-byte unchanged.
 - No scoring rules, permissions, data model, API endpoint, or backend request code were intentionally changed.
 
@@ -31,8 +31,15 @@ Important protections
 - Course records (course name, 18-hole PAR and SI) are intended to remain permanent; match-data cleanup must not delete course records.
 - This README describes the package contents; it does not claim that a live browser/API regression test has been performed.
 
+Speed-focused changes in Live Golf Game v1
+- Service worker precaches only the core app shell; the 1.6 MB intro video and large images are no longer required during service-worker installation.
+- Intro video preload changed to none and the safety timeout shortened from 6.5 seconds to 3 seconds.
+- Static resources use cache-first after first successful fetch; Google Apps Script API requests remain network-only with no-store.
+- CSS/JavaScript cache-busting query strings and service-worker cache name updated to Live Golf Game v1.
+- Existing app.js scoring and API logic are retained from v115.6; Apps Script source is included as a reference and was not changed.
+
 Validation performed on this package
 - JavaScript syntax checks for app.js and sw.js.
 - ZIP integrity and file-reference checks.
-- API endpoint/configuration comparison against the uploaded v113 source.
-- Functional browser tests, live Google Sheets read/write tests, and measured performance benchmarks were not performed as part of this package build.
+- Apps Script endpoint and Code.gs compared to the v115 base package; no backend edits were made.
+- No live browser, iPhone, Google Sheets read/write, or measured performance benchmark was performed. Speed changes are implementation optimizations, not a claim of measured benchmark improvement.

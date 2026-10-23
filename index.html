@@ -7,20 +7,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="styles.css?v=115">
-  <title>Golf Game</title>
+  <link rel="stylesheet" href="styles.css?v=live-golf-game-v1">
+  <title>Live Golf Game</title>
 </head>
 <body>
 <div id="intro-overlay" class="intro-overlay" aria-label="Golf Game intro">
-  <video id="intro-video" class="intro-video" autoplay muted playsinline preload="auto">
+  <video id="intro-video" class="intro-video" autoplay muted playsinline preload="none">
     <source src="./tom-jerry-golf-intro.mp4" type="video/mp4">
   </video>
   <button id="intro-skip" class="intro-skip" type="button">Skip ›</button>
 </div>
 <div id="app"></div>
-<script src="app.js?v=115"></script>
+<script src="app.js?v=live-golf-game-v1"></script>
 <script>
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=115-total-column').catch(()=>{});
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=live-golf-game-v1').catch(()=>{});
 </script>
 <script>
 (function(){
@@ -44,7 +44,7 @@
     playAttempt.catch(()=>{ /* muted inline autoplay may be restricted; Skip remains available */ });
   }
   // Safety fallback in case a browser does not fire ended.
-  window.setTimeout(closeIntro,6500);
+  window.setTimeout(closeIntro,3000);
 })();
 </script>
 </body>

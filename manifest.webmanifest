@@ -1,6 +1,6 @@
 {
-  "name": "Golf Game",
-  "short_name": "Golf Game",
+  "name": "Live Golf Game",
+  "short_name": "Live Golf",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#050c0a",

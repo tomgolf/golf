@@ -1440,3 +1440,149 @@ body.golf-loading-active{overflow:hidden}
 .score-table.match-score-table .final-status-cell.result-win { color: #145bd7 !important; }
 .score-table.match-score-table .final-status-cell.result-loss { color: #d52d2d !important; }
 .score-table.match-score-table .final-status-cell.result-even { color: #18251f !important; }
+
+
+/* v115.1 mobile scorecard: compact 6-character player label and equal-width GAME total column. */
+@media (max-width: 640px) {
+  .score-table.match-score-table {
+    table-layout: fixed !important;
+    min-width: 0 !important;
+    width: max-content !important;
+  }
+  .score-table.match-score-table > thead > tr > th:first-child,
+  .score-table.match-score-table > tbody > tr > td:first-child {
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+    box-sizing: border-box !important;
+    padding-left: 8px !important;
+    padding-right: 4px !important;
+    overflow-wrap: anywhere !important;
+  }
+  .score-table.match-score-table > thead > tr > th:not(:first-child),
+  .score-table.match-score-table > tbody > tr > td:not(:first-child) {
+    width: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
+    box-sizing: border-box !important;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+  }
+  .score-table.match-score-table > tbody > tr.player-row > td.player-name {
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+  }
+  .score-table.match-score-table > tbody > tr.player-row > td.nine-total-cell,
+  .score-table.match-score-table > thead > tr > th.nine-total-heading {
+    width: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
+  }
+}
+
+
+/* v115.2: comfortable vertical separation between player groups on mobile. */
+@media (max-width: 640px) {
+  .score-table.match-score-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+  /* Add breathing room before each following player, without separating that player's status row. */
+  .score-table.match-score-table > tbody > tr.stroke-row + tr.player-row > td {
+    border-top: 8px solid #eaf4f0 !important;
+    background-clip: padding-box !important;
+  }
+  .score-table.match-score-table > tbody > tr.stroke-row + tr.player-row > td.player-name {
+    border-top-color: #0b5555 !important;
+  }
+  .score-table.match-score-table > tbody > tr.stroke-row + tr.player-row > td.nine-total-cell {
+    border-top-color: #fff4d8 !important;
+  }
+}
+
+
+/* v115.3: iPhone-fit scorecard columns and clean white player separators. */
+@media (max-width: 640px) {
+  .score-table.match-score-table {
+    table-layout: fixed !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+  .score-table.match-score-table > thead > tr > th:first-child,
+  .score-table.match-score-table > tbody > tr > td:first-child {
+    width: 68px !important; min-width: 68px !important; max-width: 68px !important;
+    padding-left: 6px !important; padding-right: 3px !important;
+    box-sizing: border-box !important; overflow-wrap: anywhere !important;
+  }
+  .score-table.match-score-table > thead > tr > th:not(:first-child),
+  .score-table.match-score-table > tbody > tr > td:not(:first-child) {
+    width: 29px !important; min-width: 0 !important; max-width: 29px !important;
+    padding-left: 0 !important; padding-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .score-table.match-score-table > tbody > tr.player-row > td.player-name {
+    font-size: 10px !important; line-height: 1.15 !important;
+  }
+  .score-table.match-score-table > tbody > tr.player-row > td.nine-total-cell,
+  .score-table.match-score-table > thead > tr > th.nine-total-heading {
+    width: 29px !important; min-width: 0 !important; max-width: 29px !important;
+  }
+  .score-table.match-score-table .score-cell {
+    padding-left: 0 !important; padding-right: 0 !important;
+    font-size: 12px !important; white-space: nowrap !important;
+  }
+  .score-table.match-score-table .circle {
+    width: 25px !important; height: 25px !important;
+    max-width: 25px !important; box-sizing: border-box !important;
+    border-width: 2px !important;
+  }
+  .score-table.match-score-table .double-circle {
+    width: 27px !important; height: 27px !important;
+    max-width: 27px !important; box-sizing: border-box !important;
+  }
+  .score-table.match-score-table .match-status-cell {
+    font-size: 8px !important; line-height: 1.05 !important;
+    letter-spacing: -0.35px !important; overflow-wrap: anywhere !important;
+  }
+  /* A clean white spacer between player groups, without extending the grid lines through the gap. */
+  .score-table.match-score-table > tbody > tr.stroke-row + tr.player-row > td {
+    border-top: 8px solid #ffffff !important;
+    background-clip: padding-box !important;
+  }
+  .score-table.match-score-table > tbody > tr.stroke-row + tr.player-row > td.player-name {
+    border-top-color: #ffffff !important;
+  }
+  .score-table.match-score-table > tbody > tr.stroke-row + tr.player-row > td.nine-total-cell {
+    border-top-color: #ffffff !important;
+  }
+}
+
+/* v115.4: add the same clean 8px white separator between the current player (Lee) and the first opponent (Dennis). */
+@media (max-width: 640px) {
+  .score-table.match-score-table > tbody > tr.player-row.current-player + tr.player-row > td {
+    border-top: 8px solid #ffffff !important;
+    background-clip: padding-box !important;
+  }
+  .score-table.match-score-table > tbody > tr.player-row.current-player + tr.player-row > td.player-name,
+  .score-table.match-score-table > tbody > tr.player-row.current-player + tr.player-row > td.nine-total-cell {
+    border-top-color: #ffffff !important;
+  }
+}
+
+
+/* v115.6: square corners for the scorecard, F9/B9 Result, and Baccarat tables only.
+   Preserve v115.4 page backgrounds, cards, and Edit Handicap button styling. */
+.score-scroll > table.score-table,
+.score-scroll > table.score-table th,
+.score-scroll > table.score-table td,
+.result-scroll > table.result-table,
+.result-scroll > table.result-table th,
+.result-scroll > table.result-table td,
+.baccarat-vertical-scroll > table.baccarat-vertical-table,
+.baccarat-vertical-scroll > table.baccarat-vertical-table th,
+.baccarat-vertical-scroll > table.baccarat-vertical-table td {
+  border-radius: 0 !important;
+}
