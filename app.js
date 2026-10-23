@@ -97,7 +97,7 @@ function strokesFor(a,b,hole){return strokeValueForHole(a,b,hole)}
 function fmtStroke(n){if(!n)return '0';return `${n>0?'+':''}${Number.isInteger(n)?n:n.toFixed(1)}`}
 function segmentHandicap(a,b,mode){const hc=getPairHandicap(a,b);const n=segmentStrokeCount(hc,mode);return hc<0?-n:n}
 function relative(a,b,hole){const sa=Number(scoreFor(a,hole).score),sb=Number(scoreFor(b,hole).score);if(!sa||!sb)return 'S';const stroke=strokesFor(a,b,hole);const adjA=sa-stroke;return adjA<sb?'W':adjA>sb?'L':'S'}
-function cellClass(viewer,pid,hole){/* Handicap borders describe the opponent's stroke advantage from the current viewer's perspective. Never paint the viewer's own score cells red/blue. */if(pid===viewer)return '';const st=strokesFor(viewer,pid,hole);if(st>0)return 'benefit';if(st<0)return 'disadvantage';return ''}
+function cellClass(viewer,pid,hole){/* Mark the opponent's allowance on that player's row. If the viewer receives strokes, the opponent gives (red); if the viewer gives strokes, the opponent receives (blue). SI allocation remains the existing source of truth. */if(String(pid)===String(viewer))return '';const st=strokesFor(viewer,pid,hole);if(st>0)return 'disadvantage';if(st<0)return 'benefit';return ''}
 function isBirdie(score,par){return score&&score<=par-1}
 function scoreRewardMarker(pid,hole,grossScore){
   const course=courseHole(hole);if(!course)return false;
@@ -191,42 +191,39 @@ function matchHandicapLabel(viewer,opp){const mode=state.currentMode==='B9'?'B9'
 function scoreView(){return shell(`<main class="score-page"><div class="mode-tabs">${['F9','B9','Baccarat','P&L'].map(m=>`<button class="mode-tab ${state.currentMode===m?'active':''}" onclick="setMode('${m}')">${m}</button>`).join('')}</div>${state.currentMode==='P&L'?pnlView():state.currentMode==='Baccarat'?baccaratTable():matchTable()}${!state.viewingAsPlayer&&state.editingScores?bulkScoreEditor():!state.viewingAsPlayer&&state.editingScore?scoreEditor():''}${state.qr?qrModal():''}</main>`,{qr:true})}
 function holesForMode(){return state.currentMode==='F9'?Array.from({length:9},(_,i)=>i+1):state.currentMode==='B9'?Array.from({length:9},(_,i)=>i+10):Array.from({length:18},(_,i)=>i+1)}
 function matchTable(){
- const holes=holesForMode(),mode=state.currentMode==='B9'?'B9':'F9';
- const lastHole=holes[holes.length-1];
- const statusForPlayer=p=>{
-   if(p.player_id===state.currentPlayer.player_id)return '<span class="final-status self-status">YOU</span>';
-   const raw=matchStatus(state.currentPlayer.player_id,p.player_id,lastHole);
-   return `<span class="final-status ${matchStatusClass(raw)}">${matchStatusMarkup(raw)}</span>`;
- };
- return `<div class="score-scroll"><table class="score-table match-score-table"><thead>
- <tr><th>Hole</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th class="nine-status-heading">Status</th></tr>
- <tr class="course-meta-row"><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th class="nine-status-heading"></th></tr>
- <tr class="course-meta-row"><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th class="nine-status-heading"></th></tr>
- </thead><tbody>${displayPlayers().map((p,pi)=>{
-   const isMe=p.player_id===state.currentPlayer.player_id;
-   const scores=holes.map(h=>{
-     const cls=cellClass(state.currentPlayer.player_id,p.player_id,h);
-     const markerClass=cls==='benefit'?'stroke-receive':cls==='disadvantage'?'stroke-give':'';
-     return `<td class="score-cell ${cls} ${markerClass} ${(!state.viewingAsPlayer&&(isMe||state.isAdmin))?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`;
-   }).join('');
-   return `<tr class="player-row ${pi%2?'alt':''} ${isMe?'current-player':''}">
-     <td class="player-name">${esc(p.name)}${isMe?'<div class="you">YOU</div>':`<div class="match-hcp">${matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</div>`}</td>
-     ${scores}<td class="nine-status-cell">${statusForPlayer(p)}<button id="status-toggle-${esc(p.player_id)}" class="status-toggle" type="button" onclick="toggleStatusRow('${esc(p.player_id)}')" aria-label="Toggle hole status">⌄</button></td>
-   </tr>
-   <tr class="status-spacer-row ${pi%2?'alt':''}"><td class="status-spacer-label"></td>${holes.map(h=>`<td class="status-spacer-cell"></td>`).join('')}<td class="status-spacer-end"></td></tr>
-   <tr class="detail-status-row" id="detail-status-${esc(p.player_id)}" hidden><td class="detail-status-label">Game Status</td>${holes.map(h=>{const raw=isMe?'SQ':matchStatus(state.currentPlayer.player_id,p.player_id,h);return `<td class="match-status-cell ${matchStatusClass(raw)}">${matchStatusMarkup(raw)}</td>`}).join('')}<td></td></tr>`;
- }).join('')}</tbody></table></div>
- ${state.isAdmin?'<div class="below-handicap-tools"><button class="link-btn" onclick="openMatchHandicap()">⚖ Edit Handicap</button></div>':''}
- ${resultPanel()}`;
+  const holes=holesForMode();
+  const mode=state.currentMode==='B9'?'B9':'F9';
+  const statusForPlayer=p=>{
+    if(String(p.player_id)===String(state.currentPlayer.player_id)){
+      return {raw:'YOU',markup:'<span class="status-you">YOU</span>',cls:'status-summary-you'};
+    }
+    const raw=matchStatus(state.currentPlayer.player_id,p.player_id,holes[holes.length-1]);
+    return {raw,markup:matchStatusMarkup(raw),cls:`status-summary ${matchStatusClass(raw)}`};
+  };
+  const rows=displayPlayers().map((p,pi)=>{
+    const status=statusForPlayer(p);
+    const playerRow=`<tr class="player-row ${pi%2?'alt':''} ${String(p.player_id)===String(state.currentPlayer.player_id)?'current-player':''}">
+      <td class="player-name">${esc(p.name)}${String(p.player_id)===String(state.currentPlayer.player_id)?'<div class="you">YOU</div>':`<div class="match-hcp">${matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</div>`}</td>
+      ${holes.map(h=>`<td class="score-cell ${cellClass(state.currentPlayer.player_id,p.player_id,h)} ${(!state.viewingAsPlayer&&((String(p.player_id)===String(state.currentPlayer.player_id))||state.isAdmin))?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`).join('')}
+      <td class="status-summary-cell ${status.cls}">${status.markup}</td>
+    </tr>`;
+    // Keep the confirmed blank status spacer under each player; do not render per-hole Game Status rows.
+    const spacer=`<tr class="player-spacer ${pi%2?'alt':''}" aria-hidden="true"><td colspan="${holes.length+2}"></td></tr>`;
+    return playerRow+spacer;
+  }).join('');
+  const legend=`<div class="score-legend" aria-label="Scorecard legend">
+    <div class="legend-item"><span class="legend-par">0</span><span>Par 或更好<br><small>(荧光绿圆圈)</small></span></div>
+    <div class="legend-item"><span class="legend-normal">2</span><span>普通成绩<br><small>(白色数字)</small></span></div>
+    <div class="legend-item"><span class="legend-triangle give"></span><span>让杆<br><small>(红色右下角)</small></span></div>
+    <div class="legend-item"><span class="legend-triangle receive"></span><span>受让<br><small>(蓝色右下角)</small></span></div>
+    <div class="legend-item"><span class="legend-fin-wrap"><span class="legend-par">0</span><i></i></span><span>FIN 标记<br><small>(红色小圆点)</small></span></div>
+  </div>`;
+  return `<div class="score-scroll"><table class="score-table match-score-table"><thead>
+    <tr><th>Hole</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th class="status-heading"></th></tr>
+    <tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th class="status-heading"></th></tr>
+    <tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th class="status-heading"></th></tr>
+  </thead><tbody>${rows}</tbody></table></div>${state.isAdmin?'<div class="below-handicap-tools"><button class="link-btn" onclick="openMatchHandicap()">⚖ Edit Handicap</button></div>':''}${resultPanel()}${legend}`;
 }
-function toggleStatusRow(pid){
- const row=document.getElementById('detail-status-'+pid);
- const button=document.getElementById('status-toggle-'+pid);
- if(!row)return;
- row.hidden=!row.hidden;
- if(button)button.textContent=row.hidden?'⌄':'⌃';
-}
-
 const RESULT_TABLES={
   1:{'W':4,'S':3,'L':-1},
   2:{'WW':5,'WL':2,'WS':4,'LW':3,'LS':2,'LL':-1,'SW':5,'SS':3,'SL':1},
