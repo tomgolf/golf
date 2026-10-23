@@ -1,5 +1,5 @@
 const API='https://script.google.com/macros/s/AKfycbyqhh0p4Cp1toE8iQAkMmlS6jGb-LCkfW4J2Pwe1gNQ7PYXXL7luQFxEGaB4ESGH9KN/exec';
-const state={view:'home',courses:[],match:null,course:null,players:[],scores:[],handicaps:{},selectedPlayers:4,currentMode:'F9',gameMultiplier:10,baccaratMultiplier:5,currentHole:1,currentPlayer:null,isAdmin:false,adminName:'',adminPlayerId:null,viewingAsPlayer:false,editingScore:null,editingScores:null,editingHole:null,scoreMap:{},courseMap:{},qr:false,playerViewModal:false,error:'',publishedGames:[]};
+const state={view:'home',courses:[],match:null,course:null,players:[],scores:[],handicaps:{},selectedPlayers:4,currentMode:'F9',gameMultiplier:10,baccaratMultiplier:5,currentHole:1,currentPlayer:null,isAdmin:false,adminName:'',adminPlayerId:null,viewingAsPlayer:false,editingScore:null,editingScores:null,editingHole:null,scoreMap:{},courseMap:{},qr:false,playerViewModal:false,error:'',publishedGames:[],expandedStatusPlayers:{}};
 const $=id=>document.getElementById(id); const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 function post(data){return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error(`API request failed (${r.status})`);const out=await r.json();if(!out||typeof out!=='object')throw new Error('Invalid API response');return out})}
 function get(action,params={}){const q=new URLSearchParams({action,...params,_ts:String(Date.now())});return fetch(API+'?'+q.toString(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`API request failed (${r.status})`);return r.json()})}
@@ -97,7 +97,7 @@ function strokesFor(a,b,hole){return strokeValueForHole(a,b,hole)}
 function fmtStroke(n){if(!n)return '0';return `${n>0?'+':''}${Number.isInteger(n)?n:n.toFixed(1)}`}
 function segmentHandicap(a,b,mode){const hc=getPairHandicap(a,b);const n=segmentStrokeCount(hc,mode);return hc<0?-n:n}
 function relative(a,b,hole){const sa=Number(scoreFor(a,hole).score),sb=Number(scoreFor(b,hole).score);if(!sa||!sb)return 'S';const stroke=strokesFor(a,b,hole);const adjA=sa-stroke;return adjA<sb?'W':adjA>sb?'L':'S'}
-function cellClass(viewer,pid,hole){/* Mark the opponent's allowance on that player's row. If the viewer receives strokes, the opponent gives (red); if the viewer gives strokes, the opponent receives (blue). SI allocation remains the existing source of truth. */if(String(pid)===String(viewer))return '';const st=strokesFor(viewer,pid,hole);if(st>0)return 'disadvantage';if(st<0)return 'benefit';return ''}
+function cellClass(viewer,pid,hole){/* Red = this opponent gives the viewer a stroke; blue = this opponent receives a stroke from the viewer. The stored pair handicap sign is from the viewer's perspective. */if(String(pid)===String(viewer))return '';const st=strokesFor(viewer,pid,hole);if(st<0)return 'disadvantage';if(st>0)return 'benefit';return ''}
 function isBirdie(score,par){return score&&score<=par-1}
 function scoreRewardMarker(pid,hole,grossScore){
   const course=courseHole(hole);if(!course)return false;
@@ -190,6 +190,7 @@ function matchStatusClass(text){if(text==='G'||text.startsWith('G/')||text.endsW
 function matchHandicapLabel(viewer,opp){const mode=state.currentMode==='B9'?'B9':'F9';const n=segmentHandicap(viewer,opp,mode);if(n>0)return `<span class="hcp-receive">Receive ${fmtStroke(n)}</span>`;if(n<0)return `<span class="hcp-give">Give ${fmtStroke(n)}</span>`;return '<span class="hcp-zero">0 strokes</span>'}
 function scoreView(){return shell(`<main class="score-page"><div class="mode-tabs">${['F9','B9','Baccarat','P&L'].map(m=>`<button class="mode-tab ${state.currentMode===m?'active':''}" onclick="setMode('${m}')">${m}</button>`).join('')}</div>${state.currentMode==='P&L'?pnlView():state.currentMode==='Baccarat'?baccaratTable():matchTable()}${!state.viewingAsPlayer&&state.editingScores?bulkScoreEditor():!state.viewingAsPlayer&&state.editingScore?scoreEditor():''}${state.qr?qrModal():''}</main>`,{qr:true})}
 function holesForMode(){return state.currentMode==='F9'?Array.from({length:9},(_,i)=>i+1):state.currentMode==='B9'?Array.from({length:9},(_,i)=>i+10):Array.from({length:18},(_,i)=>i+1)}
+function togglePlayerStatus(pid){state.expandedStatusPlayers=state.expandedStatusPlayers||{};state.expandedStatusPlayers[String(pid)]=!state.expandedStatusPlayers[String(pid)];render()}
 function matchTable(){
   const holes=holesForMode();
   const mode=state.currentMode==='B9'?'B9':'F9';
@@ -205,10 +206,12 @@ function matchTable(){
     const playerRow=`<tr class="player-row ${pi%2?'alt':''} ${String(p.player_id)===String(state.currentPlayer.player_id)?'current-player':''}">
       <td class="player-name">${esc(p.name)}${String(p.player_id)===String(state.currentPlayer.player_id)?'<div class="you">YOU</div>':`<div class="match-hcp">${matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</div>`}</td>
       ${holes.map(h=>`<td class="score-cell ${cellClass(state.currentPlayer.player_id,p.player_id,h)} ${(!state.viewingAsPlayer&&((String(p.player_id)===String(state.currentPlayer.player_id))||state.isAdmin))?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`).join('')}
-      <td class="status-summary-cell ${status.cls}">${status.markup}</td>
+      <td class="status-summary-cell ${status.cls}">${String(p.player_id)===String(state.currentPlayer.player_id)?status.markup:`<button type="button" class="status-toggle" onclick="togglePlayerStatus('${p.player_id}')" aria-label="Toggle Game Status for ${esc(p.name)}" aria-expanded="${!!state.expandedStatusPlayers?.[String(p.player_id)]}"><span class="status-toggle-value">${status.markup}</span><span class="status-chevron">${state.expandedStatusPlayers?.[String(p.player_id)]?'⌃':'⌄'}</span></button>`}</td>
     </tr>`;
-    // Keep the confirmed blank status spacer under each player; do not render per-hole Game Status rows.
-    const spacer=`<tr class="player-spacer ${pi%2?'alt':''}" aria-hidden="true"><td colspan="${holes.length+2}"></td></tr>`;
+    const expanded=String(p.player_id)!==String(state.currentPlayer.player_id)&&!!state.expandedStatusPlayers?.[String(p.player_id)];
+    const spacer=expanded
+      ? `<tr class="expanded-game-status"><td class="expanded-status-label">Game Status</td>${holes.map(h=>{const raw=matchStatus(state.currentPlayer.player_id,p.player_id,h);return `<td class="${matchStatusClass(raw)}">${matchStatusMarkup(raw)}</td>`}).join('')}<td class="expanded-status-end"></td></tr>`
+      : `<tr class="player-spacer ${pi%2?'alt':''}" aria-hidden="true"><td colspan="${holes.length+2}"></td></tr>`;
     return playerRow+spacer;
   }).join('');
   const legend=`<div class="score-legend" aria-label="Scorecard legend">

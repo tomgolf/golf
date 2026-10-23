@@ -1137,3 +1137,53 @@ body.golf-loading-active{overflow:hidden}
  .score-legend .legend-par,.score-legend .legend-normal { width:26px;height:26px;flex-basis:26px;font-size:13px; }
  .score-legend .legend-triangle { border-left-width:9px;border-bottom-width:9px; }
 }
+
+/* Corrected mobile scorecard review: consistent top rows, give/receive direction,
+   expandable per-hole Game Status, and dark-teal Result Total column. */
+.score-table.match-score-table thead tr:nth-child(-n+3) th,
+.score-table.match-score-table thead tr:nth-child(-n+3) th:first-child {
+  background:#0b4946!important;
+  color:#e8f4f1!important;
+  font-weight:500!important;
+}
+.score-table.match-score-table .score-cell.benefit::after,
+.score-table.match-score-table .score-cell.disadvantage::after {
+  right:0!important; bottom:0!important; left:auto!important; top:auto!important;
+  width:0!important; height:0!important;
+  border-left:0!important;
+  border-right:8px solid transparent!important;
+  border-bottom:8px solid!important;
+  border-top:0!important;
+}
+.score-table.match-score-table .score-cell.disadvantage::after { border-bottom-color:#ff3038!important; }
+.score-table.match-score-table .score-cell.benefit::after { border-bottom-color:#168bff!important; }
+.score-table.match-score-table .status-toggle {
+  width:100%; min-width:0; border:0; padding:1px 0; margin:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; background:transparent!important; color:inherit!important;
+  line-height:1.02; font:inherit; cursor:pointer;
+}
+.score-table.match-score-table .status-toggle-value { display:flex; flex-direction:column; align-items:center; justify-content:center; max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+.score-table.match-score-table .status-chevron { font-size:9px; line-height:8px; color:#aebeb7; font-weight:500; }
+.score-table.match-score-table .expanded-game-status td {
+  height:34px!important; padding:3px 1px!important; text-align:center!important;
+  background:#0b211b!important; color:#e6f0ec!important;
+  border-bottom:1px solid #24443c!important; font-size:10px!important; font-weight:700!important;
+  white-space:normal!important; overflow-wrap:anywhere!important; line-height:1.05!important;
+}
+.score-table.match-score-table .expanded-game-status .expanded-status-label {
+  text-align:left!important; padding-left:6px!important; color:#9bb2a8!important; font-size:9px!important;
+}
+.score-table.match-score-table .expanded-game-status .status-up { color:#168bff!important; }
+.score-table.match-score-table .expanded-game-status .status-down { color:#ff464f!important; }
+.score-table.match-score-table .expanded-game-status .status-game { color:var(--golf-lime)!important; }
+.score-table.match-score-table .expanded-game-status .status-square { color:#dce6e1!important; }
+.score-table.match-score-table .expanded-game-status .status-stack { display:flex!important; flex-direction:column!important; align-items:center!important; justify-content:center!important; gap:1px!important; line-height:1.02!important; }
+.result-table th.grand-total-heading,
+.result-table thead th.grand-total-heading { background:#0b4946!important; color:var(--golf-lime)!important; border-color:var(--golf-line)!important; }
+.result-table td.grand-total-cell,
+.result-table tbody td.grand-total-cell { background:#0b4946!important; color:#f4f8f6!important; border-color:#24443c!important; }
+.result-table td.grand-total-cell .grand-total { background:transparent!important; }
+.result-table td.grand-total-cell .grand-total.result-loss { color:#ff3b43!important; }
+.result-table td.grand-total-cell .grand-total.result-win { color:#168bff!important; }
+.result-table td.grand-total-cell .grand-total.result-even { color:#f4f8f6!important; }
