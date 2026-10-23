@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#080d0c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css?v=113">
+  <title>Golf Game</title>
+</head>
+<body>
+<div id="intro-overlay" class="intro-overlay" aria-label="Golf Game intro">
+  <video id="intro-video" class="intro-video" autoplay muted playsinline preload="auto">
+    <source src="./tom-jerry-golf-intro.mp4" type="video/mp4">
+  </video>
+  <button id="intro-skip" class="intro-skip" type="button">Skip ›</button>
+</div>
+<div id="app"></div>
+<script src="app.js?v=113"></script>
+<script>
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=113').catch(()=>{});
+</script>
+<script>
+(function(){
+  const overlay=document.getElementById('intro-overlay');
+  const video=document.getElementById('intro-video');
+  const skip=document.getElementById('intro-skip');
+  if(!overlay||!video||!skip)return;
+  let closed=false;
+  function closeIntro(){
+    if(closed)return;
+    closed=true;
+    overlay.classList.add('intro-hidden');
+    window.setTimeout(()=>{overlay.remove();},350);
+    try{video.pause();}catch(e){}
+  }
+  video.addEventListener('ended',closeIntro,{once:true});
+  skip.addEventListener('click',closeIntro);
+  video.addEventListener('error',closeIntro,{once:true});
+  const playAttempt=video.play();
+  if(playAttempt&&typeof playAttempt.catch==='function'){
+    playAttempt.catch(()=>{ /* muted inline autoplay may be restricted; Skip remains available */ });
+  }
+  // Safety fallback in case a browser does not fire ended.
+  window.setTimeout(closeIntro,6500);
+})();
+</script>
+</body>
+</html>
