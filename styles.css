@@ -1009,3 +1009,434 @@ body.golf-loading-active{overflow:hidden}
     max-width: 82px !important;
   }
 }
+
+
+/* Baccarat mobile table refinement requested by user: red UP dot, teal hole/total bands, larger regular-weight scores. */
+.baccarat-vertical-table .baccarat-point { position: relative !important; overflow: visible !important; }
+.baccarat-vertical-table .baccarat-point.baccarat-has-up::after {
+  content: ""; position: absolute; top: 4px; right: 4px; width: 7px; height: 7px;
+  border-radius: 50%; background: #ff3038; display: block; pointer-events: none;
+}
+.baccarat-vertical-table .baccarat-point > span {
+  display: inline-block; border: 0 !important; border-radius: 0 !important; min-width: 0 !important;
+  height: auto !important; padding: 0 !important; line-height: 1.1 !important;
+  font-size: clamp(12px, 3.4vw, 16px) !important; font-weight: 400 !important;
+}
+.baccarat-vertical-table th.baccarat-hole-label,
+.baccarat-vertical-table tbody tr.baccarat-vertical-total > th {
+  background: #0b5555 !important; color: #f5fbfa !important;
+}
+.baccarat-vertical-table tbody tr.baccarat-vertical-total > td {
+  background: #0b5555 !important; color: #f5fbfa !important;
+}
+.baccarat-vertical-table tbody tr.baccarat-vertical-total > td b {
+  font-size: clamp(13px, 3.4vw, 16px) !important; font-weight: 600 !important;
+}
+.baccarat-vertical-table th:first-child,
+.baccarat-vertical-table td:first-child {
+  width: 36px !important; min-width: 36px !important; max-width: 36px !important;
+}
+@media (max-width: 370px) {
+  .baccarat-vertical-table th:first-child,
+  .baccarat-vertical-table td:first-child { width: 32px !important; min-width: 32px !important; max-width: 32px !important; }
+}
+
+
+/* Final correction: the TOP "Holes" header must stay dark teal, just like holes 1-18 and Total. */
+.baccarat-vertical-table thead > tr > th:first-child {
+  background-color: #0b5555 !important;
+  background: #0b5555 !important;
+  color: #f5fbfa !important;
+}
+.baccarat-vertical-table tbody > tr > th.baccarat-hole-label,
+.baccarat-vertical-table tbody > tr.baccarat-vertical-total > th,
+.baccarat-vertical-table tbody > tr.baccarat-vertical-total > td {
+  background-color: #0b5555 !important;
+  background: #0b5555 !important;
+  color: #f5fbfa !important;
+}
+
+/* v114.2 FINAL: the ENTIRE Baccarat column-header row is dark teal, not only the first "Holes" cell. */
+.baccarat-vertical-table > thead > tr > th,
+.baccarat-vertical-table thead tr th {
+  background: #0b5555 !important;
+  background-color: #0b5555 !important;
+  color: #f5fbfa !important;
+  border-color: #286e6e !important;
+  font-weight: 500 !important;
+}
+.baccarat-vertical-table > thead > tr > th .you,
+.baccarat-vertical-table thead tr th .you {
+  color: #b8ff00 !important;
+}
+
+
+/* v114.3: F9 scorecard teal bands — all three metadata rows, player-name column, and full Result header. */
+.score-table.match-score-table > thead > tr > th,
+.score-table.match-score-table > thead > tr > th:first-child,
+.score-table.match-score-table > thead > tr > th.nine-total-heading {
+  background: #0b5555 !important;
+  background-color: #0b5555 !important;
+  color: #f5fbfa !important;
+  border-color: #286e6e !important;
+  font-weight: 500 !important;
+}
+.score-table.match-score-table > tbody > tr.player-row > td.player-name,
+.score-table.match-score-table > tbody > tr.player-row.current-player > td.player-name {
+  background: #0b5555 !important;
+  background-color: #0b5555 !important;
+  color: #f5fbfa !important;
+  border-color: #286e6e !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+}
+.score-table.match-score-table > tbody > tr.player-row > td.player-name .you {
+  color: #b8ff00 !important;
+  font-weight: 600 !important;
+}
+.result-table > thead > tr > th {
+  background: #0b5555 !important;
+  background-color: #0b5555 !important;
+  color: #f5fbfa !important;
+  border-color: #286e6e !important;
+  font-weight: 500 !important;
+}
+
+
+/* v114.4: keep every left-side player/status cell deep teal; player names neon, handicap subtitle white. */
+.score-table.match-score-table > tbody > tr.player-row > td.player-name,
+.score-table.match-score-table > tbody > tr.player-row.current-player > td.player-name,
+.score-table.match-score-table > tbody > tr.stroke-row > td.match-status-label-cell {
+  background: #0b5555 !important;
+  background-color: #0b5555 !important;
+  border-color: #286e6e !important;
+}
+.score-table.match-score-table > tbody > tr.player-row > td.player-name {
+  color: #b8ff00 !important;
+}
+.score-table.match-score-table > tbody > tr.player-row > td.player-name .match-hcp,
+.score-table.match-score-table > tbody > tr.player-row > td.player-name .match-hcp .hcp-give,
+.score-table.match-score-table > tbody > tr.player-row > td.player-name .match-hcp .hcp-receive,
+.score-table.match-score-table > tbody > tr.player-row > td.player-name .match-hcp .hcp-zero {
+  color: #f5fbfa !important;
+}
+.score-table.match-score-table > tbody > tr.player-row > td.player-name .you {
+  color: #ffffff !important;
+}
+
+/* v114.5: Front 9 / Back 9 Result — compact neon Opponent column and teal Total heading. */
+.result-table > thead > tr > th:first-child,
+.result-table > tbody > tr > td:first-child {
+  background: #0b5555 !important;
+  background-color: #0b5555 !important;
+  color: #b8ff00 !important;
+  border-color: #286e6e !important;
+  font-weight: 500 !important;
+}
+.result-table > thead > tr > th:first-child,
+.result-table > tbody > tr > td:first-child {
+  width: 82px !important;
+  min-width: 82px !important;
+  max-width: 82px !important;
+  padding-left: 6px !important;
+  padding-right: 4px !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+.result-table > thead > tr > th.grand-total-heading {
+  background: #0b5555 !important;
+  background-color: #0b5555 !important;
+  color: #b8ff00 !important;
+  border-color: #286e6e !important;
+  font-weight: 500 !important;
+}
+@media (max-width: 640px) {
+  .result-table > thead > tr > th:first-child,
+  .result-table > tbody > tr > td:first-child {
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* v114.8: size name columns to fit approximately 8 characters, without wasting mobile width. */
+.score-table.match-score-table > thead > tr > th:first-child,
+.score-table.match-score-table > tbody > tr > td:first-child {
+  width: calc(8ch + 18px) !important;
+  min-width: calc(8ch + 18px) !important;
+  max-width: calc(8ch + 18px) !important;
+  box-sizing: border-box !important;
+}
+.result-table > thead > tr > th:first-child,
+.result-table > tbody > tr > td:first-child {
+  width: calc(8ch + 12px) !important;
+  min-width: calc(8ch + 12px) !important;
+  max-width: calc(8ch + 12px) !important;
+  box-sizing: border-box !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+@media (max-width: 640px) {
+  .score-table.match-score-table > thead > tr > th:first-child,
+  .score-table.match-score-table > tbody > tr > td:first-child {
+    width: calc(8ch + 18px) !important;
+    min-width: calc(8ch + 18px) !important;
+    max-width: calc(8ch + 18px) !important;
+  }
+  .result-table > thead > tr > th:first-child,
+  .result-table > tbody > tr > td:first-child {
+    width: calc(8ch + 12px) !important;
+    min-width: calc(8ch + 12px) !important;
+    max-width: calc(8ch + 12px) !important;
+    font-size: 10px !important;
+  }
+}
+
+
+/* v114.9 FIX: enforce the compact Opponent column. The old 690px minimum
+   table width was overriding the intended 8-character column on mobile. */
+.result-table:has(th:nth-child(8)) {
+  width: 100% !important;
+  min-width: 0 !important;
+  table-layout: fixed !important;
+}
+.result-table > thead > tr > th:first-child,
+.result-table > tbody > tr > td:first-child {
+  width: calc(8ch + 12px) !important;
+  min-width: calc(8ch + 12px) !important;
+  max-width: calc(8ch + 12px) !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  text-overflow: clip !important;
+}
+@media (max-width: 640px) {
+  .result-table:has(th:nth-child(8)) {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+  }
+  .result-table > thead > tr > th:first-child,
+  .result-table > tbody > tr > td:first-child {
+    width: calc(8ch + 12px) !important;
+    min-width: calc(8ch + 12px) !important;
+    max-width: calc(8ch + 12px) !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    font-size: 10px !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+
+
+/* v114.10: hard fixed-width Opponent column; override legacy min-width rules. */
+.result-card .result-scroll > table.result-table {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  table-layout: fixed !important;
+}
+.result-card .result-scroll > table.result-table th:first-child,
+.result-card .result-scroll > table.result-table td:first-child {
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+  box-sizing: border-box !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+@media (max-width: 640px) {
+  .result-card .result-scroll > table.result-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+  }
+  .result-card .result-scroll > table.result-table th:first-child,
+  .result-card .result-scroll > table.result-table td:first-child {
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+
+
+/* v114.11 FINAL OVERRIDE: enforce compact Opponent column after all legacy rules. */
+.result-card .result-scroll table.result-table,
+.result-card .result-scroll table.result-table:has(th.db-heading) {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  table-layout: fixed !important;
+}
+.result-card .result-scroll table.result-table th:first-child,
+.result-card .result-scroll table.result-table td:first-child {
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+}
+@media (max-width: 640px) {
+  .result-card .result-scroll table.result-table,
+  .result-card .result-scroll table.result-table:has(th.db-heading) {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+  }
+  .result-card .result-scroll table.result-table th:first-child,
+  .result-card .result-scroll table.result-table td:first-child {
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+  }
+}
+
+
+/* v114.12: compact match status symbols requested by user. */
+.score-table.match-score-table .match-status-cell{vertical-align:middle;text-align:center;}
+.match-status-cell .status-direction{display:inline-flex;align-items:center;justify-content:center;gap:2px;line-height:1;white-space:nowrap;font-weight:700;}
+.match-status-cell .status-direction-number{font-size:inherit;line-height:1;}
+.match-status-cell .status-direction-triangle{display:inline-block;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;}
+.match-status-cell .status-direction.is-up{color:#00AFFF!important;}
+.match-status-cell .status-direction.is-up .status-direction-triangle{border-bottom:9px solid #00AFFF;}
+.match-status-cell .status-direction.is-down{color:#F5222D!important;}
+.match-status-cell .status-direction.is-down .status-direction-triangle{border-top:9px solid #F5222D;}
+.match-status-cell .status-stack{gap:2px;}
+.match-status-cell .game-over-symbol{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#171717;position:relative;flex:0 0 22px;}
+.match-status-cell .game-over-symbol span::before,.match-status-cell .game-over-symbol span::after{content:"";position:absolute;left:5px;top:10px;width:12px;height:2.5px;background:#fff;border-radius:1px;}
+.match-status-cell .game-over-symbol span::before{transform:rotate(45deg);}
+.match-status-cell .game-over-symbol span::after{transform:rotate(-45deg);}
+
+/* v114.13: requested mobile typography sizes for F9/B9 and Front 9 Result. */
+@media (max-width: 640px) {
+  .score-table.match-score-table > tbody > tr.player-row > td.score-cell {
+    font-size: 12px !important;
+  }
+  .score-table.match-score-table > tbody > tr.player-row > td.score-cell .score-ring {
+    font-size: 12px !important;
+  }
+  .score-table.match-score-table > tbody > tr.stroke-row > td.match-status-cell {
+    font-size: clamp(8px, 2.4vw, 10px) !important;
+  }
+  .result-table > thead > tr > th:first-child,
+  .result-table > tbody > tr > td:first-child {
+    font-size: 11px !important;
+  }
+}
+
+
+/* v114.15: Total header uses deep teal + fluorescent text; body cells keep their existing fill. */
+.result-table > thead > tr > th.grand-total-heading,
+.result-table > tbody > tr > td.grand-total-cell {
+  border: 1px solid #d5e1dd !important;
+  font-size: 12px !important;
+}
+.result-table > thead > tr > th.grand-total-heading {
+  background: #0b5553 !important;
+  color: #b8ff00 !important;
+}
+.result-table > tbody > tr > td.grand-total-cell {
+  background: #fff7df !important;
+}
+.result-table > tbody > tr > td.grand-total-cell .grand-total {
+  font-size: 12px !important;
+}
+
+/* v114.16: remove the legacy red frame around the Result Total column completely. */
+.result-table > thead > tr > th.grand-total-heading,
+.result-table > tbody > tr > td.grand-total-cell,
+.result-table > tbody > tr:last-child > td.grand-total-cell,
+.result-table > tbody > tr:last-child > td.grand-total-cell .grand-total {
+  border: 1px solid #d5e1dd !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.result-table > thead > tr > th.grand-total-heading {
+  background: #0b5553 !important;
+  color: #b8ff00 !important;
+  border-top: 1px solid #d5e1dd !important;
+}
+.result-table > tbody > tr > td.grand-total-cell {
+  background: #fff7df !important;
+}
+.result-table > tbody > tr:last-child > td.grand-total-cell {
+  border-bottom: 1px solid #d5e1dd !important;
+  border-radius: 0 !important;
+}
+
+/* v114.17: normalize Total column edges to match adjacent table cells. */
+.result-card .result-scroll > table.result-table > thead > tr > th.grand-total-heading,
+.result-card .result-scroll > table.result-table > tbody > tr > td.grand-total-cell,
+.result-card .result-scroll > table.result-table > tbody > tr:last-child > td.grand-total-cell {
+  border: 1px solid #d5e1dd !important;
+  border-color: #d5e1dd !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-clip: padding-box !important;
+}
+.result-card .result-scroll > table.result-table > thead > tr > th.grand-total-heading {
+  background-color: #0b5553 !important;
+  color: #b8ff00 !important;
+}
+.result-card .result-scroll > table.result-table > tbody > tr > td.grand-total-cell {
+  background-color: #fff7df !important;
+}
+.result-card .result-scroll > table.result-table > tbody > tr > td.grand-total-cell .grand-total {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+/* v114.18: Lee name stays neon; YOU label is white. */
+.score-table.match-score-table > tbody > tr.player-row > td.player-name .you { color: #ffffff !important; }
+
+
+/* v114.20: replace 9-hole stroke total with the final hole's match status. */
+.score-table.match-score-table .final-status-cell {
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 0 !important;
+  white-space: normal !important;
+}
+.score-table.match-score-table .final-status-cell .status-direction {
+  justify-content: center !important;
+}
+.score-table.match-score-table .final-status-cell .game-over-symbol {
+  margin: 0 auto !important;
+}
+.score-table.match-score-table .stroke-row > .nine-result-cell {
+  color: transparent !important;
+  background: #fff4d8 !important;
+}
+
+
+/* v114.21: UP/DW with matching TO GO use two icon rows. */
+.match-status-cell .status-stack.status-to-go{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1;}
+.match-status-cell .status-stack.status-to-go .status-direction{display:inline-flex;align-items:center;justify-content:center;gap:2px;line-height:1;white-space:nowrap;font-weight:700;}
+.match-status-cell .status-stack.status-to-go .status-direction-circle{display:inline-block;width:9px;height:9px;border:2px solid currentColor;border-radius:50%;box-sizing:border-box;}
+
+
+/* v114.23: rightmost GAME column shows full F9/B9 pair total, colored by win/loss. */
+.score-table.match-score-table .final-status-cell.result-win { color: #145bd7 !important; }
+.score-table.match-score-table .final-status-cell.result-loss { color: #d52d2d !important; }
+.score-table.match-score-table .final-status-cell.result-even { color: #18251f !important; }
