@@ -1009,3 +1009,101 @@ body.golf-loading-active{overflow:hidden}
     max-width: 82px !important;
   }
 }
+
+
+/* v114 Personal Mobile Garmin — presentation-only layer based on the supplied v113 ZIP */
+:root{
+ --green:#b8ff00;--green2:#9fe600;--mint:#063f3e;--mint2:#084b49;
+ --line:#285b56;--red:#ff3038;--blue:#1688ff;--ink:#f3f8f6;
+ --muted:#a7b8b2;--bg:#030c0a;--white:#0a1714;--gray:#13221f;
+ --shadow:0 10px 30px rgba(0,0,0,.24);
+ --garmin-lime:#b8ff00;--benefit-bg:#0a211d;--disadvantage-bg:#0a211d;
+}
+html,body{background:#030c0a!important;color:#f3f8f6!important}
+.app-shell{background:linear-gradient(180deg,#020907 0%,#061a15 100%)!important;color:#f3f8f6}
+.header{background:#030b09!important;color:#fff;border-bottom:2px solid #b8ff00;box-shadow:none}
+.brand{font-size:clamp(20px,5vw,28px);color:#fff}
+.header .header-icon-btn,.header .qr-btn{background:#101d19!important;color:#b8ff00!important;border:1px solid #31534b}
+.container{padding:16px 12px 28px}
+.card,.course-item,.handicap-panel,.editor-panel,.bulk-row{background:#0d1a16!important;color:#f3f8f6!important;border-color:#29463e!important}
+.sub,.help,.course-item small,.label{color:#a7b8b2!important}
+.field,.handicap-select{background:#0b1713!important;color:#f3f8f6!important;border-color:#38564d!important}
+.mode-tabs{gap:7px;padding:12px 12px;background:rgba(3,12,10,.96)!important;top:68px}
+.mode-tab{height:48px;border-radius:12px;background:#14221e!important;color:#b7c4bf!important;border:1px solid #263e36;font-size:14px}
+.mode-tab.active{background:#b8ff00!important;color:#07100a!important;border-color:#b8ff00}
+.score-page{padding-bottom:20px}
+.score-scroll{overflow-x:auto;padding:0 10px 8px;-webkit-overflow-scrolling:touch}
+.score-table.match-score-table{min-width:0!important;width:100%!important;table-layout:fixed!important;background:#07130f!important;color:#f5f8f6!important;border:1px solid #28635a;border-radius:15px;box-shadow:none;overflow:hidden}
+.score-table.match-score-table th,.score-table.match-score-table td{min-width:0!important;width:auto!important;padding:0 1px;height:50px;border-right:1px solid #294640;border-bottom:1px solid #294640;text-align:center;font-size:clamp(12px,3.25vw,15px);color:#f4f8f6;background:#091713}
+.score-table.match-score-table th:first-child,.score-table.match-score-table td:first-child{width:76px!important;min-width:76px!important;padding-left:8px;text-align:left;font-size:12px}
+.score-table.match-score-table thead th{height:42px!important;font-size:12px!important;font-weight:900;background:#063f3e!important;color:#f4fbf8!important}
+.score-table.match-score-table thead .course-meta-row th{background:#064744!important}
+.score-table.match-score-table thead th.nine-status-heading{width:62px!important;min-width:62px!important;background:#07332e!important;color:#b8ff00!important;white-space:normal}
+.score-table.match-score-table .player-row td{height:64px;background:#07140f!important}
+.score-table.match-score-table .player-row.alt td{background:#0b1b15!important}
+.score-table.match-score-table .player-row.current-player td:first-child{border-left:5px solid #b8ff00;padding-left:5px}
+.score-table.match-score-table .player-row td.player-name{font-size:14px!important;font-weight:900;line-height:1.2;overflow-wrap:anywhere}
+.score-table.match-score-table .player-name .you{color:#b8ff00;font-size:12px;font-weight:900;margin-top:3px}
+.score-table.match-score-table .match-hcp{font-size:10px!important;font-weight:900;line-height:1.15;margin-top:3px;white-space:normal}
+.score-table.match-score-table .hcp-give{color:#ff3b45!important}
+.score-table.match-score-table .hcp-receive{color:#1688ff!important}
+.score-table.match-score-table .hcp-zero{color:#a7b8b2!important}
+.score-table.match-score-table .score-cell{position:relative;padding:0!important;background:#07140f!important}
+.score-table.match-score-table .score-cell .score-ring-wrap,
+.score-table.match-score-table .score-cell .score-plain-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:25px;min-height:35px}
+.score-table.match-score-table .score-ring{width:clamp(28px,7.2vw,40px)!important;height:clamp(28px,7.2vw,40px)!important;border:0!important;background:#b8ff00!important;color:#101a00!important;box-shadow:0 0 9px rgba(184,255,0,.28)!important;font-size:clamp(13px,3.4vw,17px)!important}
+.score-table.match-score-table .score-plain{color:#f4f8f6!important;font-size:clamp(13px,3.4vw,16px)!important;font-weight:850;min-width:1em}
+.score-table.match-score-table .reward-dot{width:9px;height:9px;top:-2px;right:-2px;border:1px solid #ff3038;background:#ff3038;box-shadow:none;z-index:3}
+.score-table.match-score-table .score-cell.benefit,
+.score-table.match-score-table .score-cell.disadvantage{background:#07140f!important;border:0!important}
+.score-table.match-score-table .score-cell.stroke-receive::after,
+.score-table.match-score-table .score-cell.stroke-give::after{content:"";position:absolute;left:0;bottom:0;width:0;height:0;border-style:solid;z-index:2}
+.score-table.match-score-table .score-cell.stroke-receive::after{border-width:0 0 11px 11px;border-color:transparent transparent #1688ff transparent}
+.score-table.match-score-table .score-cell.stroke-give::after{border-width:0 0 11px 11px;border-color:transparent transparent #ff3038 transparent}
+.score-table.match-score-table .nine-status-cell{width:62px!important;min-width:62px!important;position:relative;padding:0 17px 0 1px!important;background:#061b14!important;font-weight:900}
+.final-status{display:inline-block;font-size:clamp(10px,2.8vw,14px);line-height:1.05;overflow-wrap:anywhere;font-weight:950}
+.final-status.status-up{color:#1688ff!important}
+.final-status.status-down{color:#ff3038!important}
+.final-status.status-square{color:#eaf0ed!important}
+.final-status.status-game{color:#b8ff00!important}
+.final-status.self-status{color:#b8ff00!important;font-size:10px}
+.status-toggle{position:absolute;right:1px;top:50%;transform:translateY(-50%);width:17px;height:34px;padding:0;background:transparent;color:#b7c4bf;font-size:17px;font-weight:900}
+.score-table.match-score-table .status-spacer-row td{height:12px!important;background:#06110e!important;border-bottom:1px solid #23483f}
+.score-table.match-score-table .status-spacer-row.alt td{background:#091812!important}
+.score-table.match-score-table .status-spacer-row td:first-child{background:#06110e!important}
+.score-table.match-score-table .detail-status-row td{height:36px!important;background:#0c201a!important;font-size:10px!important;font-weight:850}
+.score-table.match-score-table .detail-status-row[hidden]{display:none!important}
+.score-table.match-score-table .detail-status-label{font-size:9px!important;color:#a7b8b2!important}
+.score-table.match-score-table .match-status-cell.status-up{color:#1688ff!important}
+.score-table.match-score-table .match-status-cell.status-down{color:#ff3038!important}
+.score-table.match-score-table .match-status-cell.status-square{color:#d8e2dd!important}
+.score-table.match-score-table .match-status-cell.status-game{color:#b8ff00!important}
+.below-handicap-tools{display:flex;justify-content:center;padding:10px 12px 14px;background:#07140f;margin:0 10px;border:1px solid #214c40;border-top:0;border-radius:0 0 16px 16px}
+.below-handicap-tools .link-btn{min-height:46px;width:min(100%,460px);border:1px solid #b8ff00;border-radius:14px;background:#0c2118!important;color:#b8ff00!important;font-size:16px;font-weight:900}
+.result-card{margin:12px 10px 18px;background:#07140f!important;border:1px solid #245b50!important;border-radius:16px;color:#f3f8f6;overflow:hidden}
+.result-title{background:#0b2119!important;color:#f5f8f6!important;padding:14px 14px;font-size:clamp(18px,4.8vw,24px);font-weight:950;border-bottom:1px solid #244d43}
+.result-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.result-table{width:100%;min-width:550px;background:#07140f;border-collapse:collapse}
+.result-table th,.result-table td{padding:10px 6px;border-bottom:1px solid #29443d;border-right:1px solid #203b34;text-align:center;font-size:12px;color:#f3f8f6}
+.result-table th{background:#0d211b!important;color:#d6e2dc!important;font-size:11px}
+.result-table th:first-child,.result-table td:first-child{text-align:left}
+.result-table .grand-total-heading,.result-table .grand-total-cell{background:#123b1b!important;color:#b8ff00!important}
+.result-table .segment-total.result-loss,.result-table .grand-total.result-loss{color:#ff3038!important}
+.result-table .segment-total.result-win,.result-table .grand-total.result-win{color:#1688ff!important}
+.result-table .segment-total.result-even,.result-table .grand-total.result-even{color:#f3f8f6!important}
+.result-table input[type=checkbox]{accent-color:#b8ff00;width:19px;height:19px}
+.home-menu-card,.home-hero,.home-menu{color:#f4f8f6}
+.home-menu-card{background:#0d1a16!important;border-color:#29463e!important}
+.home-menu-card strong,.home-title,.home-hero-caption h1{color:#f4f8f6!important}
+.home-menu-card small,.sub{color:#a7b8b2!important}
+.home-menu-card .home-menu-icon{color:#b8ff00}
+.primary,.start{background:#b8ff00!important;color:#07100a!important}
+.secondary,.tertiary{background:#14251f!important;color:#d9e5df!important;border:1px solid #2c4b40}
+@media(max-width:420px){
+ .score-table.match-score-table th:first-child,.score-table.match-score-table td:first-child{width:68px!important;min-width:68px!important;padding-left:5px}
+ .score-table.match-score-table thead th.nine-status-heading,.score-table.match-score-table .nine-status-cell{width:56px!important;min-width:56px!important}
+ .score-table.match-score-table th,.score-table.match-score-table td{height:48px;font-size:12px}
+ .score-table.match-score-table .player-row td{height:60px}
+ .score-table.match-score-table .score-ring{width:27px!important;height:27px!important}
+ .result-card{margin-left:8px;margin-right:8px}
+}

@@ -190,7 +190,43 @@ function matchStatusClass(text){if(text==='G'||text.startsWith('G/')||text.endsW
 function matchHandicapLabel(viewer,opp){const mode=state.currentMode==='B9'?'B9':'F9';const n=segmentHandicap(viewer,opp,mode);if(n>0)return `<span class="hcp-receive">Receive ${fmtStroke(n)}</span>`;if(n<0)return `<span class="hcp-give">Give ${fmtStroke(n)}</span>`;return '<span class="hcp-zero">0 strokes</span>'}
 function scoreView(){return shell(`<main class="score-page"><div class="mode-tabs">${['F9','B9','Baccarat','P&L'].map(m=>`<button class="mode-tab ${state.currentMode===m?'active':''}" onclick="setMode('${m}')">${m}</button>`).join('')}</div>${state.currentMode==='P&L'?pnlView():state.currentMode==='Baccarat'?baccaratTable():matchTable()}${!state.viewingAsPlayer&&state.editingScores?bulkScoreEditor():!state.viewingAsPlayer&&state.editingScore?scoreEditor():''}${state.qr?qrModal():''}</main>`,{qr:true})}
 function holesForMode(){return state.currentMode==='F9'?Array.from({length:9},(_,i)=>i+1):state.currentMode==='B9'?Array.from({length:9},(_,i)=>i+10):Array.from({length:18},(_,i)=>i+1)}
-function matchTable(){const holes=holesForMode();const mode=state.currentMode==='B9'?'B9':'F9';const segmentStrokes=pid=>holes.reduce((sum,h)=>sum+Math.max(0,Number(scoreFor(pid,h).score)||0),0);const segmentResult=pid=>{if(pid===state.currentPlayer.player_id)return '';const r=resultForPair(state.currentPlayer.player_id,pid,mode);const key=resultPairKey(mode,state.currentPlayer.player_id,pid);const adjusted=r.total*(state.match.result_doubles?.[key]?2:1);return fmtSigned(adjusted)};return `<div class="score-scroll"><table class="score-table match-score-table"><thead><tr><th>Holes</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th class="nine-total-heading">Total</th></tr><tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th class="nine-total-heading"></th></tr><tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th class="nine-total-heading"></th></tr></thead><tbody>${displayPlayers().map((p,pi)=>`<tr class="player-row ${pi%2?'alt':''} ${p.player_id===state.currentPlayer.player_id?'current-player':''}"><td class="player-name">${esc(p.name)}${p.player_id===state.currentPlayer.player_id?'<div class="you">YOU</div>':`<div class="match-hcp">${matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</div>`}</td>${holes.map(h=>`<td class="score-cell ${cellClass(state.currentPlayer.player_id,p.player_id,h)} ${(!state.viewingAsPlayer&&((p.player_id===state.currentPlayer.player_id)||state.isAdmin))?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`).join('')}<td class="nine-total-cell"><b>${segmentStrokes(p.player_id)||'–'}</b></td></tr>${p.player_id!==state.currentPlayer.player_id?`<tr class="stroke-row ${pi%2?'alt':''}"><td class="match-status-label-cell">${mode} Result</td>${holes.map(h=>{const raw=matchStatus(state.currentPlayer.player_id,p.player_id,h);const ms=matchStatusMarkup(raw);return `<td class="match-status-cell ${matchStatusClass(raw)}">${ms}</td>`}).join('')}<td class="nine-result-cell ${resultTone(resultForPair(state.currentPlayer.player_id,p.player_id,mode).total)}"><b>${segmentResult(p.player_id)}</b></td></tr>`:''}`).join('')}</tbody></table></div>${state.isAdmin?'<div class="below-handicap-tools"><button class="link-btn" onclick="openMatchHandicap()">⚖ Edit Handicap</button></div>':''}${resultPanel()}`}
+function matchTable(){
+ const holes=holesForMode(),mode=state.currentMode==='B9'?'B9':'F9';
+ const lastHole=holes[holes.length-1];
+ const statusForPlayer=p=>{
+   if(p.player_id===state.currentPlayer.player_id)return '<span class="final-status self-status">YOU</span>';
+   const raw=matchStatus(state.currentPlayer.player_id,p.player_id,lastHole);
+   return `<span class="final-status ${matchStatusClass(raw)}">${matchStatusMarkup(raw)}</span>`;
+ };
+ return `<div class="score-scroll"><table class="score-table match-score-table"><thead>
+ <tr><th>Hole</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th class="nine-status-heading">Status</th></tr>
+ <tr class="course-meta-row"><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th class="nine-status-heading"></th></tr>
+ <tr class="course-meta-row"><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th class="nine-status-heading"></th></tr>
+ </thead><tbody>${displayPlayers().map((p,pi)=>{
+   const isMe=p.player_id===state.currentPlayer.player_id;
+   const scores=holes.map(h=>{
+     const cls=cellClass(state.currentPlayer.player_id,p.player_id,h);
+     const markerClass=cls==='benefit'?'stroke-receive':cls==='disadvantage'?'stroke-give':'';
+     return `<td class="score-cell ${cls} ${markerClass} ${(!state.viewingAsPlayer&&(isMe||state.isAdmin))?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`;
+   }).join('');
+   return `<tr class="player-row ${pi%2?'alt':''} ${isMe?'current-player':''}">
+     <td class="player-name">${esc(p.name)}${isMe?'<div class="you">YOU</div>':`<div class="match-hcp">${matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</div>`}</td>
+     ${scores}<td class="nine-status-cell">${statusForPlayer(p)}<button id="status-toggle-${esc(p.player_id)}" class="status-toggle" type="button" onclick="toggleStatusRow('${esc(p.player_id)}')" aria-label="Toggle hole status">⌄</button></td>
+   </tr>
+   <tr class="status-spacer-row ${pi%2?'alt':''}"><td class="status-spacer-label"></td>${holes.map(h=>`<td class="status-spacer-cell"></td>`).join('')}<td class="status-spacer-end"></td></tr>
+   <tr class="detail-status-row" id="detail-status-${esc(p.player_id)}" hidden><td class="detail-status-label">Game Status</td>${holes.map(h=>{const raw=isMe?'SQ':matchStatus(state.currentPlayer.player_id,p.player_id,h);return `<td class="match-status-cell ${matchStatusClass(raw)}">${matchStatusMarkup(raw)}</td>`}).join('')}<td></td></tr>`;
+ }).join('')}</tbody></table></div>
+ ${state.isAdmin?'<div class="below-handicap-tools"><button class="link-btn" onclick="openMatchHandicap()">⚖ Edit Handicap</button></div>':''}
+ ${resultPanel()}`;
+}
+function toggleStatusRow(pid){
+ const row=document.getElementById('detail-status-'+pid);
+ const button=document.getElementById('status-toggle-'+pid);
+ if(!row)return;
+ row.hidden=!row.hidden;
+ if(button)button.textContent=row.hidden?'⌄':'⌃';
+}
+
 const RESULT_TABLES={
   1:{'W':4,'S':3,'L':-1},
   2:{'WW':5,'WL':2,'WS':4,'LW':3,'LS':2,'LL':-1,'SW':5,'SS':3,'SL':1},

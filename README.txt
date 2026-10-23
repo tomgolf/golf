@@ -1,38 +1,25 @@
-Golf Game PWA — v113 Safe Cleanup Build
+Golf Game PWA — v114 Personal Mobile Garmin UI
 
-Purpose
-- Online PWA frontend for GitHub Pages.
-- Google Apps Script remains the backend; Google Sheets remains the data store.
-- This package does not deploy or modify GitHub, Apps Script, or Google Sheets automatically.
+Base
+- Built directly from the user-supplied `Golf_Game_PWA_v113_white background.zip`.
+- This is a frontend UI update package. It does not deploy or modify GitHub Pages, Apps Script, or Google Sheets automatically.
 
-What is included
-- index.html, styles.css, app.js: website frontend.
-- sw.js: service worker and resource caching.
-- manifest.webmanifest and icons/: PWA metadata and icons.
-- home-golf-hero.jpg, home-course.svg, tom-jerry-golf-intro.mp4: referenced home-page assets.
-- apps-script/Code.gs: reference copy of Apps Script source; it is not automatically deployed by uploading the website files.
+Requested presentation changes
+- Dark Garmin-inspired black/green palette with neon-lime highlights, teal course metadata rows, white score text, red FIN dots.
+- Mobile scorecard header uses Hole / Index / PAR and a Status column instead of the previous Total column.
+- Scorecard rows remain visible for all players. The per-hole status detail row is initially collapsed and can be expanded from the right-side control; a blank spacer row is kept under each player.
+- Red and blue small triangles at the bottom-left of score cells indicate give/receive handicap; the markers do not display stroke numbers.
+- Front 9 Result is lower on the page and uses the dark theme.
+- Existing score calculation functions and the original API endpoint were retained; the UI calls the existing score and handicap functions.
 
-Safe cleanup changes in this package
-- Removed obsolete version-specific README files and historical Apps Script source copies that duplicated or could be confused with the current reference copy.
-- Aligned the service-worker registration query and pre-cached CSS/JavaScript resource query strings with v113 to avoid stale/mismatched asset keys.
-- Kept app.js, styles.css, manifest.webmanifest, all referenced media/icons, and apps-script/Code.gs byte-for-byte unchanged.
-- No scoring rules, permissions, data model, API endpoint, or backend request code were intentionally changed.
+Important
+- The supplied v113 Apps Script reference file is included unchanged. Do not redeploy Apps Script for this frontend styling update.
+- Course data, match data, access rules, and backend API are not intentionally changed.
+- The visual mockup is a design target; generated example scores/markers in the image are illustrative only.
+- Live browser tests, live Google Sheets read/write tests, and regression tests with a real match were not performed. Test a copy/development deployment before replacing the live site.
 
-Deploying the online frontend
-1. Keep a backup of the currently working website files.
-2. Extract this ZIP.
-3. Upload the website files and folders to the existing GitHub repository, preserving the directory structure. The apps-script folder is reference source only; it is not needed for the GitHub Pages website deployment unless you intentionally keep it in the repository.
-4. Wait for GitHub Pages to publish, then reload the PWA.
-5. If an installed PWA continues showing old assets, close it fully and reopen it. If necessary, clear the site's cached data in the browser and reload.
-
-Important protections
-- Do not redeploy Apps Script as part of this frontend update.
-- Do not change the Apps Script /exec endpoint or Google Sheets configuration.
-- Course records (course name, 18-hole PAR and SI) are intended to remain permanent; match-data cleanup must not delete course records.
-- This README describes the package contents; it does not claim that a live browser/API regression test has been performed.
-
-Validation performed on this package
-- JavaScript syntax checks for app.js and sw.js.
-- ZIP integrity and file-reference checks.
-- API endpoint/configuration comparison against the uploaded v113 source.
-- Functional browser tests, live Google Sheets read/write tests, and measured performance benchmarks were not performed as part of this package build.
+Deploying
+1. Keep the existing online v113 untouched until you finish testing this package.
+2. Extract this ZIP and upload the frontend files to the existing GitHub Pages repository, preserving file structure.
+3. Do not redeploy the `apps-script/Code.gs` reference file.
+4. After GitHub Pages publishes, close and reopen the PWA. If stale assets remain, clear the site's cached data and reload.
