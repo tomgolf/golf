@@ -1,5 +1,5 @@
 const API='https://script.google.com/macros/s/AKfycbyqhh0p4Cp1toE8iQAkMmlS6jGb-LCkfW4J2Pwe1gNQ7PYXXL7luQFxEGaB4ESGH9KN/exec';
-const state={view:'home',courses:[],match:null,course:null,players:[],scores:[],handicaps:{},selectedPlayers:4,currentMode:'F9',gameMultiplier:10,baccaratMultiplier:5,currentHole:1,currentPlayer:null,isAdmin:false,adminName:'',adminPlayerId:null,viewingAsPlayer:false,editingScore:null,editingScores:null,editingHole:null,scoreMap:{},courseMap:{},qr:false,playerViewModal:false,error:'',publishedGames:[],expandedStatusPlayers:{}};
+const state={view:'home',courses:[],match:null,course:null,players:[],scores:[],handicaps:{},selectedPlayers:4,currentMode:'F9',gameMultiplier:10,baccaratMultiplier:5,currentHole:1,currentPlayer:null,isAdmin:false,adminName:'',adminPlayerId:null,viewingAsPlayer:false,editingScore:null,editingScores:null,editingHole:null,scoreMap:{},courseMap:{},qr:false,playerViewModal:false,error:'',publishedGames:[]};
 const $=id=>document.getElementById(id); const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 function post(data){return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error(`API request failed (${r.status})`);const out=await r.json();if(!out||typeof out!=='object')throw new Error('Invalid API response');return out})}
 function get(action,params={}){const q=new URLSearchParams({action,...params,_ts:String(Date.now())});return fetch(API+'?'+q.toString(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`API request failed (${r.status})`);return r.json()})}
@@ -97,7 +97,7 @@ function strokesFor(a,b,hole){return strokeValueForHole(a,b,hole)}
 function fmtStroke(n){if(!n)return '0';return `${n>0?'+':''}${Number.isInteger(n)?n:n.toFixed(1)}`}
 function segmentHandicap(a,b,mode){const hc=getPairHandicap(a,b);const n=segmentStrokeCount(hc,mode);return hc<0?-n:n}
 function relative(a,b,hole){const sa=Number(scoreFor(a,hole).score),sb=Number(scoreFor(b,hole).score);if(!sa||!sb)return 'S';const stroke=strokesFor(a,b,hole);const adjA=sa-stroke;return adjA<sb?'W':adjA>sb?'L':'S'}
-function cellClass(viewer,pid,hole){/* Red = this opponent gives the viewer a stroke; blue = this opponent receives a stroke from the viewer. The stored pair handicap sign is from the viewer's perspective. */if(String(pid)===String(viewer))return '';const st=strokesFor(viewer,pid,hole);if(st<0)return 'disadvantage';if(st>0)return 'benefit';return ''}
+function cellClass(viewer,pid,hole){/* Handicap borders describe the opponent's stroke advantage from the current viewer's perspective. Never paint the viewer's own score cells red/blue. */if(pid===viewer)return '';const st=strokesFor(viewer,pid,hole);if(st>0)return 'benefit';if(st<0)return 'disadvantage';return ''}
 function isBirdie(score,par){return score&&score<=par-1}
 function scoreRewardMarker(pid,hole,grossScore){
   const course=courseHole(hole);if(!course)return false;
@@ -190,43 +190,7 @@ function matchStatusClass(text){if(text==='G'||text.startsWith('G/')||text.endsW
 function matchHandicapLabel(viewer,opp){const mode=state.currentMode==='B9'?'B9':'F9';const n=segmentHandicap(viewer,opp,mode);if(n>0)return `<span class="hcp-receive">Receive ${fmtStroke(n)}</span>`;if(n<0)return `<span class="hcp-give">Give ${fmtStroke(n)}</span>`;return '<span class="hcp-zero">0 strokes</span>'}
 function scoreView(){return shell(`<main class="score-page"><div class="mode-tabs">${['F9','B9','Baccarat','P&L'].map(m=>`<button class="mode-tab ${state.currentMode===m?'active':''}" onclick="setMode('${m}')">${m}</button>`).join('')}</div>${state.currentMode==='P&L'?pnlView():state.currentMode==='Baccarat'?baccaratTable():matchTable()}${!state.viewingAsPlayer&&state.editingScores?bulkScoreEditor():!state.viewingAsPlayer&&state.editingScore?scoreEditor():''}${state.qr?qrModal():''}</main>`,{qr:true})}
 function holesForMode(){return state.currentMode==='F9'?Array.from({length:9},(_,i)=>i+1):state.currentMode==='B9'?Array.from({length:9},(_,i)=>i+10):Array.from({length:18},(_,i)=>i+1)}
-function togglePlayerStatus(pid){state.expandedStatusPlayers=state.expandedStatusPlayers||{};state.expandedStatusPlayers[String(pid)]=!state.expandedStatusPlayers[String(pid)];render()}
-function matchTable(){
-  const holes=holesForMode();
-  const mode=state.currentMode==='B9'?'B9':'F9';
-  const statusForPlayer=p=>{
-    if(String(p.player_id)===String(state.currentPlayer.player_id)){
-      return {raw:'YOU',markup:'<span class="status-you">YOU</span>',cls:'status-summary-you'};
-    }
-    const raw=matchStatus(state.currentPlayer.player_id,p.player_id,holes[holes.length-1]);
-    return {raw,markup:matchStatusMarkup(raw),cls:`status-summary ${matchStatusClass(raw)}`};
-  };
-  const rows=displayPlayers().map((p,pi)=>{
-    const status=statusForPlayer(p);
-    const playerRow=`<tr class="player-row ${pi%2?'alt':''} ${String(p.player_id)===String(state.currentPlayer.player_id)?'current-player':''}">
-      <td class="player-name">${esc(p.name)}${String(p.player_id)===String(state.currentPlayer.player_id)?'<div class="you">YOU</div>':`<div class="match-hcp">${matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</div>`}</td>
-      ${holes.map(h=>`<td class="score-cell ${cellClass(state.currentPlayer.player_id,p.player_id,h)} ${(!state.viewingAsPlayer&&((String(p.player_id)===String(state.currentPlayer.player_id))||state.isAdmin))?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`).join('')}
-      <td class="status-summary-cell ${status.cls}">${String(p.player_id)===String(state.currentPlayer.player_id)?status.markup:`<button type="button" class="status-toggle" onclick="togglePlayerStatus('${p.player_id}')" aria-label="Toggle Game Status for ${esc(p.name)}" aria-expanded="${!!state.expandedStatusPlayers?.[String(p.player_id)]}"><span class="status-toggle-value">${status.markup}</span><span class="status-chevron">${state.expandedStatusPlayers?.[String(p.player_id)]?'⌃':'⌄'}</span></button>`}</td>
-    </tr>`;
-    const expanded=String(p.player_id)!==String(state.currentPlayer.player_id)&&!!state.expandedStatusPlayers?.[String(p.player_id)];
-    const spacer=expanded
-      ? `<tr class="expanded-game-status"><td class="expanded-status-label">Game Status</td>${holes.map(h=>{const raw=matchStatus(state.currentPlayer.player_id,p.player_id,h);return `<td class="${matchStatusClass(raw)}">${matchStatusMarkup(raw)}</td>`}).join('')}<td class="expanded-status-end"></td></tr>`
-      : `<tr class="player-spacer ${pi%2?'alt':''}" aria-hidden="true"><td colspan="${holes.length+2}"></td></tr>`;
-    return playerRow+spacer;
-  }).join('');
-  const legend=`<div class="score-legend" aria-label="Scorecard legend">
-    <div class="legend-item"><span class="legend-par">0</span><span>Par 或更好<br><small>(荧光绿圆圈)</small></span></div>
-    <div class="legend-item"><span class="legend-normal">2</span><span>普通成绩<br><small>(白色数字)</small></span></div>
-    <div class="legend-item"><span class="legend-triangle give"></span><span>让杆<br><small>(红色右下角)</small></span></div>
-    <div class="legend-item"><span class="legend-triangle receive"></span><span>受让<br><small>(蓝色右下角)</small></span></div>
-    <div class="legend-item"><span class="legend-fin-wrap"><span class="legend-par">0</span><i></i></span><span>FIN 标记<br><small>(红色小圆点)</small></span></div>
-  </div>`;
-  return `<div class="score-scroll"><table class="score-table match-score-table"><thead>
-    <tr><th>Hole</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th class="status-heading"></th></tr>
-    <tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th class="status-heading"></th></tr>
-    <tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th class="status-heading"></th></tr>
-  </thead><tbody>${rows}</tbody></table></div>${state.isAdmin?'<div class="below-handicap-tools"><button class="link-btn" onclick="openMatchHandicap()">⚖ Edit Handicap</button></div>':''}${resultPanel()}${legend}`;
-}
+function matchTable(){const holes=holesForMode();const mode=state.currentMode==='B9'?'B9':'F9';const segmentStrokes=pid=>holes.reduce((sum,h)=>sum+Math.max(0,Number(scoreFor(pid,h).score)||0),0);const segmentResult=pid=>{if(pid===state.currentPlayer.player_id)return '';const r=resultForPair(state.currentPlayer.player_id,pid,mode);const key=resultPairKey(mode,state.currentPlayer.player_id,pid);const adjusted=r.total*(state.match.result_doubles?.[key]?2:1);return fmtSigned(adjusted)};return `<div class="score-scroll"><table class="score-table match-score-table"><thead><tr><th>Holes</th>${holes.map(h=>`<th>${h}</th>`).join('')}<th class="nine-total-heading">Total</th></tr><tr><th>Index</th>${holes.map(h=>`<th>${courseHole(h)?.si||''}</th>`).join('')}<th class="nine-total-heading"></th></tr><tr><th>PAR</th>${holes.map(h=>`<th>${courseHole(h)?.par||''}</th>`).join('')}<th class="nine-total-heading"></th></tr></thead><tbody>${displayPlayers().map((p,pi)=>`<tr class="player-row ${pi%2?'alt':''} ${p.player_id===state.currentPlayer.player_id?'current-player':''}"><td class="player-name">${esc(p.name)}${p.player_id===state.currentPlayer.player_id?'<div class="you">YOU</div>':`<div class="match-hcp">${matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</div>`}</td>${holes.map(h=>`<td class="score-cell ${cellClass(state.currentPlayer.player_id,p.player_id,h)} ${(!state.viewingAsPlayer&&((p.player_id===state.currentPlayer.player_id)||state.isAdmin))?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`).join('')}<td class="nine-total-cell"><b>${segmentStrokes(p.player_id)||'–'}</b></td></tr>${p.player_id!==state.currentPlayer.player_id?`<tr class="stroke-row ${pi%2?'alt':''}"><td class="match-status-label-cell">${mode} Result</td>${holes.map(h=>{const raw=matchStatus(state.currentPlayer.player_id,p.player_id,h);const ms=matchStatusMarkup(raw);return `<td class="match-status-cell ${matchStatusClass(raw)}">${ms}</td>`}).join('')}<td class="nine-result-cell ${resultTone(resultForPair(state.currentPlayer.player_id,p.player_id,mode).total)}"><b>${segmentResult(p.player_id)}</b></td></tr>`:''}`).join('')}</tbody></table></div>${state.isAdmin?'<div class="below-handicap-tools"><button class="link-btn" onclick="openMatchHandicap()">⚖ Edit Handicap</button></div>':''}${resultPanel()}`}
 const RESULT_TABLES={
   1:{'W':4,'S':3,'L':-1},
   2:{'WW':5,'WL':2,'WS':4,'LW':3,'LS':2,'LL':-1,'SW':5,'SS':3,'SL':1},

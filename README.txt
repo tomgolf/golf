@@ -32,16 +32,7 @@ Important protections
 - This README describes the package contents; it does not claim that a live browser/API regression test has been performed.
 
 Validation performed on this package
-- JavaScript syntax checks for app.js and sw.js. Static checks for handicap marker mapping, expandable status-row markup, and all-cell Total column styling.
+- JavaScript syntax checks for app.js and sw.js.
 - ZIP integrity and file-reference checks.
 - API endpoint/configuration comparison against the uploaded v113 source.
 - Functional browser tests, live Google Sheets read/write tests, and measured performance benchmarks were not performed as part of this package build.
-
-
-V114.1 PERSONAL MOBILE UI REPAIR - REVISION 3
-==============================
-Source baseline: user-supplied Golf_Game_PWA_v113_white background.zip.
-Only frontend scorecard presentation was changed. Apps Script source and API configuration are unchanged.
-Restored the complete original v113 RESULT_TABLES scoring lookup and result calculation code.
-Mobile scorecard: dark Garmin theme, deep-teal Hole/Index/PAR headers, smaller regular-weight header text, expandable per-hole Game Status rows (collapsed by default with a blank spacer), compact right-side final status stack, corrected red give / blue receive mapping with both triangles anchored at the bottom-right, FIN reward dots, and deep-teal Opponent and entire Total result column. Service-worker cache key and asset query strings are bumped to v114.1.
-The package has passed archive and JavaScript syntax checks, and marker/status/result-column code was statically inspected. A real live-match/mobile browser regression test is still required before deployment. Keep the online v113 deployment unchanged until that test is complete.
