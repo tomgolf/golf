@@ -89,6 +89,8 @@ function setupDatabase() {
   // Add course_id to an older MATCHES sheet if it is missing.
   ensureHeader_(ss.getSheetByName(SHEETS.MATCHES), 'course_id');
   ensureHeader_(ss.getSheetByName(SHEETS.MATCHES), 'result_doubles');
+  ensureHeader_(ss.getSheetByName(SHEETS.MATCHES), 'selected_holes_json');
+  ensureHeader_(ss.getSheetByName(SHEETS.COURSES), 'section_name');
   ensureHeader_(ss.getSheetByName(SHEETS.PLAYERS), 'baccarat_enabled');
   createSheetIfMissing_(ss, SHEETS.JOIN_ENTRIES, ['match_id','admin','status','published_at','updated_at']);
 
@@ -303,65 +305,30 @@ function jsonp_(obj, callback) {
  * ===================================================== */
 
 function getCourses_() {
-  const sheet = SpreadsheetApp
-    .getActiveSpreadsheet()
-    .getSheetByName(SHEETS.COURSES);
-
-  if (!sheet || sheet.getLastRow() < 2) {
-    return {
-      success: true,
-      courses: []
-    };
-  }
-
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEETS.COURSES);
+  if (!sheet || sheet.getLastRow() < 2) return {success:true, courses:[]};
   const values = sheet.getDataRange().getValues();
-  const headers = values[0].map(String);
-  const rows = values.slice(1);
-
-  const idx = headerIndex_(headers);
-
-  const map = {};
-
-  rows.forEach(function(row) {
+  const headers = values[0].map(String), idx = headerIndex_(headers), map = {};
+  values.slice(1).forEach(function(row) {
     const courseId = String(row[idx.course_id] || '').trim();
     if (!courseId) return;
-
-    if (!map[courseId]) {
-      map[courseId] = {
-        course_id: courseId,
-        course_name: String(row[idx.course_name] || ''),
-        holes: []
-      };
-    }
-
+    if (!map[courseId]) map[courseId] = {course_id:courseId, course_name:String(row[idx.course_name]||''), holes:[], sections:[]};
     const hole = Number(row[idx.hole]);
-    if (hole >= 1 && hole <= 18) {
-      map[courseId].holes.push({
-        hole: hole,
-        par: Number(row[idx.par]),
-        si: Number(row[idx.si])
-      });
+    if (hole >= 1 && hole <= 27) {
+      const defaultSection = hole <= 9 ? 'Front 9' : (hole <= 18 ? 'Back 9' : 'Third 9');
+      map[courseId].holes.push({hole:hole, par:Number(row[idx.par]), si:Number(row[idx.si]), section_name:String(idx.section_name != null ? row[idx.section_name] || defaultSection : defaultSection)});
     }
   });
-
   const courses = Object.keys(map).map(function(id) {
-    const course = map[id];
-
-    course.holes.sort(function(a, b) {
-      return a.hole - b.hole;
-    });
-
-    return course;
+    const c=map[id]; c.holes.sort((a,b)=>a.hole-b.hole);
+    c.hole_count = c.holes.length >= 27 ? 27 : 18;
+    const sectionMap={};
+    c.holes.forEach(function(h){const sectionIndex=Math.floor((h.hole-1)/9);const key=String(sectionIndex);if(!sectionMap[key])sectionMap[key]={section_index:sectionIndex,section_name:h.section_name||(['Front 9','Back 9','Third 9'][sectionIndex]),holes:[]};sectionMap[key].holes.push({hole:h.hole,par:h.par,si:h.si});});
+    c.sections=Object.keys(sectionMap).map(k=>sectionMap[k]).sort((a,b)=>a.section_index-b.section_index);
+    return c;
   });
-
-  courses.sort(function(a, b) {
-    return a.course_name.localeCompare(b.course_name);
-  });
-
-  return {
-    success: true,
-    courses: courses
-  };
+  courses.sort((a,b)=>a.course_name.localeCompare(b.course_name));
+  return {success:true,courses:courses};
 }
 
 function getCourse_(courseId) {
@@ -392,73 +359,64 @@ function getCourse_(courseId) {
 }
 
 /* =====================================================
+ * COURSE LOOKUP - duplicate-name check
+ * ===================================================== */
+function findCourseByName_(courseName) {
+  const target = String(courseName || '').trim().toLocaleLowerCase();
+  if (!target) return null;
+  const result = getCourses_();
+  const courses = result && Array.isArray(result.courses) ? result.courses : [];
+  for (let i = 0; i < courses.length; i++) {
+    if (String(courses[i].course_name || '').trim().toLocaleLowerCase() === target) {
+      return courses[i];
+    }
+  }
+  return null;
+}
+
+/* =====================================================
+ * COURSE ID GENERATOR
+ * ===================================================== */
+function generateCourseId_() {
+  // UUID-backed IDs avoid collisions when courses are created close together.
+  const uuid = Utilities.getUuid().replace(/-/g, '').toUpperCase();
+  return 'CRS-' + uuid.substring(0, 12);
+}
+
+/* =====================================================
  * 6. COURSES - CREATE
  * ===================================================== */
 
 function createCourse_(data) {
-  const courseName = String(data.course_name || '').trim();
-  const holes = data.holes || [];
-
-  if (!courseName) {
-    return {
-      success: false,
-      error: 'course_name is required'
-    };
-  }
-
-  validateHoles_(holes);
-
-  const existing = findCourseByName_(courseName);
-
-  if (existing) {
-    return {
-      success: false,
-      error: 'Course already exists',
-      course_id: existing.course_id
-    };
-  }
-
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(SHEETS.COURSES);
-
-  if (!sheet) {
-    throw new Error('COURSES sheet not found. Run setupDatabase() first.');
-  }
-
-  const now = new Date();
-  const courseId = generateCourseId_();
-
-  const rows = holes.map(function(h, i) {
-    return [
-      courseId,
-      courseName,
-      i + 1,
-      Number(h.par),
-      Number(h.si),
-      now,
-      now
-    ];
+  const courseSheetForHeaders=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEETS.COURSES);
+  if(courseSheetForHeaders)ensureHeader_(courseSheetForHeaders,'section_name');
+  const courseName=String(data.course_name||'').trim();
+  const holeCount=Number(data.hole_count||18);
+  const sections=Array.isArray(data.sections)?data.sections:[];
+  const holes=Array.isArray(data.holes)?data.holes:[];
+  if(!courseName)return {success:false,error:'course_name is required'};
+  if(![18,27].includes(holeCount))return {success:false,error:'Course must have 18 or 27 holes'};
+  const requiredSections=holeCount/9;
+  if(sections.length!==requiredSections)return {success:false,error:'Provide a name and PAR/SI for each 9-hole section'};
+  const sectionNames=sections.map(function(sec){return String(sec.section_name||'').trim().toLowerCase();});
+  if(sectionNames.some(function(n){return !n;})||new Set(sectionNames).size!==sectionNames.length)return {success:false,error:'Each 9-hole section needs a unique name'};
+  const normalized=[];
+  sections.forEach(function(sec,si){
+    const sectionName=String(sec.section_name||'').trim();
+    const secHoles=Array.isArray(sec.holes)?sec.holes:[];
+    if(!sectionName)throw new Error('Enter a name for section '+(si+1));
+    if(secHoles.length!==9)throw new Error(sectionName+': exactly 9 holes are required');
+    const sis=[];
+    secHoles.forEach(function(h,i){const par=Number(h.par), stroke=Number(h.si);if(![3,4,5,6].includes(par))throw new Error(sectionName+' hole '+(i+1)+': invalid PAR');if(!Number.isInteger(stroke)||stroke<1||stroke>18)throw new Error(sectionName+' hole '+(i+1)+': SI must be 1-18');sis.push(stroke);normalized.push({hole:si*9+i+1,par:par,si:stroke,section_name:sectionName});});
+    if(new Set(sis).size!==9)throw new Error(sectionName+': SI values must be unique within the 9-hole section');
   });
-
-  sheet
-    .getRange(sheet.getLastRow() + 1, 1, rows.length, rows[0].length)
-    .setValues(rows);
-
-  return {
-    success: true,
-    message: 'Course created',
-    course: {
-      course_id: courseId,
-      course_name: courseName,
-      holes: holes.map(function(h, i) {
-        return {
-          hole: i + 1,
-          par: Number(h.par),
-          si: Number(h.si)
-        };
-      })
-    }
-  };
+  if(holeCount===18 && new Set(normalized.map(function(h){return h.si;})).size!==18)throw new Error('For an 18-hole course, SI values 1-18 must each be unique');
+  const existing=findCourseByName_(courseName);if(existing)return {success:false,error:'Course already exists',course_id:existing.course_id};
+  const sheet=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEETS.COURSES);if(!sheet)throw new Error('COURSES sheet not found. Run setupDatabase() first.');
+  const now=new Date(),courseId=generateCourseId_(), headers=sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].map(String), idx=headerIndex_(headers);
+  const rows=normalized.map(h=>{const row=Array(headers.length).fill('');row[idx.course_id]=courseId;row[idx.course_name]=courseName;row[idx.hole]=h.hole;row[idx.par]=h.par;row[idx.si]=h.si;row[idx.created_at]=now;row[idx.updated_at]=now;if(idx.section_name!=null)row[idx.section_name]=h.section_name;return row;});
+  sheet.getRange(sheet.getLastRow()+1,1,rows.length,headers.length).setValues(rows);
+  return {success:true,message:'Course created',course:{course_id:courseId,course_name:courseName,hole_count:holeCount,holes:normalized,sections:sections}};
 }
 
 /* =====================================================
@@ -466,186 +424,26 @@ function createCourse_(data) {
  * ===================================================== */
 
 function updateCourse_(data) {
-  const courseId = String(data.course_id || '').trim();
-  const courseName = String(data.course_name || '').trim();
-  const holes = data.holes || [];
-
-  if (!courseId) {
-    return {
-      success: false,
-      error: 'course_id is required'
-    };
-  }
-
-  if (!courseName) {
-    return {
-      success: false,
-      error: 'course_name is required'
-    };
-  }
-
-  validateHoles_(holes);
-
-  const sheet = SpreadsheetApp
-    .getActiveSpreadsheet()
-    .getSheetByName(SHEETS.COURSES);
-
-  if (!sheet) {
-    throw new Error('COURSES sheet not found');
-  }
-
-  const values = sheet.getDataRange().getValues();
-
-  if (values.length < 2) {
-    return {
-      success: false,
-      error: 'Course not found'
-    };
-  }
-
-  const headers = values[0].map(String);
-  const idx = headerIndex_(headers);
-
-  const matchingRows = [];
-
-  for (let r = 1; r < values.length; r++) {
-    if (String(values[r][idx.course_id] || '').trim() === courseId) {
-      matchingRows.push(r + 1);
-    }
-  }
-
-  if (matchingRows.length === 0) {
-    return {
-      success: false,
-      error: 'Course not found'
-    };
-  }
-
-  const now = new Date();
-
-  // Keep the same course_id, replace its 18 course rows.
-  matchingRows.forEach(function(rowNumber) {
-    sheet.getRange(rowNumber, 1, 1, 7).clearContent();
-  });
-
-  const rows = holes.map(function(h, i) {
-    return [
-      courseId,
-      courseName,
-      i + 1,
-      Number(h.par),
-      Number(h.si),
-      values[matchingRows[0] - 1][idx.created_at] || now,
-      now
-    ];
-  });
-
-  // Rebuild safely at the end of the existing data.
-  const firstAppendRow = sheet.getLastRow() + 1;
-
-  sheet
-    .getRange(firstAppendRow, 1, rows.length, rows[0].length)
-    .setValues(rows);
-
-  return {
-    success: true,
-    message: 'Course updated',
-    course: {
-      course_id: courseId,
-      course_name: courseName,
-      holes: holes.map(function(h, i) {
-        return {
-          hole: i + 1,
-          par: Number(h.par),
-          si: Number(h.si)
-        };
-      })
-    }
-  };
-}
-
-function validateHoles_(holes) {
-  if (!Array.isArray(holes) || holes.length !== 18) {
-    throw new Error('Exactly 18 holes are required');
-  }
-
-  const sis = [];
-
-  holes.forEach(function(h, index) {
-    const par = Number(h.par);
-    const si = Number(h.si);
-
-    if (![3, 4, 5, 6].includes(par)) {
-      throw new Error('Hole ' + (index + 1) + ': PAR must be 3, 4, 5 or 6');
-    }
-
-    if (!Number.isInteger(si) || si < 1 || si > 18) {
-      throw new Error('Hole ' + (index + 1) + ': SI must be 1-18');
-    }
-
-    sis.push(si);
-  });
-
-  const unique = new Set(sis);
-
-  if (unique.size !== 18) {
-    throw new Error('SI 1-18 must each appear exactly once');
-  }
-}
-
-function findCourseByName_(courseName) {
-  const wanted = String(courseName || '').trim().toLowerCase();
-
-  if (!wanted) return null;
-
-  const courses = getCourses_().courses;
-
-  for (let i = 0; i < courses.length; i++) {
-    if (String(courses[i].course_name).trim().toLowerCase() === wanted) {
-      return courses[i];
-    }
-  }
-
-  return null;
-}
-
-function generateCourseId_() {
-  const date = Utilities.formatDate(
-    new Date(),
-    Session.getScriptTimeZone() || 'Asia/Singapore',
-    'yyMMdd'
-  );
-
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-
-  for (let i = 0; i < 4; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-
-  return 'C' + date + '-' + code;
-}
-
-/* =====================================================
- * GAME ID: day-of-month + daily sequence, e.g. 21-1
- * ===================================================== */
-function getNextGameId_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(SHEETS.MATCHES);
-  const tz = Session.getScriptTimeZone() || 'Asia/Singapore';
-  const day = Utilities.formatDate(new Date(), tz, 'd');
-  let maxSeq = 0;
-  if (sheet && sheet.getLastRow() > 1) {
-    const values = sheet.getDataRange().getValues();
-    const headers = values[0].map(String);
-    const idx = headerIndex_(headers);
-    for (let r = 1; r < values.length; r++) {
-      const id = String(values[r][idx.match_id] || '').trim();
-      const m = id.match(/^(\d{1,2})-(\d+)$/);
-      if (m && Number(m[1]) === Number(day)) maxSeq = Math.max(maxSeq, Number(m[2]));
-    }
-  }
-  return {success:true, match_id:day + '-' + (maxSeq + 1), day:Number(day), sequence:maxSeq+1};
+  const courseSheetForHeaders=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEETS.COURSES);
+  if(courseSheetForHeaders)ensureHeader_(courseSheetForHeaders,'section_name');
+  const courseId=String(data.course_id||'').trim(), courseName=String(data.course_name||'').trim();
+  const holeCount=Number(data.hole_count||18), sections=Array.isArray(data.sections)?data.sections:[];
+  if(!courseId)return {success:false,error:'course_id is required'};
+  if(!courseName)return {success:false,error:'course_name is required'};
+  if(![18,27].includes(holeCount)||sections.length!==holeCount/9)return {success:false,error:'Provide 2 or 3 complete 9-hole sections'};
+  const sectionNames=sections.map(function(sec){return String(sec.section_name||'').trim().toLowerCase();});
+  if(sectionNames.some(function(n){return !n;})||new Set(sectionNames).size!==sectionNames.length)return {success:false,error:'Each 9-hole section needs a unique name'};
+  const normalized=[];
+  sections.forEach(function(sec,si){const sectionName=String(sec.section_name||'').trim(),secHoles=Array.isArray(sec.holes)?sec.holes:[];if(!sectionName)throw new Error('Enter a name for section '+(si+1));if(secHoles.length!==9)throw new Error(sectionName+': exactly 9 holes are required');const sis=[];secHoles.forEach(function(h,i){const par=Number(h.par),stroke=Number(h.si);if(![3,4,5,6].includes(par))throw new Error(sectionName+' hole '+(i+1)+': invalid PAR');if(!Number.isInteger(stroke)||stroke<1||stroke>18)throw new Error(sectionName+' hole '+(i+1)+': SI must be 1-18');sis.push(stroke);normalized.push({hole:si*9+i+1,par:par,si:stroke,section_name:sectionName});});if(new Set(sis).size!==9)throw new Error(sectionName+': SI values must be unique within the 9-hole section');});
+  if(holeCount===18 && new Set(normalized.map(function(h){return h.si;})).size!==18)throw new Error('For an 18-hole course, SI values 1-18 must each be unique');
+  const sheet=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEETS.COURSES);if(!sheet)throw new Error('COURSES sheet not found');
+  const values=sheet.getDataRange().getValues(),headers=values[0].map(String),idx=headerIndex_(headers),matching=[];let createdAt=new Date();
+  for(let r=1;r<values.length;r++)if(String(values[r][idx.course_id]||'').trim()===courseId){matching.push(r+1);if(idx.created_at!=null&&values[r][idx.created_at])createdAt=values[r][idx.created_at];}
+  if(!matching.length)return {success:false,error:'Course not found'};
+  matching.forEach(r=>sheet.getRange(r,1,1,headers.length).clearContent());
+  const now=new Date(),rows=normalized.map(h=>{const row=Array(headers.length).fill('');row[idx.course_id]=courseId;row[idx.course_name]=courseName;row[idx.hole]=h.hole;row[idx.par]=h.par;row[idx.si]=h.si;row[idx.created_at]=createdAt;row[idx.updated_at]=now;if(idx.section_name!=null)row[idx.section_name]=h.section_name;return row;});
+  sheet.getRange(sheet.getLastRow()+1,1,rows.length,headers.length).setValues(rows);
+  return {success:true,message:'Course updated',course:{course_id:courseId,course_name:courseName,hole_count:holeCount,holes:normalized,sections:sections}};
 }
 
 /* =====================================================
@@ -653,6 +451,8 @@ function getNextGameId_() {
  * ===================================================== */
 
 function createMatch_(data) {
+  const matchSheetForHeaders=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEETS.MATCHES);
+  if(matchSheetForHeaders)ensureHeader_(matchSheetForHeaders,'selected_holes_json');
   let matchId = String(data.match_id || '').trim();
   const admin = String(data.admin || '').trim();
   const courseId = String(data.course_id || '').trim();
@@ -698,6 +498,12 @@ function createMatch_(data) {
     };
   }
 
+  const selectedHoles = Array.isArray(data.selected_holes) ? data.selected_holes : [];
+  if (selectedHoles.length && selectedHoles.length !== 18) return {success:false,error:'Select exactly two 9-hole sections for an 18-hole game'};
+  if (Number(course.course.hole_count||18)===27) { const counts={}; selectedHoles.forEach(function(h){const key=String(h.section_name||'').trim();counts[key]=(counts[key]||0)+1;}); const groupCounts=Object.keys(counts); if(groupCounts.length!==2||groupCounts.some(function(k){return !k||counts[k]!==9;}))return {success:false,error:'A 27-hole course requires exactly two complete 9-hole sections'}; }
+  const matchHoles = selectedHoles.length ? selectedHoles.map(function(h,i){return {hole:i+1,par:Number(h.par),si:Number(h.si),section_name:String(h.section_name||'')};}) : (course.course.holes||[]).slice(0,18).map(function(h,i){return {hole:i+1,par:Number(h.par),si:Number(h.si),section_name:String(h.section_name||'')};});
+  if (matchHoles.length !== 18) return {success:false,error:'Course does not contain 18 selected holes'};
+
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const matchSheet = ss.getSheetByName(SHEETS.MATCHES);
   const playerSheet = ss.getSheetByName(SHEETS.PLAYERS);
@@ -718,6 +524,9 @@ function createMatch_(data) {
     now,
     now
   ]);
+  const matchHeaders=matchSheet.getRange(1,1,1,matchSheet.getLastColumn()).getValues()[0].map(String);
+  const selectedJsonCol=matchHeaders.indexOf('selected_holes_json')+1;
+  if(selectedJsonCol>0)matchSheet.getRange(matchSheet.getLastRow(),selectedJsonCol).setValue(JSON.stringify(matchHoles));
 
   const createdPlayers = [];
 
@@ -790,6 +599,8 @@ function getMatch_(matchId) {
 
   const players = getPlayers_(matchId);
   const course = getCourse_(match.course_id);
+  let matchCourse = course.success ? course.course : null;
+  if (matchCourse && Array.isArray(match.selected_holes) && match.selected_holes.length === 18) { matchCourse = Object.assign({}, matchCourse, {holes:match.selected_holes, hole_count:18}); }
 
   return {
     success: true,
@@ -804,7 +615,7 @@ function getMatch_(matchId) {
       pnl_settings: match.pnl_settings || {game_multiplier:10,baccarat_multiplier:5}
     },
     players: players,
-    course: course.success ? course.course : null,
+    course: matchCourse,
     handicaps: getHandicaps_(matchId).handicaps
   };
 }
@@ -860,6 +671,11 @@ function saveResultDouble_(data) {
   return {success:true,result_doubles:doubles};
 }
 
+function parseSelectedHoles_(headers,row) {
+  const i=headers.indexOf('selected_holes_json'); if(i<0||!row[i]) return null;
+  try { const value=JSON.parse(String(row[i])); return Array.isArray(value)?value:null; } catch(e) { return null; }
+}
+
 function getMatchRaw_(matchId) {
   const sheet = SpreadsheetApp
     .getActiveSpreadsheet()
@@ -880,6 +696,7 @@ function getMatchRaw_(matchId) {
         admin: String(values[r][idx.admin] || ''),
         player_count: Number(values[r][idx.player_count] || 0),
         course_id: String(values[r][idx.course_id] || ''),
+        selected_holes: parseSelectedHoles_(headers, values[r]),
         status: String(values[r][idx.status] || ''),
         result_doubles: parseResultDoubles_(headers, values[r]),
         pnl_settings: parsePnlSettings_(headers, values[r])
