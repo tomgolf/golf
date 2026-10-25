@@ -1,9 +1,9 @@
-const CACHE='live-golf-game-v1-8-player-count-row';
+const CACHE='live-golf-game-v1-19-thin-stroke-multi-fin-dots';
 const CORE_ASSETS=[
   './',
   './index.html',
-  './styles.css?v=live-golf-game-v1-8-player-count-row-course-18-27',
-  './app.js?v=live-golf-game-v1-8-player-count-row-course-18-27',
+  './styles.css?v=live-golf-game-v1-19-thin-stroke-multi-fin-dots',
+  './app.js?v=live-golf-game-v1-19-thin-stroke-multi-fin-dots',
   './manifest.webmanifest'
 ];
 const API_HOSTS=new Set(['script.google.com','script.googleusercontent.com']);
