@@ -1,9 +1,9 @@
-const CACHE='live-golf-game-v1-19-thin-stroke-multi-fin-dots';
+const CACHE='live-golf-game-v1-20-b9-unplayed-status-fix';
 const CORE_ASSETS=[
   './',
   './index.html',
-  './styles.css?v=live-golf-game-v1-19-thin-stroke-multi-fin-dots',
-  './app.js?v=live-golf-game-v1-19-thin-stroke-multi-fin-dots',
+  './styles.css?v=live-golf-game-v1-20-b9-unplayed-status-fix',
+  './app.js?v=live-golf-game-v1-20-b9-unplayed-status-fix',
   './manifest.webmanifest'
 ];
 const API_HOSTS=new Set(['script.google.com','script.googleusercontent.com']);

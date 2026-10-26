@@ -171,11 +171,23 @@ function matchStatus(viewer,opp,hole){
     }
     const t=row.margin-tr.margin;
     // Established B9 lookup sequence, locked into Tommy/Buy after it starts.
-    if(mode==='B9' && tr.h===15 && tr.margin===-3 && idx>triggerIdx &&
-       rows.slice(triggerIdx+1,idx+1).every(x=>x.r==='S')){
-      if(idx===triggerIdx+1)return 'T+1';
-      if(idx===triggerIdx+2)return 'G/T+1';
-      if(idx===triggerIdx+3)return 'T+1/B0';
+    // Do not advance the lookup on a hole without both players' scores.
+    if(mode==='B9' && tr.h===15 && tr.margin===-3 && idx>triggerIdx){
+      if(!hasScores(idx)){
+        let completedSquares=0;
+        for(let i=triggerIdx+1;i<idx;i++){
+          if(!hasScores(i) || rows[i].r!=='S') break;
+          completedSquares++;
+        }
+        if(completedSquares===0)return `${Math.abs(tr.margin)}${tr.margin>0?'UP':'DW'}/${Math.abs(tr.margin)}GO`;
+        if(completedSquares===1)return 'T+1';
+        if(completedSquares===2)return 'G/T+1';
+        if(completedSquares===3)return 'T+1/B0';
+      } else if(rows.slice(triggerIdx+1,idx+1).every((x,offset)=>hasScores(triggerIdx+1+offset)&&x.r==='S')){
+        if(idx===triggerIdx+1)return 'T+1';
+        if(idx===triggerIdx+2)return 'G/T+1';
+        if(idx===triggerIdx+3)return 'T+1/B0';
+      }
     }
     if(decisionIdx>=0&&idx>=decisionIdx){
       if(idx===decisionIdx)return `G/T${t>0?'+':''}${t}`;
