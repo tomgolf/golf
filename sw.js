@@ -1,9 +1,9 @@
-const CACHE='live-golf-game-v1-23-player-separator-fix';
+const CACHE='live-golf-game-v1-25-left-handicap-colors';
 const CORE_ASSETS=[
   './',
   './index.html',
-  './styles.css?v=live-golf-game-v1-23-player-separator-fix',
-  './app.js?v=live-golf-game-v1-23-player-separator-fix',
+  './styles.css?v=live-golf-game-v1-25-left-handicap-colors',
+  './app.js?v=live-golf-game-v1-25-left-handicap-colors',
   './manifest.webmanifest'
 ];
 const API_HOSTS=new Set(['script.google.com','script.googleusercontent.com']);

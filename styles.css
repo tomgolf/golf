@@ -1730,8 +1730,8 @@ body.golf-loading-active{overflow:hidden}
   white-space:nowrap !important;
 }
 .score-table.match-score-table > tbody > tr.stroke-row > td.handicap-status-cell .hcp-zero { color:#f5fbfa !important; font-size:15px !important; font-weight:900 !important; }
-.score-table.match-score-table > tbody > tr.stroke-row > td.handicap-status-cell .hcp-receive { color:#00b7ff !important; font-size:15px !important; font-weight:1000 !important; }
-.score-table.match-score-table > tbody > tr.stroke-row > td.handicap-status-cell .hcp-give { color:#ff3038 !important; font-size:15px !important; font-weight:1000 !important; }
+.score-table.match-score-table > tbody > tr.stroke-row > td.handicap-status-cell .hcp-receive { color:#ffffff !important; font-size:15px !important; font-weight:1000 !important; }
+.score-table.match-score-table > tbody > tr.stroke-row > td.handicap-status-cell .hcp-give { color:#b7ff35 !important; font-size:15px !important; font-weight:1000 !important; }
 .score-table.match-score-table > tbody > tr.stroke-row > td.handicap-status-cell { background:#117a78 !important; }
 @media(max-width:640px){
   .score-table.match-score-table > tbody > tr.stroke-row > td.handicap-status-cell { font-size:13px !important; padding-left:8px !important; }
