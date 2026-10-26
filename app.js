@@ -144,6 +144,16 @@ function matchStatus(viewer,opp,hole){
   const row=rows[idx], lastIdx=rows.length-1;
   const hasScores=i=>{const a=Number(scoreFor(viewer,rows[i].h).score),b=Number(scoreFor(opp,rows[i].h).score);return a>0&&b>0;};
 
+  // Only show match status through the last consecutively completed hole.
+  // A hole is complete only when both players have entered a score. The first
+  // unfinished hole and every hole after it must remain blank.
+  let lastCompletedIdx=-1;
+  for(let i=0;i<=lastIdx;i++){
+    if(!hasScores(i)) break;
+    lastCompletedIdx=i;
+  }
+  if(idx>lastCompletedIdx)return '';
+
   // Determine which scoring path starts first. Once Tommy/Buy starts, keep
   // that path for the rest of the segment; GG is only used if it occurs first.
   let triggerIdx=-1, ggIdx=-1;

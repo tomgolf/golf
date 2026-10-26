@@ -1,9 +1,9 @@
-const CACHE='live-golf-game-v1-20-b9-unplayed-status-fix';
+const CACHE='live-golf-game-v1-21-status-cutoff-fix';
 const CORE_ASSETS=[
   './',
   './index.html',
-  './styles.css?v=live-golf-game-v1-20-b9-unplayed-status-fix',
-  './app.js?v=live-golf-game-v1-20-b9-unplayed-status-fix',
+  './styles.css?v=live-golf-game-v1-21-status-cutoff-fix',
+  './app.js?v=live-golf-game-v1-21-status-cutoff-fix',
   './manifest.webmanifest'
 ];
 const API_HOSTS=new Set(['script.google.com','script.googleusercontent.com']);
