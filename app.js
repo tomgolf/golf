@@ -252,7 +252,7 @@ function matchTable(){
     const pairDoubled=!isMe&&!!state.match.result_doubles?.[pairKey];
     const finalScore=isMe?'':Number(pairResult.total)*(pairDoubled?2:1);
     const scoreRow=`<tr class="player-row ${pi%2?'alt':''} ${isMe?'current-player':''} ${isAdminPlayer?'admin-player-row':''}"><td class="player-name">${esc(p.name)}</td>${holes.map(h=>`<td class="score-cell ${cellClass(state.currentPlayer.player_id,p.player_id,h)} ${(!state.viewingAsPlayer&&(isMe||state.isAdmin))?'editable':''}" onclick="editScore('${p.player_id}',${h})">${scoreMarkup(p.player_id,h)}</td>`).join('')}<td class="nine-total-cell final-status-cell ${isMe?'':resultTone(finalScore)}">${isMe?'':fmtSigned(finalScore)}</td></tr>`;
-    if(isAdminPlayer)return scoreRow;
+    if(isMe)return scoreRow;
     return `${scoreRow}<tr class="stroke-row ${pi%2?'alt':''}"><td class="match-status-label-cell handicap-status-cell">${isMe?'<span class="hcp-zero">0</span>':matchHandicapLabel(state.currentPlayer.player_id,p.player_id)}</td>${holes.map(h=>{if(isMe)return '<td class="match-status-cell"></td>';const raw=matchStatus(state.currentPlayer.player_id,p.player_id,h);const ms=matchStatusMarkup(raw);return `<td class="match-status-cell ${matchStatusClass(raw)}">${ms}</td>`}).join('')}<td class="nine-result-cell"></td></tr>`;
   }).join('')}</tbody></table></div>${resultPanel()}`
 }

@@ -1740,19 +1740,22 @@ body.golf-loading-active{overflow:hidden}
   .score-table.match-score-table > tbody > tr.stroke-row > td.handicap-status-cell .hcp-give { font-size:13px !important; }
 }
 
-/* v1.17: white 8px separator BETWEEN player groups at every viewport width.
-   The player score row and its following stroke/status row remain connected. */
+/* v1.23: white 8px separator between player groups at every viewport width.
+   Also cover the viewer row -> next player row, because the viewer has no status row. */
 .score-table.match-score-table > tbody > tr.stroke-row + tr.player-row > td,
-.score-table.match-score-table > tbody > tr.player-row.admin-player-row + tr.player-row > td {
+.score-table.match-score-table > tbody > tr.player-row.admin-player-row + tr.player-row > td,
+.score-table.match-score-table > tbody > tr.player-row.current-player + tr.player-row > td {
   border-top: 8px solid #ffffff !important;
   background-clip: padding-box !important;
 }
 .score-table.match-score-table > tbody > tr.stroke-row + tr.player-row > td.player-name,
-.score-table.match-score-table > tbody > tr.player-row.admin-player-row + tr.player-row > td.player-name {
+.score-table.match-score-table > tbody > tr.player-row.admin-player-row + tr.player-row > td.player-name,
+.score-table.match-score-table > tbody > tr.player-row.current-player + tr.player-row > td.player-name {
   border-top-color: #ffffff !important;
 }
 .score-table.match-score-table > tbody > tr.stroke-row + tr.player-row > td.nine-total-cell,
-.score-table.match-score-table > tbody > tr.player-row.admin-player-row + tr.player-row > td.nine-total-cell {
+.score-table.match-score-table > tbody > tr.player-row.admin-player-row + tr.player-row > td.nine-total-cell,
+.score-table.match-score-table > tbody > tr.player-row.current-player + tr.player-row > td.nine-total-cell {
   border-top-color: #ffffff !important;
 }
 
